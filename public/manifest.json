@@ -1,35 +1,39 @@
 {
   "manifest_version": 3,
 
-  "name": "Chrome Extension TypeScript Starter",
-  "description": "Chrome Extension, TypeScript, Visual Studio Code",
-  "version": "1.0",
+  "name": "Rewritten AO3 Extension",
+  "description": "rewrite of AO3 Extension",
+  "version": "0.1",
+
+
+  "oauth2": {
+    "client_id": "972283065139-0vv4km66vsale3ibeu2dr253gki1r8ln.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets"]
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmiXSszV2OCyf7MiWKkw6NsCJ2Xy9xrfseBfdcOKlX08HNPyKjpSR6gOsx96ZGVe0nVpxIkC7+zBG5GWp7rMVxVeVoDPE+d0KCvjkxpgDybq3gFtlszNZOKSUiUbRfwuk+ukstp9yY0PuNR1C/EB+WvwHGmPDTkMHAzTtgX+BEPs3VYjrGpVW6avdlGYOBtBUOcTg0oO2NdmKIQdm0cHeZIOqRTgNR/hlNMjY7rI9BGYSVVe7ac5k/wk9zqYTPB7fK/rkvoJxktRF3NavkRfiSt/XX8EmCTYzYLrlRVvq2/wQtoP4nf0wKIQAalqTGb1z5Rn7ded5+IU9iAYL9rm4VQIDAQAB",
+  "permissions": ["identity", "storage", "scripting"],
+  "host_permissions": ["*://*.archiveofourown.org/", "https://docs.google.com/spreadsheets/*"],
+
 
   "options_ui": {
     "page": "options.html"
   },
 
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": "icons/icon-16.png",
     "default_popup": "popup.html"
   },
 
   "content_scripts": [
       {
           "matches": ["<all_urls>"],
-          "js": ["js/vendor.js", "js/content_script.js"]
+          "js": ["js/content_script.js"],
+          "run_at": "document_end"
       }
-  ],
-
-  "background": {
-    "service_worker": "js/background.js"
-  },
-
-  "permissions": [
-    "storage"
-  ],
-
-  "host_permissions": [
-    "<all_urls>"
   ]
+
 }
