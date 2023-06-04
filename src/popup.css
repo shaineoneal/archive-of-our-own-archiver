@@ -1,0 +1,33 @@
+body {
+    width: 250px;
+}
+
+h1 {
+    text-align: center
+}
+
+button {
+    font-family: Roboto, system-ui, sans-serif;
+    border: 1px solid rgb( 218, 220, 224 );
+    border-radius: 4px;
+    user-select: none;
+    background: rgb( 26, 115, 232 );
+    color: white;
+    cursor: pointer;
+    display: block;
+    font-weight: 500;
+    text-align: center;
+    padding: 8px;
+    width: 100%;
+}
+button:disabled {
+    background: rgb( 218, 220, 224 );
+    color: rgb( 118, 118, 118 );
+    cursor: default;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    
+}
