@@ -1,52 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { BsFillGearFill } from "react-icons/bs";
+import "./popup.css";
 
 const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
 
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
-    });
-  }, []);
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            const result = await new Promise((resolve) => {
+                chrome.storage.sync.get(["isLoggedIn"], (result) => {
+                    setIsLoggedIn(result.isLoggedIn);
+                    resolve(result);
+                });
+            });
+            return result;
+        };
 
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
+        checkLoginStatus();
 
-  return (
-    <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
-      </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
-    </>
-  );
+    }, []);
+ 
+    const handleLogin = async() => {
+        try {
+            const result = await new Promise<string>((resolve) => {
+                chrome.runtime.sendMessage({ reason: "login" }, (response) => {
+                    console.log("response received", response);
+                    resolve(response);
+                });
+            });
+
+            if (result && result === "success") {
+                console.log("login success in handleLogin");
+                //successful login
+            } else {
+                console.log("login failed in handleLogin");
+                //failed login
+            }
+        }
+        catch (error) {
+            console.log("error handling response", error);
+        }
+    
+    };
+
+
+    return (
+        <>
+            <header>
+                <div className="flex-container">
+                    <div className="logo">
+                        <img src="icon.png" alt="extension-icon"/>
+                    </div>
+                    <div className="title">AO3E: Rewritten Extension</div>
+                    <div className="settings">
+                        <a href="settings.html">
+                            <BsFillGearFill />
+                        </a>
+                    </div>
+            
+                </div>
+            </header>
+            <main>
+                <button onClick={handleLogin} disabled={!isLoggedIn}>
+                    {!isLoggedIn ? "Logged In!" : "Login"}
+                </button>
+            </main>
+        </>
+    );
 };
 
 const root = createRoot(document.getElementById("root")!);
