@@ -1,41 +1,8 @@
-import { sheetURL } from "./sheet";
-
-async function handleAuthentication() {
-    //make sure getAuthToken worked
-    console.log("handleAuthentication");
-    try {   
-        const token = await getAuthToken();
-        //make sure getAuthToken returned the token
-        console.log("getAuthToken success", token);
-        //get the sheet URL from local storage
-        const url: string = await sheetURL(token);
-        //make sure sheetURL returned the URL
-        console.log("sheetURL success", url);
-    } catch (error) {
-        console.log("Error in handleAuthentication:", error);
-    }
-}
-
-function getAuthToken() {
-    return new Promise<string>((resolve, reject) => {
-        try {
-            chrome.identity.getAuthToken({ interactive: true }, (token) => {
-                console.log("Got the token", token);
-                chrome.storage.sync.set({ authToken: token });
-                resolve(token);
-            });
-        } catch (error) {  
-            console.log("Error in getAuthToken:", chrome.runtime.lastError);
-            chrome.identity.clearAllCachedAuthTokens(() => {
-                console.log("Cleared all cached");
-            });
-            reject(chrome.runtime.lastError);
-        }             
-    });
-}
-
-
-
+import { getURL } from "./sheet";
+//import getLoginStatus from "../login";
+import { check } from "prettier";
+import { createContext, useState } from "react";
+import  userLogin from "../components/Login";
 
 
 chrome.runtime.onInstalled.addListener(function () {
@@ -47,7 +14,7 @@ chrome.runtime.onMessage.addListener(async function (buttonClicked, sender, send
     if (buttonClicked.reason === "login") {
         console.log("login heard");
         try {
-            await handleAuthentication();
+            await userLogin();
             console.log("Authentication successful");
             sendResponse({ success: true });
         } catch (error) {
@@ -55,8 +22,31 @@ chrome.runtime.onMessage.addListener(async function (buttonClicked, sender, send
             sendResponse({ success: false, error: error });
         }
         return true; // Return true to indicate that sendResponse will be used asynchronously
-      } else if (buttonClicked.reason === "update") {
-        getAuthToken();
+      } else if (buttonClicked.reason === "logout") {
+        try {
+            chrome.identity.removeCachedAuthToken({ token: buttonClicked.reason}, () => {
+                fetch(
+                    "https://accounts.google.com/o/oauth2/revoke?token=" + buttonClicked.token,
+                    { method: "GET" }
+                ).then((response) => {
+                    console.log("logout response", response);
+                });
+            });
+            chrome.storage.sync.set({ isLoggedIn: false });
+            sendResponse({ success: true });
+        } catch (error) {
+            console.log("Error in logout:", error);
+            sendResponse({ success: false, error: error });
+        }
         return true; // Return true to indicate that sendResponse will be used asynchronously
       }
     });
+
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    console.log("storage changed");
+    //const loginStatus = getLoginStatus();
+    for (const key in changes) {
+        const storageChange = changes[key];
+        console.log(storageChange);
+    }
+});

@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
+
 //return token fix??
-export const sheetURL = async (token: string) => {
+export function getSheetURL(token: string) {
+    console.log("getting sheet URL");
     return new Promise<string>((resolve, reject) => {
         chrome.storage.sync.get(["sheetURL"], async(result) => {
             const sheetURL = result.sheetURL;
@@ -18,7 +21,25 @@ export const sheetURL = async (token: string) => {
             }
         });
     });
-};
+}
+
+
+export async function getURL() {
+    console.log("getURL");
+    let url: string = "";
+    try {
+        chrome.storage.sync.get(["sheetURL"], (result) => {
+            console.log("getURL", result.sheetURL)
+            return result.sheetURL;
+        });
+    } catch (error) {  
+        console.log("Error in getURL:", chrome.runtime.lastError);
+        chrome.identity.clearAllCachedAuthTokens(() => {
+            console.log("Cleared all cached");
+        });
+    }
+    return url;
+}
 
 async function createSheet(token: string) {
     const url = "https://sheets.googleapis.com/v4/spreadsheets";
@@ -49,4 +70,30 @@ async function createSheet(token: string) {
         console.error("Error creating sheet:", error);
         throw error;
       });
+}
+
+
+
+export default async function useSheetURL(token: string) {
+    const [sheetURL, setSheetURL] = useState("");
+
+    useEffect(() => {
+        
+        async function fetchSheetURL() {
+            try {
+                const url = await getSheetURL(token);
+                setSheetURL(url);
+            } catch (error) {
+                console.log("error getting sheet URL", error);
+                chrome.identity.clearAllCachedAuthTokens(() => {
+                    console.log("Cleared all cached");
+                });
+            }
+        }
+        
+        fetchSheetURL();
+       
+    }, [sheetURL]);
+
+
 }
