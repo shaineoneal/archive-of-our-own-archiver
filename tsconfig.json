@@ -11,5 +11,9 @@
         "noEmitOnError": true,
         "jsx": "react",
         "typeRoots": [ "node_modules/@types" ]
+    },
+    "typedocOptions": {
+        "entryPoints": [ "src/index.tsx" ],
+        "out": "docs"
     }
 }
