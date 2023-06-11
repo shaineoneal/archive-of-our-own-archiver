@@ -1,7 +1,12 @@
 // @types.user.ts
 
-export interface IUser {
-    email: string;
-    authToken: string;
-    sheetURL: string;
+export type UserType = {
+    email: string | null;
+    authToken: string | null;
+    sheetURL: string | null;
+}
+
+export type UserStateType = {
+    user: UserType | null;
+    setUser: (user: UserType | null) => void;
 }

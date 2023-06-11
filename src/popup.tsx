@@ -1,19 +1,14 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { IconContext } from "react-icons";  
 import { BsFillGearFill } from "react-icons/bs";
-import Login, { userAuth } from "./components/Login";
-import { UserContext } from "./Contexts/UserContext";
-import { checkUserStatus } from "./useUser";
-import Logout from "./components/Logout";
+import Login from './components/Login';
 import "./popup.css";
-
 
 const Popup = () => {
 
     useEffect(() => {
         console.log("popup");
-
     }, []);
 
     return (
@@ -35,7 +30,7 @@ const Popup = () => {
             <main>
 
                     {<Login />}
-                    
+
                 <div></div>
             </main>
         </>

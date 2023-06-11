@@ -1,43 +1,107 @@
 import { UserContext } from "../Contexts/UserContext";
-import { IUser } from "../user";
-import { useUser, checkUserStatus } from "../useUser";
-import { useLocalStorage } from "../useLocalStorage";
-import React, { useEffect } from 'react';
+import { UserType } from "../user";
+import { useUser } from "../useUser";
+import React, { useState } from 'react';
 
 /** Login component */
 
+const LoginButton = () => {
+    const { user, login } = useUser();
+    
+    const handleLogin = () => {
+        console.log("save user; email: ", user?.email);
+        login({
+            email: "test@gmail.com",
+            authToken: "test",
+            sheetURL: "google.com/test",
+        });
+    }
 
-export const userAuth = () => {
+    return (
+        <>
+            <button onClick={handleLogin} disabled={!useUser()}>Login</button>
+            <h1>{useUser().user?.email}</h1>
+        </>
+    );
+}
+
+const Login = () => {
+    const [user, setUser] = useState<UserType | null>(null);
+
+    return (
+        <UserContext.Provider value={{ user, setUser }}>
+            <LoginButton />
+        </UserContext.Provider>
+
+    )
+}
+
+export default Login;
+
+
+
+/*
+export class LoginClass extends Component <UserContextType> {
+
+    static contextType = UserContext;
+
+
+    render() {
+        const currentUser = LoginClass.contextType;
+
+        return (
+            <div>
+                <h1>{ this.props.user?.email }</h1>
+            </div>
+        )
+    }
+}
+
+
+
+
+export const useUser = () => {
 
     console.log("user auth");
 
-    const { user, addUser, removeUser} = useUser();
-    const { getItem } = useLocalStorage();
+    const { user, saveUser } = useContext(UserContext);
 
     useEffect(() => {
-        const user = getItem("user");
-        if (user) {
-            addUser(JSON.parse(user));
-        }
+        chrome.storage.local.get("user")
+            .then((user) => { 
+                saveUser(user.user);
+                console.log("user auth; user: ", user.user);
+            });
+
     }, []);
 
-    const login = (user: IUser) => {
-        addUser(user);
+    const login = (user: UserType) => {
+        console.log("login");
+        saveUser(user);
+        chrome.storage.local.set({ user });
+
     };
 
-    const logout = () => {
-        removeUser();
+    /*const logout = () => {
+        saveUser(null);
+        chrome.storage.local.remove("user");
     };
 
-    return { user, login, logout };
+    const getUserStatus = () => {
+        if (user) {
+            return true;
+        } else { return false; }
+    }
+    
+    return { user, login };
 };
 
 const Login = () => {
-    const { login } = userAuth();
-    
+
+    const { user, login } = useUser();
 
     const handleLogin = () => {
-        console.log("handle login");
+        console.log("handle login; current local storage: ", checkLocal());
         login({
             email: "test@gmail.com",
             authToken: "test",
@@ -48,8 +112,8 @@ const Login = () => {
 
     return (
         <div>
-            <button onClick={handleLogin} disabled={!userAuth().user}>
-                {!userAuth().user ? "Logged In!" : "Login"}
+            <button onClick={handleLogin} >
+                {!!useUser().user ? "Logged In!" : "Login"}
             </button>
         </div>
     );
@@ -57,11 +121,11 @@ const Login = () => {
 
 export default Login;
 
-/*export const AddUser: React.FC = () => {
+export const AddUser: React.FC = () => {
     console.log("add user");
     const { saveNewUser } = React.useContext(UserContext) as UserContextType;
     console.log("add user 2")
-    const [user, setUser] = useState<IUser | null>(null);
+    const [user, saveUser] = useState<IUser | null>(null);
 
     const handleLogin = async () => {
         try {
@@ -70,7 +134,7 @@ export default Login;
                 chrome.storage.sync.set({ isLoggedIn: true });
                 console.log("login response", response);
                 saveNewUser(response);
-                setUser(response);
+                saveUser(response);
             });
         }
         catch (error) {
