@@ -1,25 +1,11 @@
 import { createContext } from "react"; 
-import { IUser } from "../user";
-import { useState } from 'react';
+import { UserStateType } from "../user";
 
-
-interface UserContext {
-    user: IUser | null;
-    saveUser: (user: IUser | null) => void;
-}
-
-const initialUser = {
-    email: "",
-    authToken: "",
-    sheetURL: "",
-}
-
-
-/**
- * Context for user login status
- * default value is null
- */
-export const UserContext = createContext<UserContext>({
-    user: null,
-    saveUser: () => {},
-})
+export const UserContext = createContext<UserStateType>({
+    user: {
+        email: null,
+        authToken: null,
+        sheetURL: null
+    },
+    setUser: () => {}
+});
