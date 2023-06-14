@@ -1,5 +1,5 @@
-import { useContext } from 'react';
-import { UserContext } from './contexts/UserContext';
+/*import { useContext } from 'react';
+import { UserContext } from './contexts/URLContext';
 import { UserType } from './user';
 
 export function useUser() {
@@ -8,6 +8,11 @@ export function useUser() {
     const login = (user: UserType) => {
         console.log("login");
         setUser(user);
+    }
+
+    const logout = () => {
+        console.log("logout");
+        setUser({ authToken: "", sheetURL: "" });   
     }
 
     return { user, login };

@@ -1,46 +1,29 @@
-import { UserContext } from "../contexts/UserContext";
+/*import { UserContext } from "../contexts/URLContext";
 import { UserType } from "../user";
 import { useUser } from "../useUser";
 import React, { useState } from 'react';
+import { fetchToken } from "../gapiHandling";
 
-/** Login component */
 
-const LoginButton = () => {
-    const { user, login } = useUser();
-    
-    const handleLogin = () => {
-        console.log("save user; email: ", user?.email);
-        login({
-            email: "test@gmail.com",
-            authToken: "test",
-            sheetURL: "google.com/test",
-        });
-    }
+
+const loginButton = () => {
+
+    async function handleLogin() {
+        const loading
+
 
     return (
         <>
             <button onClick={handleLogin} disabled={!useUser()}>Login</button>
-            <h1>{useUser().user?.email}</h1>
+            <p>{useUser().user?.authToken}</p>
         </>
     );
 }
 
-const Login = () => {
-    const [user, setUser] = useState<UserType | null>(null);
-
-    return (
-        <UserContext.Provider value={{ user, setUser }}>
-            <LoginButton />
-        </UserContext.Provider>
-
-    )
-}
-
-export default Login;
+export default LoginButton;
 
 
 
-/*
 export class LoginClass extends Component <UserContextType> {
 
     static contextType = UserContext;

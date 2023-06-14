@@ -1,14 +1,34 @@
-import { getURL } from "./sheet";
-//import getLoginStatus from "../login";
-import { check } from "prettier";
-import { createContext, useState } from "react";
-import  userLogin from "../components/Login";
+import { URLContext } from "../contexts/URLContext";
+import { createContext, useState, useContext } from "react";
+//import  userLogin from "../components/Login";
+//import { useUser } from "../useUser";
+import { fetchToken } from "./fetchToken";
 
 
 chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
 });
 
+//checks if user is logged in
+
+fetchToken(true).then((token) => {
+    console.log("Token: ", token);
+    chrome.storage.sync.set({ isLoggedIn: true });
+}).catch((error) => {
+    console.log("Error: ", error);
+});
+
+chrome.storage.onChanged.addListener(() => {
+    fetchToken(true).then((token) => {
+        console.log("Token: ", token);
+        chrome.storage.sync.set({ isLoggedIn: true });
+    }).catch((error) => {
+        console.log("Error: ", error);
+    });
+});    
+
+
+/*
 chrome.runtime.onMessage.addListener(async function (buttonClicked, sender, sendResponse) {
     console.log(buttonClicked.reason);
     if (buttonClicked.reason === "login") {
@@ -50,3 +70,4 @@ chrome.storage.onChanged.addListener(function (changes, namespace) {
         console.log(storageChange);
     }
 });
+*/

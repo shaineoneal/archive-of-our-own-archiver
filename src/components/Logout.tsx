@@ -1,18 +1,26 @@
 import React from "react";
-import { useUser } from "../useUser";
 //import { userAuth } from "./Login";
 
-const Logout = () => {
+function removeSheetURL() {
+    chrome.storage.sync.remove(["sheetURL"], () => {
+        console.log("sheet URL removed");
+    });
+}
+
+
+
+export const Logout = () => {
    // const { logout } = userAuth();
 
     const handleLogout = () => {
-     //   logout();
+        removeSheetURL();
+        //logout();
     };
 
     return (
         <div>
-            <button onClick={handleLogout} disabled={!useUser().user}>
-                {!useUser().user ? "Logged Out!" : "Logout"}
+            <button onClick={handleLogout}>
+                Logout
             </button>
         </div>
     );
