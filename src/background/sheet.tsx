@@ -8,7 +8,7 @@ export function getSheetURL(token: string) {
             const sheetURL = result.sheetURL;
             //does the user have a sheet URL?
             if (sheetURL) {
-                console.log("user has sheet URL");
+                console.log("user has sheet URL: ", sheetURL);
                 resolve(sheetURL);
             } else {
                 console.log("user doesn't have sheet URL, creating sheet");
@@ -23,23 +23,6 @@ export function getSheetURL(token: string) {
     });
 }
 
-
-export async function getURL() {
-    console.log("getURL");
-    let url: string = "";
-    try {
-        chrome.storage.sync.get(["sheetURL"], (result) => {
-            console.log("getURL", result.sheetURL)
-            return result.sheetURL;
-        });
-    } catch (error) {  
-        console.log("Error in getURL:", chrome.runtime.lastError);
-        chrome.identity.clearAllCachedAuthTokens(() => {
-            console.log("Cleared all cached");
-        });
-    }
-    return url;
-}
 
 async function createSheet(token: string) {
     const url = "https://sheets.googleapis.com/v4/spreadsheets";
@@ -94,6 +77,4 @@ export default async function useSheetURL(token: string) {
         fetchSheetURL();
        
     }, [sheetURL]);
-
-
 }
