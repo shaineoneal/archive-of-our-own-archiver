@@ -2,25 +2,26 @@ import React, { useEffect, useState, useContext} from "react";
 import { fetchToken } from './background/fetchToken';
 import { getSheetURL } from "./background/sheet";
 import { URLContext } from "./contexts/URLContext";
-import { LoginContext } from "./contexts/LoginContext";
+import { LoginContext, useLogin } from "./contexts/LoginContext";
+import { Loader } from "./components/Loader";
+import { LoaderContext } from "./contexts/LoaderContext";
 //import getLoginStatus from './login';
 //import Login from './components/Login';
 
 
-export function popupBody() {
-    
-    const [ loggedIn, setLoggedIn ] = useState(false);
 
-    const [loader, setLoader] = useState(false);
-    
+export const PopupBody = () => {
+    //begin with loader on
+    const { loader, setLoader } = useContext(LoaderContext);
     const [url, setURL] = useState("");
+    const { loggedIn, setLoggedIn } = useContext(LoginContext);
 
     async function handleLogin() {
     
         //if (!Loader) { throw new Error("No loader found"); }
-        
         setLoader(true);
         const token = await fetchToken(true);
+        chrome.storage.sync.set({ token: token });
         setURL(await getSheetURL(token));
         setLoader(false);
         setLoggedIn(true);
@@ -31,8 +32,6 @@ export function popupBody() {
         console.log("url: ", url);
         chrome.tabs.create({ url: url });
     }
-
-    
 
     const Login = () => {
         return (
@@ -56,12 +55,10 @@ export function popupBody() {
 
 
     return (
-        <LoginContext.Provider value = {{loggedIn, setLoggedIn}}>
             <URLContext.Provider value = {{url, setURL}}>
                 {loggedIn ? <LoggedIn /> : <Login />}
             </URLContext.Provider>
-        </LoginContext.Provider>
     )
 }
 
-export default popupBody;
+export default PopupBody;
