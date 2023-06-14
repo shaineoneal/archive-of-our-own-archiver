@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { IconContext } from "react-icons";  
 import { BsFillGearFill } from "react-icons/bs";
-import Login from './components/Login';
+import { popupBody } from "./popup_body";
 import "./popup.css";
 
 const Popup = () => {
-
+   
     useEffect(() => {
         console.log("popup");
     }, []);
@@ -28,10 +28,7 @@ const Popup = () => {
                 </div>
             </header>
             <main>
-
-                    {<Login />}
-
-                <div></div>
+                <div className="body">{ popupBody() }</div>
             </main>
         </>
     );
