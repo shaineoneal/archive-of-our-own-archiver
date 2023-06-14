@@ -12,8 +12,8 @@
       "https://www.googleapis.com/auth/userinfo.profile"]
   },
   "key": "***REMOVED***",
-  "permissions": ["identity", "storage", "scripting", "identity.email"],
-  "host_permissions": ["*://*.archiveofourown.org/", "https://docs.google.com/spreadsheets/*"],
+  "permissions": ["cookies", "identity", "storage", "scripting", "identity.email"],
+  "host_permissions": ["*://*.archiveofourown.org/", "https://docs.google.com/spreadsheets/*", "*://*.google.com/"],
 
 
   "options_ui": {
