@@ -1,8 +1,8 @@
 import React, { useContext, useEffect } from "react";
 import { LoaderContext } from "../contexts/LoaderContext";
-import { log } from "../utils/logger";
 import { fetchToken } from "../hooks/authToken";
-import { fetchSheetURL, sheetURL } from "../hooks/sheet";
+import { fetchSheetURL } from "../hooks/sheet";
+import { log } from "../utils/logger";
 
 
 
