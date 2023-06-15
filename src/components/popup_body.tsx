@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useContext} from "react";
+import React, { useContext, useEffect } from "react";
+import { checkLoginStatus } from "../background/checkLoginStatus";
+import { LoaderContext } from "../contexts/LoaderContext";
+import { LoginContext } from "../contexts/LoginContext";
 import { fetchToken } from '../hooks/authToken';
 import { fetchSheetURL } from "../hooks/sheet";
 import { LoggedIn } from "../pages/LoggedIn";
-import { LoginContext } from "../contexts/LoginContext";
-import { LoaderContext } from "../contexts/LoaderContext";
-import { checkLoginStatus } from "../background/checkLoginStatus";
-import { log } from "../utils/logger"
+import { log } from "../utils/logger";
 
 export const PopupBody = () => {
     //begin with loader on

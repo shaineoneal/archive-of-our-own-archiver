@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
-import { log } from "../utils/logger";
 import Logout from "../components/Logout";
-import "./popup.css"
+import { log } from "../utils/logger";
+import "./popup.css";
 
 export function openOptionsPage() {
   chrome.runtime.openOptionsPage();

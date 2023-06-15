@@ -10,4 +10,4 @@ const log = (function (environment) {
 
 export {
     log
-}
+};

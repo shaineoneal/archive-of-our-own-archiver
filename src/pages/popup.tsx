@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { IconContext } from "react-icons";  
+import { IconContext } from "react-icons";
 import { BsFillGearFill } from "react-icons/bs";
 import { PopupBody } from "../components/popup_body";
+import { LoaderContext } from "../contexts/LoaderContext";
 import { LoginContext } from "../contexts/LoginContext";
 import "./popup.css";
-import { LoaderContext } from "../contexts/LoaderContext";
 
 const Popup = () => {
    
