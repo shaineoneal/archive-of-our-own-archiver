@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 import { checkLoginStatus } from '../background/checkLoginStatus';
 import { log } from '../utils/logger';
 
