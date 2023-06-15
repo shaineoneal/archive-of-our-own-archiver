@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-//import useLoginStatus from "./login";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
-import Logout from "./components/Logout";
+import { log } from "../utils/logger";
+import Logout from "../components/Logout";
 import "./popup.css"
 
 export function openOptionsPage() {
@@ -21,8 +21,7 @@ const Options = () => {
     const getSheetURL = async () => {
       const result = await new Promise((resolve) => {
         chrome.storage.sync.get(["sheetURL"], (result) => {
-          console.log("sheet URL", result.sheetURL);
-          //setSheetURL(result.sheetURL);
+          log("sheet URL", result.sheetURL);
           resolve(result);
         });
       });

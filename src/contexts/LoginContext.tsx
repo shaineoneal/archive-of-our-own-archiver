@@ -1,5 +1,6 @@
 import React, { createContext, useState } from 'react';
 import { checkLoginStatus } from '../background/checkLoginStatus';
+import { log } from '../utils/logger';
 
 export type LoginStateType = {
     loggedIn: boolean | null;
@@ -12,7 +13,7 @@ export const LoginContext = createContext<LoginStateType>({
 });
 
 export const useLogin = async () => {
-    console.log("useLogin");
+    log("useLogin");
     const [loggedIn, setLoggedIn] = useState(await checkLoginStatus());
     return { loggedIn, setLoggedIn };
 };
