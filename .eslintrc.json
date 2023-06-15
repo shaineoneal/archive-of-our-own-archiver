@@ -18,11 +18,14 @@
     },
     "plugins": [
         "@typescript-eslint",
+        "eslint-plugin-tsdoc",
         "react",
         "react-hooks",
         "eslint-plugin-tsdoc",
         "object curly spacing"
     ],
     "rules": {
+        "tsdoc/syntax": "warn",
+        "object curly spacing/object-curly-spacing": ["error", "always"]
     }
 }

@@ -1,7 +1,6 @@
-
 export function fetchToken(interactive: boolean): Promise<string> {
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         chrome.identity.getAuthToken({ interactive: interactive }, (token) =>{
             if(token) {
                 resolve (token);
@@ -9,7 +8,6 @@ export function fetchToken(interactive: boolean): Promise<string> {
                 chrome.identity.clearAllCachedAuthTokens(() => {
                     console.log("Cleared all cached");
                 });
-                reject("Error getting token");
             }
         });
     });

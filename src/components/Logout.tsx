@@ -1,20 +1,32 @@
 import React from "react";
-//import { userAuth } from "./Login";
+import { fetchToken } from "../background/fetchToken";
+import { LoginContext } from "../contexts/LoginContext";
 
-function removeSheetURL() {
-    chrome.storage.sync.remove(["sheetURL"], () => {
-        console.log("sheet URL removed");
+async function removeToken() {
+    const token = await fetchToken(false);
+
+    if (token === null) {
+        throw new Error("Error getting token");
+    }
+    chrome.identity.removeCachedAuthToken({ token: token }, () => {
+        fetch(
+            "https://accounts.google.com/o/oauth2/revoke?token=" + token,
+            { method: "GET" }
+        ).then((response) => {
+            console.log("logout response", response);
+        });
     });
 }
 
 
 
 export const Logout = () => {
-   // const { logout } = userAuth();
+    const { setLoggedIn } = React.useContext(LoginContext);
 
     const handleLogout = () => {
-        removeSheetURL();
-        //logout();
+        removeToken();
+        setLoggedIn(false);
+        chrome.storage.sync.set({ isLoggedIn: false });
     };
 
     return (
