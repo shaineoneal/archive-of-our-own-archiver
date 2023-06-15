@@ -12,6 +12,7 @@ export const LoginContext = createContext<LoginStateType>({
 });
 
 export const useLogin = async () => {
+    console.log("useLogin");
     const [loggedIn, setLoggedIn] = useState(await checkLoginStatus());
     return { loggedIn, setLoggedIn };
 };

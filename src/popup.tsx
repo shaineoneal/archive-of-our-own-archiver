@@ -7,13 +7,6 @@ import { LoginContext, useLogin } from "./contexts/LoginContext";
 import { Loader } from "./components/Loader";
 import "./popup.css";
 import { LoaderContext } from "./contexts/LoaderContext";
-import { checkLoginStatus } from "./background/checkLoginStatus";
-
-window.onload = async () => {
-    console.log("window loaded");
-    const loggedIn = await checkLoginStatus();
-    console.log("loggedIn: ", loggedIn);
-}
 
 const Popup = () => {
    
@@ -21,15 +14,6 @@ const Popup = () => {
     const [ loggedIn, setLoggedIn ] = useState(false);
 
     //console.log("loggedIn: ", loggedIn);
-
-    useEffect(() => {
-        console.log("useEffect");
-        async function checkLoggedIn() {
-            console.log("checkLoggedIn");
-            setLoggedIn(await checkLoginStatus());
-        }
-        checkLoggedIn();
-    }, [loggedIn]);
 
     return (
         <>
@@ -51,7 +35,7 @@ const Popup = () => {
                 <LoaderContext.Provider value={{ loader, setLoader }}>
                     <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
                         <div className="body">
-                            { loader ? <Loader /> : <PopupBody/> }
+                            <PopupBody/>
                         </div>
                     </LoginContext.Provider>
                 </LoaderContext.Provider>
