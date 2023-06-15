@@ -1,19 +1,16 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { IconContext } from "react-icons";  
 import { BsFillGearFill } from "react-icons/bs";
-import { PopupBody } from "./popup_body";
-import { LoginContext, useLogin } from "./contexts/LoginContext";
-import { Loader } from "./components/Loader";
+import { PopupBody } from "../components/popup_body";
+import { LoginContext } from "../contexts/LoginContext";
 import "./popup.css";
-import { LoaderContext } from "./contexts/LoaderContext";
+import { LoaderContext } from "../contexts/LoaderContext";
 
 const Popup = () => {
    
     const [loader, setLoader] = useState(true);
     const [ loggedIn, setLoggedIn ] = useState(false);
-
-    //console.log("loggedIn: ", loggedIn);
 
     return (
         <>
