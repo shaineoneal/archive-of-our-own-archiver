@@ -1,22 +1,6 @@
-import { URLContext } from "../contexts/URLContext";
-import { createContext, useState, useContext } from "react";
-//import  userLogin from "../components/Login";
-//import { useUser } from "../useUser";
-import { fetchToken } from "./fetchToken";
-
-
 chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
 });
-
-//checks if user is logged in
-
-/*fetchToken(true).then((token) => {
-    console.log("Token: ", token);
-    chrome.storage.sync.set({ isLoggedIn: true });
-}).catch((error) => {
-    console.log("Error: ", error);
-});*/
 
 chrome.storage.onChanged.addListener(() => {
     chrome.storage.sync.get(["isLoggedIn"], (result) => {
