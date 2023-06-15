@@ -11,19 +11,16 @@ chrome.runtime.onInstalled.addListener(function () {
 
 //checks if user is logged in
 
-fetchToken(true).then((token) => {
+/*fetchToken(true).then((token) => {
     console.log("Token: ", token);
     chrome.storage.sync.set({ isLoggedIn: true });
 }).catch((error) => {
     console.log("Error: ", error);
-});
+});*/
 
 chrome.storage.onChanged.addListener(() => {
-    fetchToken(true).then((token) => {
-        console.log("Token: ", token);
-        chrome.storage.sync.set({ isLoggedIn: true });
-    }).catch((error) => {
-        console.log("Error: ", error);
+    chrome.storage.sync.get(["isLoggedIn"], (result) => {
+        console.log("isLoggedIn: ", result.isLoggedIn);
     });
 });    
 

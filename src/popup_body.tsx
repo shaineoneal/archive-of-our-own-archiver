@@ -5,6 +5,7 @@ import { URLContext } from "./contexts/URLContext";
 import { LoginContext, useLogin } from "./contexts/LoginContext";
 import { Loader } from "./components/Loader";
 import { LoaderContext } from "./contexts/LoaderContext";
+import { checkLoginStatus } from "./background/checkLoginStatus";
 //import getLoginStatus from './login';
 //import Login from './components/Login';
 
@@ -16,12 +17,26 @@ export const PopupBody = () => {
     const [url, setURL] = useState("");
     const { loggedIn, setLoggedIn } = useContext(LoginContext);
 
+    useEffect(() => {
+        console.log("useEffect");
+        console.log("loggedIn: ", loggedIn);
+        async function checkLoggedIn() {
+            console.log("checkLoggedIn");
+            setLoggedIn(await checkLoginStatus());
+        }
+        checkLoggedIn();
+        setLoader(false);
+    }, [loggedIn]);
+
     async function handleLogin() {
     
         //if (!Loader) { throw new Error("No loader found"); }
         setLoader(true);
         const token = await fetchToken(true);
-        chrome.storage.sync.set({ token: token });
+        if (token === null) {
+            throw new Error("Error getting token");
+        }
+        chrome.storage.sync.set({ isLoggedIn: true });
         setURL(await getSheetURL(token));
         setLoader(false);
         setLoggedIn(true);
@@ -36,7 +51,6 @@ export const PopupBody = () => {
     const Login = () => {
         return (
             <div className="login">
-                <div className="loader" style={ loader ? { display: "flex" } : { display: "none" }}></div>
                 <button id="login-button" onClick={handleLogin} disabled={loader}>Login to Google</button>
             </div>
         )
@@ -45,9 +59,8 @@ export const PopupBody = () => {
     const LoggedIn = () => {
         return (
             <div>
-                <h1>Logged in</h1>
                 <div className="loggedIn">
-                    <button id="logout-button" onClick={handleGoToSheet}>View your sheet</button>
+                    <button id="sheet-button" onClick={handleGoToSheet} disabled={loader}>View your sheet</button>
                 </div>
             </div>
         )
@@ -56,6 +69,7 @@ export const PopupBody = () => {
 
     return (
             <URLContext.Provider value = {{url, setURL}}>
+                 <div className="loader" style={ loader ? { display: "flex" } : { display: "none" }}></div>
                 {loggedIn ? <LoggedIn /> : <Login />}
             </URLContext.Provider>
     )
