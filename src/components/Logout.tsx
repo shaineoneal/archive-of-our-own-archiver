@@ -1,6 +1,6 @@
 import React from "react";
-import { removeToken } from "../hooks/authToken";
 import { LoginContext } from "../contexts/LoginContext";
+import { removeToken } from "../hooks/authToken";
 
 export const Logout = () => {
     const { setLoggedIn } = React.useContext(LoginContext);
