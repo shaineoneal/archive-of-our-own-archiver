@@ -51,5 +51,9 @@ module.exports = {
             patterns: [{ from: ".", to: "../", context: "public" }],
             options: {},
         }),
+        new webpack.ProvidePlugin({
+            $: require.resolve('jquery'),
+            jQuery: require.resolve('jquery'),
+        })
     ],
 };

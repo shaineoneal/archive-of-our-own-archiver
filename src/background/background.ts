@@ -1,5 +1,13 @@
-
 import { log } from "../utils/logger";
+
+/*chrome.tabs.onUpdated.addListener(function(id, changeInfo, tab) {
+    if (changeInfo.status === 'complete' && tab.url?.includes("archiveofourown.org")) {
+        chrome.scripting.executeScript({
+            target: {tabId: id, allFrames: true},
+            files: ["./js/content_script.js"],
+        }).then(() => { log("content.js injected"); });
+    }
+});
 
 chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
@@ -22,7 +30,8 @@ chrome.tabs.onUpdated.addListener((tab) => {
     });
 });
 
-/*async function getURL() {
+
+async function getURL() {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true, url: "*://*.archiveofourown.org/*" });
     const activeTab = tabs[0];
     if (!activeTab) {
@@ -33,23 +42,18 @@ chrome.tabs.onUpdated.addListener((tab) => {
     return url;
 }
 
-chrome.tabs.onUpdated.addListener(async (id, changeInfo, tab) => {
-    if (changeInfo.status === 'complete') {
-        const url = await getURL();
-        if (url) {
-            log('listener: url', url);
-            var port = chrome.tabs.connect(id, { name: 'ao3' });
-            port.postMessage({ url: url });
-            port.onMessage.addListener(function (msg) {
-                log('listener: msg', msg);
-                if (msg.type === 'ao3') {
-                    log('listener: msg', msg);
-                    chrome.storage.sync.set({ isLoggedIn: msg.isLoggedIn });
-                }
-            });
-        }
-    }
-});
+
+
+            //var port = chrome.tabs.connect(id, { name: 'ao3' });
+            //port.postMessage({ url: url });
+            //port.onMessage.addListener(function (msg) {
+            //    log('listener: msg', msg);
+            //    if (msg.type === 'ao3') {
+            //        log('listener: msg', msg);
+            //        chrome.storage.sync.set({ isLoggedIn: msg.isLoggedIn });
+            //    }
+            //});
+
 
 
 chrome.runtime.onMessage.addListener(async function (buttonClicked, sender, sendResponse) {

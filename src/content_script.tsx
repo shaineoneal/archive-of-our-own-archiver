@@ -1,27 +1,22 @@
-import $ from 'jquery';
 import { log } from './utils/logger';
 
-
-
 log('log: content_script.tsx loaded');
-/*
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    log('log: message received');
-    addTestText();
-    sendResponse({ message: "message received" });
-    return true;
+
+function getLoadedWorks() {
+  const works = document.querySelectorAll('li.work, li.bookmark');
+  return works;
+}
+
+log("works found: ", getLoadedWorks());
+
+var workList = new Array();
+getLoadedWorks().forEach((work) => {
+    //if its a bookmark, use the class to get the work id
+    if(work.classList.contains('bookmark')) {
+        workList.push(work.classList[3].split('-')[1]);
+    } else {    //else its a work, use the id to get the work id
+        workList.push(work.id.split('_')[1]);
+    }
 });
 
-
-function addTestText() {
-    $('.heading').after("<h1>Test Text</h1>");
-}*/
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    log("from background: " + request);
-    sendResponse({ message: "message received" });
-});
-
-(async () => {
-    await chrome.runtime.sendMessage(true);
-})();
+log("workList: ", workList);
