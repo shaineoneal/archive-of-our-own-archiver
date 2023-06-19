@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { LoaderContext } from "../contexts/LoaderContext";
 import { fetchToken } from "../hooks/authToken";
-import { fetchSheetURL } from "../hooks/sheet";
+import { fetchSheetURL,fetchSheetID } from "../hooks/sheet";
 import { log } from "../utils/logger";
 
 
@@ -14,6 +14,7 @@ export const LoggedIn = () => {
     useEffect(() => {
         async function getURL() {
             log("getURL");
+            //log("sheetid: ", await fetchSheetID(await fetchToken(false)));
             const sheetURL = await fetchSheetURL(await fetchToken(false));
             setURL(sheetURL);
         }

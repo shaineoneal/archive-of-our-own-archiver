@@ -10,10 +10,12 @@ export function fetchSheetURL(token: string) {
     return new Promise<string>((resolve, reject) => {
         //check for a stored sheet URL
         chrome.storage.sync.get(["sheetURL"], async(result) => {
+            
             const sheetURL = result.sheetURL;
             //does the user have a sheet URL already?
             if (sheetURL) {
                 log("user has sheet URL: ", sheetURL);
+                log("sheetID: ", sheetURL.split("/")[5]);
                 resolve(sheetURL);
             } else {
                 log("user doesn't have sheet URL, creating sheet");
@@ -23,6 +25,27 @@ export function fetchSheetURL(token: string) {
                 } catch (error) {
                     reject(error);
                 }
+            }
+        });
+    });
+}
+
+export function fetchSheetID(token: string) {
+    log("getting sheet ID");
+    return new Promise<string>((resolve, reject) => {
+        chrome.storage.sync.get(["sheetID"], async(result) => {
+            const sheetID = result.sheetID;
+            if (sheetID) {
+                log("user has sheet ID: ", sheetID);
+                resolve(sheetID);
+            } else {
+                log("user doesn't have sheet ID, creating sheet");
+                //try {
+                //    const createdSheetID = await createSheet(token);
+                //    resolve(createdSheetID);
+                //} catch (error) {
+                //    reject(error);
+                //}
             }
         });
     });
@@ -60,6 +83,7 @@ async function createSheet(token: string) {
         .then((data) => {
             log("Success:", data);
             chrome.storage.sync.set({ sheetURL: data.spreadsheetUrl });
+            chrome.storage.sync.set({ sheetID: data.spreadsheetId });
             return data.spreadsheetUrl;
         })
         .catch((error) => {
