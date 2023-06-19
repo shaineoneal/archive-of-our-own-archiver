@@ -1,4 +1,6 @@
+import { get } from 'jquery';
 import { log } from './utils/logger';
+import { Work } from './works';
 
 log('log: content_script.tsx loaded');
 
@@ -20,3 +22,7 @@ getLoadedWorks().forEach((work) => {
 });
 
 log("workList: ", workList);
+
+const workId = workList[1];
+
+log("work: ", Work.getWorkFromPage(workId));
