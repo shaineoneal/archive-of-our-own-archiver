@@ -12,7 +12,7 @@
       "https://www.googleapis.com/auth/userinfo.profile"]
   },
   "key": "***REMOVED***",
-  "permissions": ["cookies", "identity", "storage", "scripting", "identity.email", "activeTab"],
+  "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab"],
   "host_permissions": ["*://*.archiveofourown.org/*", "https://docs.google.com/spreadsheets/*", "*://*.google.com/"],
 
   "options_ui": {
@@ -33,7 +33,7 @@
       {
           "matches": ["*://*.archiveofourown.org/*"],
           "js": ["js/content_script.js"],
-          "run_at": "document_start"
+          "run_at": "document_end"
       }
   ]
 

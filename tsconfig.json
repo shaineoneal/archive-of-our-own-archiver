@@ -10,10 +10,15 @@
         "outDir": "dist/js",
         "noEmitOnError": true,
         "jsx": "react",
-        "typeRoots": [ "node_modules/@types" ]
+        "typeRoots": [ "node_modules/@types" ],
+        "allowSyntheticDefaultImports": true,
     },
     "typedocOptions": {
         "entryPoints": [ "src/index.tsx" ],
         "out": "docs"
-    }
+    },
+    "types": [
+        "chrome",
+        "jquery",
+    ]
 }
