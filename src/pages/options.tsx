@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
 import Logout from "../components/Logout";
+import ForgetSheet from "../components/ForgetSheet";
 import { log } from "../utils/logger";
 import "./popup.css";
 
@@ -47,6 +48,7 @@ const Options = () => {
           <div>Google Sheets URL</div>
           <input type="text"/>
           <Logout />
+          <ForgetSheet />
         </div>
       </main>
       <div></div>
