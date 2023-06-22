@@ -5,7 +5,7 @@ import { BsFillGearFill } from "react-icons/bs";
 import { PopupBody } from "../components/popup_body";
 import { LoaderContext } from "../contexts/LoaderContext";
 import { LoginContext } from "../contexts/LoginContext";
-import "./popup.css";
+import "../styles.css";
 
 const Popup = () => {
    
