@@ -1,25 +1,37 @@
+import { renderToStaticMarkup } from 'react-dom/server';
 import { log } from './utils/logger';
 import { Work } from './works';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { renderIntoDocument } from 'react-dom/test-utils';
 
 log('saveWork loaded');
 
-/*export function saveWork(authToken: string, work: Work) {
-    log('saveWork called');
+export const workButtons = () => {
 
-    const params = {
-        spreadsheetId
-        Range
-        valueInputOption
-        insertDataOption
-    }
+    var on_list = false;
 
-    const valueRangeBody = {
-        "majorDimension": "ROWS",
-        "values": [
-            //array from Work info
-        ]
-    }
+    
 
-    const request = gapi.client.sheets.spreadsheets.values.append(params, valueRangeBody);
+    const innerButtons = (
+        <>
+            { on_list ? "Remove Work" : "Add Work" }
+        </>
+    )
+
+    var workButtons = document.createElement("a");
+    workButtons.innerHTML = renderToStaticMarkup(innerButtons);
+
+
+    return workButtons;
 }
-*/
+
+/*export const workButtons: React.ReactNode = () => {
+
+    var on_list = false;
+    return (
+        <a>
+          {on_list ? "Remove Work" : "Add Work"}
+        </a>
+    )
+}*/

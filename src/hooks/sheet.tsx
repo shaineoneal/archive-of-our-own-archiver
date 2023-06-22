@@ -61,6 +61,66 @@ export const sheetURL = async (token: string) => {
  * @returns 
  */
 async function createSheet(token: string) {
+
+    const title = "AO3E";
+    const sheetName = "Saved Works"
+
+
+    const sheetLayout = {
+        properties: { title: title },
+        sheets: {
+            properties: { title: sheetName },
+            data: [
+                {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                        { values: [
+                            { 
+                                userEnteredValue: { stringValue: "Work ID" },
+                                userEnteredFormat: { textFormat: { bold: true } } 
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Title" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Authors" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Fandoms" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Word Count" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Chapter Count" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            },
+                            {
+                                userEnteredValue: { stringValue: "Status" },
+                                userEnteredFormat: { textFormat: { bold: true } }
+                            }
+                        ] }
+                    ]
+                },
+                { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
+                { startColumn: 1, columnMetadata: { pixelSize: 300 } }, //title
+                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
+                { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
+                { startColumn: 4, columnMetadata: { pixelSize: 100 } }, //word count
+                { startColumn: 5, columnMetadata: { pixelSize: 100 } }, //chapter count
+                { startColumn: 6, columnMetadata: { pixelSize: 100 } }, //status
+            ]
+        }
+    }
+    
+
+
+
     const url = "https://sheets.googleapis.com/v4/spreadsheets";
     const options = {
         method: "POST",
@@ -68,11 +128,7 @@ async function createSheet(token: string) {
             "Content-Type": "application/json",
             Authorization: "Bearer " + token,
         },
-        body: JSON.stringify({
-            properties: {
-              title: "AO3E",
-            },
-        }),
+        body: JSON.stringify(sheetLayout),
     };
   
     return fetch(url, options)

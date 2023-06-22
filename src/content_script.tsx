@@ -1,28 +1,33 @@
-import { get } from 'jquery';
+import React from 'react';
 import { log } from './utils/logger';
 import { Work } from './works';
+import { blurbToggles } from './components/blurbToggles';
+//import "./styles.css";
+
 
 log('log: content_script.tsx loaded');
 
 function getLoadedWorks() {
-  const works = document.querySelectorAll('li.work, li.bookmark');
+  const works = Array.from(document.querySelectorAll('li.work, li.bookmark') as unknown as HTMLCollectionOf<HTMLElement>);
   return works;
 }
 
 log("works found: ", getLoadedWorks());
 
-var workList = new Array();
+var searchList = new Array();
 getLoadedWorks().forEach((work) => {
+    work.style.marginTop = '31px';
+    blurbToggles(work);
     //if its a bookmark, use the class to get the work id
     if(work.classList.contains('bookmark')) {
-        workList.push(work.classList[3].split('-')[1]);
+        searchList.push(work.classList[3].split('-')[1]);
     } else {    //else its a work, use the id to get the work id
-        workList.push(work.id.split('_')[1]);
+        searchList.push(work.id.split('_')[1]);
     }
 });
 
-log("workList: ", workList);
+log("searchList: ", searchList);
 
-const workId = workList[1];
+const workId = searchList[1];
 
 log("work: ", Work.getWorkFromPage(workId));
