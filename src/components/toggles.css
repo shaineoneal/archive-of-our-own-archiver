@@ -1,0 +1,8 @@
+.blurb-toggles {
+    display: block;
+    position: absolute;
+    top: -22px;
+    right: -1px;
+    border: 1px solid #ddd;
+    padding: 5px;
+}

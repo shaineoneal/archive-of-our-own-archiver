@@ -5,7 +5,7 @@ import { BiArrowBack } from "react-icons/bi";
 import Logout from "../components/Logout";
 import ForgetSheet from "../components/ForgetSheet";
 import { log } from "../utils/logger";
-import "./popup.css";
+import "../styles.css";
 
 export function openOptionsPage() {
   chrome.runtime.openOptionsPage();
