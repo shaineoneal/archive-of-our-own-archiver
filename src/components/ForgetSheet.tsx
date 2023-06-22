@@ -11,6 +11,7 @@ export const ForgetSheet = () => {
         setLoggedIn(false);
         chrome.storage.sync.set({ isLoggedIn: false });
         chrome.storage.sync.remove("sheetURL");
+        chrome.storage.sync.remove("sheetID");
     };
 
     return (
