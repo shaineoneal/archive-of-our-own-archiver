@@ -4,29 +4,35 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { createRoot } from 'react-dom/client';
 
 
-export function blurbToggles(work: Element) {
+export function blurbToggles(workWrap: Element) {
 
     var on_list = false;    //TODO: check if work is on list
 
-    work.classList.add("blurb-with-toggles");
+    workWrap.classList.add("blurb-with-toggles");
+
+    
+    var linkBox = document.createElement("div");
+    var temp = document.createElement("a");
+    var link = document.createTextNode(on_list ? "Remove Work" : "Add Work")
+    temp.style.borderBottom = '1px dotted';
+    temp.appendChild(link);
+    linkBox.appendChild(temp);
+    linkBox.classList.add("blurb-toggles");
+
+    linkBox.style.display = 'block';
+    linkBox.style.position = 'relative';
+    linkBox.style.border = '1px solid #555';
+    linkBox.style.borderBottom = 'none';
+    linkBox.style.padding = '5px';
+    linkBox.style.lineHeight = '12px';
+    linkBox.style.fontSize = '10px';
+    linkBox.style.boxShadow = 'none';
 
 
     
-    var toggleButtons = document.createElement("a");
-    var innerButtons = document.createTextNode(on_list ? "Remove Work" : "Add Work")
-    toggleButtons.appendChild(innerButtons);
-    toggleButtons.classList.add("blurb-toggles");
 
-    toggleButtons.style.display = 'block';
-    toggleButtons.style.position = 'absolute';
-    toggleButtons.style.top = '-22px';
-    toggleButtons.style.right = '-1px';
-    toggleButtons.style.border = '1px solid #555';
-    toggleButtons.style.padding = '5px';
-    toggleButtons.style.lineHeight = '10px';
-
-    work.insertBefore(toggleButtons, work.firstChild);
-    return toggleButtons;
+    workWrap.insertBefore(linkBox, workWrap.firstChild);
+    return linkBox;
 
 }
 

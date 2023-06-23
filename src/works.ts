@@ -32,6 +32,7 @@ export class Work implements WorkType {
         this.status = status;
     }
 
+    //TODO: add fix for bookmarks instead of works
     public static getWorkFromPage(workId: number): Work {
         const workNode = document.querySelector(`#work_${workId}`);
     
