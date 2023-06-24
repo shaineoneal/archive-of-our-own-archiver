@@ -1,15 +1,25 @@
 import { log } from "../utils/logger";
 
-/*chrome.tabs.onUpdated.addListener(function(id, changeInfo, tab) {
-    if (changeInfo.status === 'complete' && tab.url?.includes("archiveofourown.org")) {
-        chrome.scripting.executeScript({
-            target: {tabId: id, allFrames: true},
-            files: ["./js/content_script.js"],
-        }).then(() => { log("content.js injected"); });
+chrome.tabs.onUpdated.addListener(async(tabId, changeInfo, tab) => {
+  if (
+    changeInfo.status === "complete" &&
+    tab.url?.includes("archiveofourown.org")
+  ) {
+    //chrome.scripting.executeScript({
+    //    target: {tabId: id, allFrames: true},
+    //    files: ["./js/content_script.js"],
+    //}).then(() => { log("content.js injected"); });
+    try {
+        await chrome.scripting.insertCSS({
+            target: { tabId: tabId, allFrames: true },
+            files: ["./js/content_script.css"],
+        }).then(() => { log("content_script.css injected"); });
+    } catch (error) {
+            log("Error in insertCSS:", error);
     }
-});
+}});
 
-chrome.runtime.onInstalled.addListener(function () {
+/*chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
 });
 

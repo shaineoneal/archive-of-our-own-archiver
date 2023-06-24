@@ -3,16 +3,12 @@ import React, { useState } from "react";
 import { blurbToggles } from "../components/blurbToggles";
 
 const Page = () => {
-return (
+  return (
     <>
-        <div className="body"></div>
+      <div className="body"></div>
     </>
-    );
-}
-
-
-
-
+  );
+};
 
 const root = createRoot(document.getElementById("root")!);
 
