@@ -8,37 +8,35 @@ import { LoginContext } from "../contexts/LoginContext";
 import "../styles.css";
 
 const Popup = () => {
-   
-    const [loader, setLoader] = useState(true);
-    const [ loggedIn, setLoggedIn ] = useState(false);
+  const [loader, setLoader] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
-    return (
-        <>
-            <header>
-                <div className="flex-container">
-                    <div className="logo">
-                        <img src="icons/icon-32.png" alt="extension-icon"/>
-                    </div>
-                    <div className="title">AO3E: Rewritten</div>
-                    <IconContext.Provider value={{ className: "settings-icon" }}>
-                        <a href="options.html">
-                            <BsFillGearFill />
-                        </a>
-                    </IconContext.Provider>
-            
-                </div>
-            </header>
-            <main>
-                <LoaderContext.Provider value={{ loader, setLoader }}>
-                    <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
-                        <div className="body">
-                            <PopupBody/>
-                        </div>
-                    </LoginContext.Provider>
-                </LoaderContext.Provider>
-            </main>
-        </>
-    );
+  return (
+    <>
+      <header>
+        <div className="flex-container">
+          <div className="logo">
+            <img src="icons/icon-32.png" alt="extension-icon" />
+          </div>
+          <div className="title">AO3E: Rewritten</div>
+          <IconContext.Provider value={{ className: "settings-icon" }}>
+            <a href="options.html">
+              <BsFillGearFill />
+            </a>
+          </IconContext.Provider>
+        </div>
+      </header>
+      <main>
+        <LoaderContext.Provider value={{ loader, setLoader }}>
+          <LoginContext.Provider value={{ loggedIn, setLoggedIn }}>
+            <div className="body">
+              <PopupBody />
+            </div>
+          </LoginContext.Provider>
+        </LoaderContext.Provider>
+      </main>
+    </>
+  );
 };
 
 const root = createRoot(document.getElementById("root")!);
