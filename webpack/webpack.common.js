@@ -2,6 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const srcDir = path.join(__dirname, "..", "src");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
     entry: {
@@ -32,7 +33,7 @@ module.exports = {
             {
                 test: /\.css$/,
                 use: [
-                    "style-loader",
+                    MiniCssExtractPlugin.loader,
                     "css-loader"
                 ]
             },
@@ -54,6 +55,7 @@ module.exports = {
         new webpack.ProvidePlugin({
             $: require.resolve('jquery'),
             jQuery: require.resolve('jquery'),
-        })
+        }),
+        new MiniCssExtractPlugin()
     ],
 };
