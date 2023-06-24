@@ -11,13 +11,9 @@ export function openOptionsPage() {
   chrome.runtime.openOptionsPage();
 }
 
-
-
 const Options = () => {
-  
-  
   //const [loginStatus, toggleLoginStatus] = useLoginStatus();
-  
+
   useEffect(() => {
     const getSheetURL = async () => {
       const result = await new Promise((resolve) => {
@@ -46,7 +42,7 @@ const Options = () => {
       <main>
         <div className="options-container">
           <div>Google Sheets URL</div>
-          <input type="text"/>
+          <input type="text" />
           <Logout />
           <ForgetSheet />
         </div>

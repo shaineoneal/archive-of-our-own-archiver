@@ -11,11 +11,6 @@ main {
     padding: 8px;
 }
 
-a {
-    display:flex;
-    align-items: center;
-}
-
 button {
     grid-column: 1;
     grid-row: 1;
@@ -130,3 +125,13 @@ button:disabled {
 	}
 }
 
+.blurb-toggles {
+    display: block;
+    position: relative;
+    border: 1px solid #555;
+    border-bottom: none;
+    padding: 5px;
+    line-height: 12px;
+    font-size: 10px;
+    box-shadow: none;
+}
