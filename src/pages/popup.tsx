@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BsFillGearFill } from "react-icons/bs";
 import { PopupBody } from "../components/popup_body";
@@ -39,10 +39,9 @@ const Popup = () => {
   );
 };
 
-const root = createRoot(document.getElementById("root")!);
-
-root.render(
+ReactDOM.render(
   <React.StrictMode>
     <Popup />
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+  document.getElementById("root")
+)
