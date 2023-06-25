@@ -3,16 +3,11 @@ import { log } from "./utils/logger";
 import { Work } from "./works";
 import { blurbToggles } from "./components/blurbToggles";
 import { wrap } from "./utils/wrapper";
+import ReactDOM from "react-dom";
+import App from "./App";
 //import "./styles.css";
 
 log("log: content_script.tsx loaded");
-
-const link = document.createElement("link");
-link.rel = "stylesheet";
-link.type = "text/css";
-link.href = chrome.runtime.getURL("js/content_script.css");
-document.head.appendChild(link);
-
 
 const works = Array.from(
   document.querySelectorAll(

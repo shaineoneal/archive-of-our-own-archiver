@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
 import Logout from "../components/Logout";
@@ -52,10 +52,9 @@ const Options = () => {
   );
 };
 
-const root = createRoot(document.getElementById("root")!);
-
-root.render(
+ReactDOM.render(
   <React.StrictMode>
     <Options />
-  </React.StrictMode>
+  </React.StrictMode>,
+  document.getElementById("root")
 );

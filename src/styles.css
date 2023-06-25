@@ -135,3 +135,7 @@ button:disabled {
     font-size: 10px;
     box-shadow: none;
 }
+
+.toggle {
+    border-bottom: 1px dotted;
+}
