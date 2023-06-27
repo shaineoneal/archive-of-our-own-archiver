@@ -3,9 +3,10 @@ import { log } from "./utils/logger";
 import { Work } from "./works";
 import { blurbToggles } from "./components/blurbToggles";
 import { wrap } from "./utils/wrapper";
-import ReactDOM from "react-dom";
-import App from "./App";
-//import "./styles.css";
+import { addWorkToSheet } from "./hooks/appendToSheet";
+import { getWorkFromWorksPage } from './pages/worksPage';
+
+
 
 log("log: content_script.tsx loaded");
 
@@ -41,3 +42,6 @@ log("searchList: ", searchList);
 const workId = searchList[1];
 
 log("work: ", Work.getWorkFromPage(workId));
+addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
+  log("response: ", response);
+});
