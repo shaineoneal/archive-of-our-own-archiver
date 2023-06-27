@@ -2,27 +2,36 @@ import React, { useContext, useEffect } from "react";
 import { LoaderContext } from "../contexts/LoaderContext";
 import { fetchToken } from "../hooks/authToken";
 import { fetchSheetURL, fetchSheetID } from "../hooks/sheet";
+import { User, UserContext } from "../contexts/UserContext";
 import { log } from "../utils/logger";
 
 export const LoggedIn = () => {
   const { loader, setLoader } = useContext(LoaderContext);
-  const [url, setURL] = React.useState<string>("");
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    async function getURL() {
-      log("getURL");
-      //log("sheetid: ", await fetchSheetID(await fetchToken(false)));
-      const sheetURL = await fetchSheetURL(await fetchToken(false));
-      setURL(sheetURL);
+    if (user === null) {
+      throw new Error("User not found");
     }
-    getURL();
+    
     setLoader(false);
   }, []);
 
   function handleGoToSheet() {
-    log("url: ", url);
-    chrome.tabs.create({ url: url });
+    log("url: ", user?.sheetUrl);
+    chrome.tabs.create({ url: user?.sheetUrl });
   }
+  function fetchUserInfo(): User | null {
+    chrome.storage.sync.get(["userInfo"], async (result) => {
+      log("result ", result);
+      log("result userInfo ", result.userInfo);
+      if (result.userInfo) {
+        return result.userInfo;
+      }
+    });
+    return null;
+  }
+
 
   return (
     <div>
@@ -30,6 +39,7 @@ export const LoggedIn = () => {
         <button id="sheet-button" onClick={handleGoToSheet} disabled={loader}>
           View your sheet
         </button>
+        
       </div>
     </div>
   );
