@@ -1,6 +1,6 @@
 import { log } from "../utils/logger";
 
-export function fetchToken(interactive: boolean): Promise<string> {
+export function fetchToken(interactive: boolean): Promise<string | null> {
   return new Promise((resolve) => {
     chrome.identity.getAuthToken({ interactive: interactive }, (token) => {
       if (token) {
@@ -8,6 +8,7 @@ export function fetchToken(interactive: boolean): Promise<string> {
       } else {
         chrome.identity.clearAllCachedAuthTokens(() => {
           log("Cleared all cached");
+          resolve(null);
         });
       }
     });
