@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
@@ -12,13 +12,15 @@ export function openOptionsPage() {
 }
 
 const Options = () => {
-  //const [loginStatus, toggleLoginStatus] = useLoginStatus();
+  const [sheetURL, setSheetUrl] = useState<string>("");
 
   useEffect(() => {
+  
     const getSheetURL = async () => {
       const result = await new Promise((resolve) => {
         chrome.storage.sync.get(["sheetURL"], (result) => {
           log("sheet URL", result.sheetURL);
+          setSheetUrl(result.sheetURL);
           resolve(result);
         });
       });
@@ -42,7 +44,7 @@ const Options = () => {
       <main>
         <div className="options-container">
           <div>Google Sheets URL</div>
-          <input type="text" />
+          <input type="text" value={sheetURL}/>
           <Logout />
           <ForgetSheet />
         </div>

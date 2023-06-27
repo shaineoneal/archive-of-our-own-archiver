@@ -67,6 +67,26 @@ export class Work implements WorkType {
       parseInt(chapterCount!.replace(/,/g, ""))
     );
   }
+
+
+  createJSON(){
+    const obj: {values: any[][]} = {
+      values: [
+        [
+          this.workId,
+          this.title,
+          this.author,
+          this.fandoms,
+          this.wordCount,
+          this.totalChapters,
+          this.status
+        ],
+      ],
+    };
+
+    return JSON.stringify(obj);
+
+  }
 }
 /*public static getWorkFromPage(workId: number): Work {
         const workNode = document.querySelector(`#work_${workId}`);

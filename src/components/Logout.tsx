@@ -9,6 +9,7 @@ export const Logout = () => {
     removeToken();
     setLoggedIn(false);
     chrome.storage.sync.set({ isLoggedIn: false });
+    chrome.storage.sync.remove(["userInfo"]);
   };
 
   return (
