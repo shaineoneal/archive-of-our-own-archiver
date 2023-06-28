@@ -1,17 +1,16 @@
 import React from "react";
-import { LoginContext } from "../contexts/LoginContext";
+import { UserContext, defaultUser } from "../contexts";
 
 export const ForgetSheet = () => {
-  const { setLoggedIn } = React.useContext(LoginContext);
+
+  const { setUser } = React.useContext(UserContext);
 
   const handleForgetSheet = () => {
     chrome.identity.clearAllCachedAuthTokens(() => {
       console.log("Cleared all cached");
     });
-    setLoggedIn(false);
-    chrome.storage.sync.set({ isLoggedIn: false });
-    chrome.storage.sync.remove("sheetURL");
-    chrome.storage.sync.remove("sheetID");
+    setUser(defaultUser);
+    chrome.storage.sync.remove(["userInfo"]);
   };
 
   return (

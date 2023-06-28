@@ -1,4 +1,4 @@
-import { log } from "../utils/logger";
+import { log } from "../utils";
 
 /**
  *
@@ -6,53 +6,28 @@ import { log } from "../utils/logger";
  * @returns promise of the sheet URL
  */
 export function fetchSheetURL(token: string) {
-  log("getting sheet URL");
-  return new Promise<string>((resolve, reject) => {
-    //check for a stored sheet URL
-    chrome.storage.sync.get(["sheetURL"], async (result) => {
-      const sheetURL = result.sheetURL;
-      //does the user have a sheet URL already?
-      if (sheetURL) {
-        log("user has sheet URL: ", sheetURL);
-        log("sheetID: ", sheetURL.split("/")[5]);
-        resolve(sheetURL);
-      } else {
-        log("user doesn't have sheet URL, creating sheet");
-        try {
-          const createdSheetURL = await createSheet(token);
-          resolve(createdSheetURL);
-        } catch (error) {
-          reject(error);
-        }
-      }
-    });
+    log("getting sheet URL");
+    return new Promise<string>((resolve, reject) => {
+        //check for a stored sheet URL
+        chrome.storage.sync.get(["userInfo"], async (result) => {
+            const sheetUrl = result.userInfo?.sheetUrl;
+            //does the user have a sheet URL already?
+            if (sheetUrl !== undefined) {
+                log("user has sheet URL: ", sheetUrl);
+                log("sheetID: ", sheetUrl.split("/")[5]);
+                resolve(sheetUrl);
+            } else {
+                log("user doesn't have sheet URL, creating sheet");
+                await createSheet(token).then((url) => {
+                    resolve(url);
+                }).catch((error) => {
+                    reject(error);
+                });
+            }
+        });
   });
 }
 
-export function fetchSheetID(token: string) {
-  log("getting sheet ID");
-  return new Promise<string>((resolve, reject) => {
-    chrome.storage.sync.get(["sheetID"], async (result) => {
-      const sheetID = result.sheetID;
-      if (sheetID) {
-        log("user has sheet ID: ", sheetID);
-        resolve(sheetID);
-      } else {
-        log("user doesn't have sheet ID, creating sheet");
-        //try {
-        //    const createdSheetID = await createSheet(token);
-        //    resolve(createdSheetID);
-        //} catch (error) {
-        //    reject(error);
-        //}
-      }
-    });
-  });
-}
-
-export const sheetURL = async (token: string) => {
-  await fetchSheetURL(token);
-};
 
 /**
  *
