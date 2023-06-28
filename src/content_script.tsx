@@ -1,10 +1,8 @@
-import React from "react";
-import { log } from "./utils/logger";
-import { Work } from "./works";
+import { addWorkToSheet } from "./chrome-services/utils/appendToSheet";
 import { blurbToggles } from "./components/blurbToggles";
+import { log } from "./utils/logger";
 import { wrap } from "./utils/wrapper";
-import { addWorkToSheet } from "./hooks/appendToSheet";
-import { getWorkFromWorksPage } from './pages/worksPage';
+import { Work } from "./works";
 
 
 
