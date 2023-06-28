@@ -1,7 +1,5 @@
-import { log } from "../utils/logger";
-import { Work } from "../works";
-
-
+import { log } from "../../utils/logger";
+import { Work } from "../../works";
 
 export function addWorkToSheet(work: Work) {
     log("addWorkToSheet", work);

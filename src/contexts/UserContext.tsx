@@ -1,36 +1,37 @@
-import { createContext, useState } from "react";
-import useEffect from 'react';
-import getState from "../utils/useSetState";
-import { log } from "../utils/logger";
-
-export type UserStateType = {
-  user: User,
-  setUser: (user: User) => void;
-  getUser: () => User;
-};
-
-export interface User {
-  authToken: string;
-  sheetId: string;
-  sheetUrl: string;
-}
+import { UserStateType, User } from "../types";
+import { createContext } from "react";
+import { useSetState } from "../utils";
 
 export const defaultUser: User = {
-  authToken: "",
-  sheetId: "",
-  sheetUrl: "",
+    authToken: "",
+    sheetId: "",
+    sheetUrl: "",
 }
 
 export const UserContext = createContext<UserStateType>({
-  user: defaultUser,
-  setUser: () => {},
-  getUser: () => {return defaultUser},
+    user: defaultUser,
+    setUser: () => {},
+    getUser: () => {return defaultUser},
 });
 
 export function doesUserExist(user: User) {
-  if(user.authToken === "" || user.sheetId === "" || user.sheetUrl === "") {
-    return false;
-  } else {
-    return true;
-  }
+    if(user.authToken === "" || user.sheetId === "" || user.sheetUrl === "") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+type Props = {
+    children: JSX.Element | JSX.Element[];
+};
+
+export function userProvider({ children }: Props) {
+    const [user, setUser, getUser] = useSetState<User>(defaultUser);
+
+    return (
+        <UserContext.Provider value={{ user, setUser, getUser }}>
+            {children}
+        </UserContext.Provider>
+    );
 }

@@ -1,14 +1,14 @@
 import React from "react";
-import { LoginContext } from "../contexts/LoginContext";
-import { removeToken } from "../hooks/authToken";
+import { removeToken } from "../chrome-services/authToken";
+import { UserContext, defaultUser } from "../contexts";
 
 export const Logout = () => {
-  const { setLoggedIn } = React.useContext(LoginContext);
+
+  const { setUser } = React.useContext(UserContext);
 
   const handleLogout = () => {
     removeToken();
-    setLoggedIn(false);
-    chrome.storage.sync.set({ isLoggedIn: false });
+    setUser(defaultUser);
     chrome.storage.sync.remove(["userInfo"]);
   };
 
@@ -18,4 +18,5 @@ export const Logout = () => {
     </div>
   );
 };
+
 export default Logout;

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
-import Logout from "../components/Logout";
-import ForgetSheet from "../components/ForgetSheet";
+import { Logout, ForgetSheet } from "../components";
 import { log } from "../utils/logger";
 import "../styles.css";
 

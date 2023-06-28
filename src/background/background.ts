@@ -5,10 +5,6 @@ chrome.tabs.onUpdated.addListener(async(tabId, changeInfo, tab) => {
     changeInfo.status === "complete" &&
     tab.url?.includes("archiveofourown.org")
   ) {
-    //chrome.scripting.executeScript({
-    //    target: {tabId: id, allFrames: true},
-    //    files: ["./js/content_script.js"],
-    //}).then(() => { log("content.js injected"); });
     try {
         await chrome.scripting.insertCSS({
             target: { tabId: tabId, allFrames: true },
