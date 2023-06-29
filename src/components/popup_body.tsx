@@ -1,43 +1,58 @@
 import { GoToSheet, Login } from "../components"
 
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LoaderContext } from "../contexts/LoaderContext";
-import { UserContext, doesUserExist } from '../contexts/UserContext';
 import { log } from "../utils/logger";
-import { getSyncedUser } from "../chrome-services/syncedUser";
+import { fetchSheetUrl } from "../chrome-services/sheet";
+import { useGetSet, useGetSetState } from "react-use";
+import { fetchToken } from "../chrome-services/authToken";
+import { TokenContext } from "../contexts";
+
+
+
 
 export const PopupBody = () => {
   //begin with loader on
   const { loader, setLoader } = useContext(LoaderContext);
-  const { user, setUser } = useContext(UserContext);
+  const [sheetUrl, setSheetUrl] = useState<string>("");
+  const [authToken, setAuthToken] = useState<string>("");
 
   useEffect(() => {
-    log("useEffect");
+    log("useEffect"); 
 
-    getSyncedUser().then((result) => {
-      log("getSyncedUser result: ", result);
-      if (result !== null) {
-        setUser({
-          authToken: result.authToken,
-          sheetId: result.sheetId,
-          sheetUrl: result.sheetUrl,
+    async function getUserInfo() {
+        fetchToken(false).then((token) => {
+            if(token === "") log("user is not logged in")  //can be removed when fetchToken is fixed
+            setAuthToken(token);
         });
-        setLoader(false);
-      }
-    });
-  }, []);
+      
+        fetchSheetUrl().then((url) => {
+            log("url: ", url);
+            setSheetUrl(url);
+        });
+    }
+
+    getUserInfo().then(() => { setLoader(false) });
+
+  }, [authToken]);
 
 
+  if (loader) {
+    log("loader is true");
+    return ( <div className="loader"></div> );
 
-  return (
-    <>
-      <div
-        className="loader"
-        style={loader ? { display: "flex" } : { display: "none" }}
-      ></div>
-      {!doesUserExist(user) ? <Login /> : <GoToSheet />}
-    </>
-  );
+  } else {
+      return (
+        <>
+            <TokenContext.Provider value={{authToken, setAuthToken}}>
+                <div>{(!authToken) ? <Login /> : <GoToSheet sheetUrl={sheetUrl}/>}</div>
+            </TokenContext.Provider>
+        </>
+      );
+  }
 };
+
+
+
 
 export default PopupBody;

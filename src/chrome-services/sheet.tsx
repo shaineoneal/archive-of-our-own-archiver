@@ -1,3 +1,4 @@
+import { fetchToken } from ".";
 import { log } from "../utils";
 
 /**
@@ -5,12 +6,12 @@ import { log } from "../utils";
  * @param token user's auth token
  * @returns promise of the sheet URL
  */
-export function fetchSheetURL(token: string) {
+export function fetchSheetUrl() {
     log("getting sheet URL");
     return new Promise<string>((resolve, reject) => {
         //check for a stored sheet URL
-        chrome.storage.sync.get(["userInfo"], async (result) => {
-            const sheetUrl = result.userInfo?.sheetUrl;
+        chrome.storage.sync.get(["sheetUrl"], async (result) => {
+            const sheetUrl = result.sheetUrl;
             //does the user have a sheet URL already?
             if (sheetUrl !== undefined) {
                 log("user has sheet URL: ", sheetUrl);
@@ -18,11 +19,18 @@ export function fetchSheetURL(token: string) {
                 resolve(sheetUrl);
             } else {
                 log("user doesn't have sheet URL, creating sheet");
-                await createSheet(token).then((url) => {
-                    resolve(url);
-                }).catch((error) => {
-                    reject(error);
-                });
+                //get authToken
+                const token = await fetchToken(true);
+                if (token === null) { 
+                    reject("Error getting token");
+                } else {
+                    //create sheet
+                    await createSheet(token).then((url) => {
+                        resolve(url);
+                    }).catch((error) => {
+                        reject(error);
+                    });
+                }
             }
         });
   });
@@ -109,12 +117,11 @@ async function createSheet(token: string) {
     })
     .then((data) => {
       log("Success:", data);
-      chrome.storage.sync.set({ sheetURL: data.spreadsheetUrl });
-      chrome.storage.sync.set({ sheetID: data.spreadsheetId });
+      chrome.storage.sync.set({ "sheetUrl": data.spreadsheetUrl });
       return data.spreadsheetUrl;
     })
     .catch((error) => {
-      error("Error creating sheet:", error);
+      log("Error creating sheet:", error);
       throw error;
     });
 }

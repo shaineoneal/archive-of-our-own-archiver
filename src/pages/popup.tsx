@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BsFillGearFill } from "react-icons/bs";
 import { PopupBody } from "../components/popup_body";
-import { UserContext } from "../contexts";
-import { useSetState } from "../utils";
+import { LoaderProvider } from "../contexts";
 import { User } from "../types";
 import "../styles.css";
+import { useGetSetState } from "react-use";
 
 const Popup = () => {
-  const [ user, setUser, getUser ] = useSetState<User>({authToken: "", sheetId: "", sheetUrl: ""});
-  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
     <>
@@ -28,11 +26,13 @@ const Popup = () => {
         </div>
       </header>
       <main>
-        <UserContext.Provider value={{ user, setUser, getUser }}>
+        
+          <LoaderProvider>
             <div className="body">
               <PopupBody />
             </div>
-        </UserContext.Provider>
+          </LoaderProvider>
+        
       </main>
     </>
   );

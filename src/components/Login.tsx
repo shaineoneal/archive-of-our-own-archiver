@@ -1,34 +1,41 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { fetchToken } from "../chrome-services/authToken";
-import { UserContext } from "../contexts";
-import { fetchSheetURL } from "../chrome-services/sheet";
+import { LoaderContext, TokenContext } from "../contexts";
+import { fetchSheetUrl } from "../chrome-services/sheet";
 import { log } from "../utils/logger";
+import { User } from "../types";
 
 
 
 export const Login = () => {
 
-    const { user, setUser, getUser } = useContext(UserContext);
-    const [loader, setLoader] = useState(false);
+    const { loader, setLoader } = useContext(LoaderContext);
+    const { setAuthToken } = useContext(TokenContext);
 
-    async function handleLogin() {
-        setLoader(true);
+    useEffect(() => {
+
+    }, []);
+    
+    const handleLogin = async () => {
+
+      setLoader(true);
         const token = await fetchToken(true);
         if (token === null) {
             throw new Error("Error getting token");
+        } else {
+            log("token: ", token);
+            chrome.storage.sync.set({ authToken: token });
+            setAuthToken(token);
         }
-        fetchSheetURL(token).then(async (url) => {
-            log("handleLogin url: ", url);
 
-            setUser({
-                authToken: token,
-                sheetId: url.split("/")[5],
-                sheetUrl: url,
-            });
-            chrome.storage.sync.set({ userInfo: await getUser() });
-            log("await getUser: ", getUser());
-            setLoader(false);      
-        });
+        const url = await fetchSheetUrl();
+        if (url === null) {
+            throw new Error("Error getting sheet url");
+        } else {
+            chrome.storage.sync.set({ sheetUrl: url });
+        }
+
+        setLoader(false);
   }
 
   
@@ -36,7 +43,7 @@ export const Login = () => {
       <>
       <h1>Please log in to begin</h1>
       <div className="login">
-        <button id="login-button" onClick={handleLogin} disabled={loader}>
+        <button id="login-button" onClick={() => handleLogin()} disabled={loader}>
           Login to Google
         </button>
       </div>
