@@ -1,12 +1,11 @@
 type UserStateType = {
-    user: User,
+    user: () => User,
     setUser: (user: User) => void;
-    getUser: () => User;
 };
   
 export interface User {
     authToken: string;
-    sheetId: string;
-    sheetUrl: string;
+    sheetId?: string;
+    sheetUrl?: string;
 }
 

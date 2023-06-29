@@ -1,32 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom";
 import { IconContext } from "react-icons";
 import { BiArrowBack } from "react-icons/bi";
+import { fetchSheetUrl } from "../chrome-services/sheet";
 import { Logout, ForgetSheet } from "../components";
 import { log } from "../utils/logger";
 import "../styles.css";
+
 
 export function openOptionsPage() {
   chrome.runtime.openOptionsPage();
 }
 
 const Options = () => {
-  const [sheetURL, setSheetUrl] = useState<string>("");
+  const [sheetUrl, setSheetUrl] = useState("");
 
   useEffect(() => {
-  
-    const getSheetURL = async () => {
-      const result = await new Promise((resolve) => {
-        chrome.storage.sync.get(["sheetURL"], (result) => {
-          log("sheet URL", result.sheetURL);
-          setSheetUrl(result.sheetURL);
-          resolve(result);
-        });
-      });
-      return result;
-    };
-    getSheetURL();
-  }, []);
+
+    fetchSheetUrl().then((url) => {
+      log("url: ", url);
+      setSheetUrl(url);
+    });
+
+  }, [sheetUrl]);
 
   return (
     <>
@@ -43,7 +39,7 @@ const Options = () => {
       <main>
         <div className="options-container">
           <div>Google Sheets URL</div>
-          <input type="text" value={sheetURL}/>
+          <input type="text" defaultValue={sheetUrl}/>
           <Logout />
           <ForgetSheet />
         </div>

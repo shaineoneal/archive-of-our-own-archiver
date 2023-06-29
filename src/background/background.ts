@@ -14,8 +14,13 @@ chrome.tabs.onUpdated.addListener(async(tabId, changeInfo, tab) => {
             log("Error in insertCSS:", error);
     }
 }});
-/*
-chrome.runtime.onInstalled.addListener(function () {
+
+
+
+
+
+
+/*chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
 });
 
