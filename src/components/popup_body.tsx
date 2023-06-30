@@ -8,7 +8,7 @@ export const PopupBody = () => {
     //begin with loader on
     const { loader, setLoader } = useContext(LoaderContext);
     const [sheetUrl, setSheetUrl] = useState<string>('');
-    const [authToken, setAuthToken] = useState<string>('');
+    const { authToken, setAuthToken } = useContext(TokenContext);
 
     useEffect(() => {
         log('useEffect');
@@ -36,15 +36,11 @@ export const PopupBody = () => {
     } else {
         return (
             <>
-                <TokenContext.Provider value={{ authToken, setAuthToken }}>
-                    <div>
-                        {!authToken ? (
-                            <Login />
-                        ) : (
-                            <GoToSheet sheetUrl={sheetUrl} />
-                        )}
-                    </div>
-                </TokenContext.Provider>
+                
+                <div>
+                    {!authToken ? (<Login />) : (<GoToSheet sheetUrl={sheetUrl} />)}
+                </div>
+                
             </>
         );
     }
