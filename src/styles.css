@@ -40,6 +40,10 @@ button:disabled {
     margin-bottom: 8px;
 }
 
+.logo {
+    margin-right: 8px;
+}
+
 .back-icon {
     flex: none;
     margin-right: 8px;

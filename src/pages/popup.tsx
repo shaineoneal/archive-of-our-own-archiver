@@ -1,18 +1,16 @@
 import React, { useContext, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-
-import { PopupBody } from '../components/popup_body';
+import { PopupBody, OptionsIcon } from '../components';
 import { LoaderProvider, TokenContext, TokenProvider } from '../contexts';
 import '../styles.css';
-import { log } from '../utils';
-import { OptionsIcon } from '../components/optionsIcon';
+
 
 const Popup = () => {
 
     const { authToken } = useContext(TokenContext);
 
     useEffect(() => {
-        log('useEffect');
+        //to ensure that the options icon reloads when the user logs in
     }, [authToken]);
 
 
