@@ -1,5 +1,3 @@
-export * from './authToken'
-export * from './syncedUser'
-export * from './utils/appendToSheet'
-export * from './utils/checkLoginStatus'
-
+export * from './authToken';
+export * from './utils/appendToSheet';
+export * from './sheet';
