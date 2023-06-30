@@ -1,26 +1,22 @@
-import { createContext, useState } from "react";
-import { useToggle } from 'usehooks-ts';
+import { createContext, useState } from 'react';
+import { PropsWithChildren } from '../types';
 
 export type LoaderStateType = {
-  loader: boolean;
-  setLoader: (loader: boolean) => void;
+    loader: boolean;
+    setLoader: (loader: boolean) => void;
 };
 
 export const LoaderContext = createContext<LoaderStateType>({
-  loader: false,
-  setLoader: () => {},
+    loader: false,
+    setLoader: () => {},
 });
 
-type Props = {
-  children: JSX.Element | JSX.Element[];
-};
+export function LoaderProvider({ children }: PropsWithChildren) {
+    const [loader, setLoader] = useState<boolean>(true);
 
-export function LoaderProvider({ children }: Props) {
-  const [ loader, setLoader ] = useState<boolean>(true);
-
-  return (
-    <LoaderContext.Provider value={{ loader, setLoader }}>
-      {children}
-    </LoaderContext.Provider>
-  );
+    return (
+        <LoaderContext.Provider value={{ loader, setLoader }}>
+            {children}
+        </LoaderContext.Provider>
+    );
 }

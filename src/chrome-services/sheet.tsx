@@ -1,41 +1,42 @@
-import { fetchToken } from ".";
-import { log } from "../utils";
+import { fetchToken } from '.';
+import { log } from '../utils';
 
 /**
  *
- * @param token user's auth token
- * @returns promise of the sheet URL
+ * @returns user's sheet URL
  */
 export function fetchSheetUrl() {
-    log("getting sheet URL");
+    log('getting sheet URL');
     return new Promise<string>((resolve, reject) => {
-        //check for a stored sheet URL
-        chrome.storage.sync.get(["sheetUrl"], async (result) => {
+        // check for a stored sheet URL
+        chrome.storage.sync.get(['sheetUrl'], async (result) => {
             const sheetUrl = result.sheetUrl;
-            //does the user have a sheet URL already?
+
+            // does the user have a sheet URL already?
             if (sheetUrl !== undefined) {
-                log("user has sheet URL: ", sheetUrl);
-                log("sheetID: ", sheetUrl.split("/")[5]);
+                log('user has sheet URL: ', sheetUrl);
+                log('sheetID: ', sheetUrl.split('/')[5]);
                 resolve(sheetUrl);
             } else {
                 log("user doesn't have sheet URL, creating sheet");
                 //get authToken
                 const token = await fetchToken(true);
-                if (token === null) { 
-                    reject("Error getting token");
+                if (token === null) {
+                    reject('Error getting token');
                 } else {
                     //create sheet
-                    await createSheet(token).then((url) => {
-                        resolve(url);
-                    }).catch((error) => {
-                        reject(error);
-                    });
+                    await createSheet(token)
+                        .then((url) => {
+                            resolve(url);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
                 }
             }
         });
-  });
+    });
 }
-
 
 /**
  *
@@ -43,85 +44,109 @@ export function fetchSheetUrl() {
  * @returns
  */
 async function createSheet(token: string) {
-  const title = "AO3E";
-  const sheetName = "Saved Works";
+    const title = 'AO3E';
+    const sheetName = 'Saved Works';
 
-  const sheetLayout = {
-    properties: { title: title },
-    sheets: {
-      properties: { title: sheetName },
-      data: [
-        {
-          startRow: 0,
-          startColumn: 0,
-          rowData: [
-            {
-              values: [
+    const sheetLayout = {
+        properties: { title: title },
+        sheets: {
+            properties: { title: sheetName },
+            data: [
                 {
-                  userEnteredValue: { stringValue: "Work ID" },
-                  userEnteredFormat: { textFormat: { bold: true } },
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData: [
+                        {
+                            values: [
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Work ID',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: { stringValue: 'Title' },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Authors',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Fandoms',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Word Count',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Chapter Count',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: { stringValue: 'Status' },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 },
-                {
-                  userEnteredValue: { stringValue: "Title" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-                {
-                  userEnteredValue: { stringValue: "Authors" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-                {
-                  userEnteredValue: { stringValue: "Fandoms" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-                {
-                  userEnteredValue: { stringValue: "Word Count" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-                {
-                  userEnteredValue: { stringValue: "Chapter Count" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-                {
-                  userEnteredValue: { stringValue: "Status" },
-                  userEnteredFormat: { textFormat: { bold: true } },
-                },
-              ],
-            },
-          ],
+                { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
+                { startColumn: 1, columnMetadata: { pixelSize: 300 } }, //title
+                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
+                { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
+                { startColumn: 4, columnMetadata: { pixelSize: 100 } }, //word count
+                { startColumn: 5, columnMetadata: { pixelSize: 100 } }, //chapter count
+                { startColumn: 6, columnMetadata: { pixelSize: 100 } }, //status
+            ],
         },
-        { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
-        { startColumn: 1, columnMetadata: { pixelSize: 300 } }, //title
-        { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
-        { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
-        { startColumn: 4, columnMetadata: { pixelSize: 100 } }, //word count
-        { startColumn: 5, columnMetadata: { pixelSize: 100 } }, //chapter count
-        { startColumn: 6, columnMetadata: { pixelSize: 100 } }, //status
-      ],
-    },
-  };
+    };
 
-  const url = "https://sheets.googleapis.com/v4/spreadsheets";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify(sheetLayout),
-  };
+    const url = 'https://sheets.googleapis.com/v4/spreadsheets';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+        },
+        body: JSON.stringify(sheetLayout),
+    };
 
-  return fetch(url, options)
-    .then((response) => {
-      log("Response status:", response.status);
-      return response.json();
-    })
-    .then((data) => {
-      log("Success:", data);
-      chrome.storage.sync.set({ "sheetUrl": data.spreadsheetUrl });
-      return data.spreadsheetUrl;
-    })
-    .catch((error) => {
-      log("Error creating sheet:", error);
-      throw error;
-    });
+    return fetch(url, options)
+        .then((response) => {
+            log('Response status:', response.status);
+            return response.json();
+        })
+        .then((data) => {
+            log('Success:', data);
+            chrome.storage.sync.set({ sheetUrl: data.spreadsheetUrl });
+            return data.spreadsheetUrl;
+        })
+        .catch((error) => {
+            log('Error creating sheet:', error);
+            throw error;
+        });
 }

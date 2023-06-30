@@ -1,92 +1,91 @@
-import { WorkStatus } from "./data";
+import { WorkStatus } from './data';
 
 type WorkType = {
-  workId: number;
+    workId: number;
 };
 
 export class Work implements WorkType {
-  workId: number;
-  title: string;
-  author: string[];
-  fandoms: string[];
-  wordCount: number;
-  totalChapters: number;
-  status?: WorkStatus;
+    workId: number;
+    title: string;
+    author: string[];
+    fandoms: string[];
+    wordCount: number;
+    totalChapters: number;
+    status?: WorkStatus;
 
-  constructor(
-    workId: number,
-    title: string,
-    author: string[],
-    fandoms: string[],
-    wordCount: number,
-    totalChapters: number,
-    status?: WorkStatus
-  ) {
-    this.workId = workId;
-    this.title = title;
-    this.author = author;
-    this.fandoms = fandoms;
-    this.wordCount = wordCount;
-    this.totalChapters = totalChapters;
-    this.status = status;
-  }
-
-  //TODO: add fix for bookmarks instead of works
-  public static getWorkFromPage(workId: number): Work {
-    const workNode = document.querySelector(`#work_${workId}`);
-
-    if (!workNode) {
-      throw new Error(`Work ${workId} not found on page`);
-    }
-    const title = workNode.querySelector(".heading > a")!.textContent;
-
-    const authorNodes = workNode.querySelectorAll("[rel='author']");
-    const authors = Array.from(authorNodes).map(
-      (authorNode) => authorNode.textContent
-    );
-
-    const fandomNodes = workNode.querySelectorAll(".fandoms > a");
-    const fandoms = Array.from(fandomNodes).map(
-      (fandomNode) => fandomNode.textContent
-    );
-
-    const wordCount = workNode.querySelector("dd.words")!.textContent;
-
-    var chapterCount = workNode.querySelector("dd.chapters > a")?.textContent;
-    if (!chapterCount) {
-      //one-shot
-      chapterCount = "1";
+    constructor(
+        workId: number,
+        title: string,
+        author: string[],
+        fandoms: string[],
+        wordCount: number,
+        totalChapters: number,
+        status?: WorkStatus
+    ) {
+        this.workId = workId;
+        this.title = title;
+        this.author = author;
+        this.fandoms = fandoms;
+        this.wordCount = wordCount;
+        this.totalChapters = totalChapters;
+        this.status = status;
     }
 
-    return new this(
-      workId,
-      title!,
-      authors as string[],
-      fandoms as string[],
-      parseInt(wordCount!.replace(/,/g, "")),
-      parseInt(chapterCount!.replace(/,/g, ""))
-    );
-  }
+    //TODO: add fix for bookmarks instead of works
+    public static getWorkFromPage(workId: number): Work {
+        const workNode = document.querySelector(`#work_${workId}`);
 
+        if (!workNode) {
+            throw new Error(`Work ${workId} not found on page`);
+        }
+        const title = workNode.querySelector('.heading > a')!.textContent;
 
-  createJSON(){
-    const obj: {values: any[][]} = {
-      values: [
-        [
-          this.workId,
-          this.title,
-          this.author,
-          this.fandoms,
-          this.wordCount,
-          this.totalChapters,
-          this.status
-        ],
-      ],
-    };
+        const authorNodes = workNode.querySelectorAll("[rel='author']");
+        const authors = Array.from(authorNodes).map(
+            (authorNode) => authorNode.textContent
+        );
 
-    return JSON.stringify(obj);
+        const fandomNodes = workNode.querySelectorAll('.fandoms > a');
+        const fandoms = Array.from(fandomNodes).map(
+            (fandomNode) => fandomNode.textContent
+        );
 
-  }
+        const wordCount = workNode.querySelector('dd.words')!.textContent;
+
+        var chapterCount =
+            workNode.querySelector('dd.chapters > a')?.textContent;
+        if (!chapterCount) {
+            //one-shot
+            chapterCount = '1';
+        }
+
+        return new this(
+            workId,
+            title!,
+            authors as string[],
+            fandoms as string[],
+            parseInt(wordCount!.replace(/,/g, '')),
+            parseInt(chapterCount!.replace(/,/g, ''))
+        );
+    }
+
+    createJSON() {
+        const obj: { values: any[][] } = {
+            values: [
+                [
+                    this.workId,
+                    this.title,
+                    this.author,
+                    this.fandoms,
+                    this.wordCount,
+                    this.totalChapters,
+                    this.status,
+                ],
+            ],
+        };
+
+        return JSON.stringify(obj);
+    }
 }
 /*public static getWorkFromPage(workId: number): Work {
         const workNode = document.querySelector(`#work_${workId}`);
