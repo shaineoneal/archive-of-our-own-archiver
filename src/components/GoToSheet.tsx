@@ -2,8 +2,8 @@ import { log } from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
     function handleGoToSheet() {
-        log('going to url: ', props.sheetUrl);
-        chrome.tabs.create({ url: props.sheetUrl });
+        log('going to url: ', props.spreadsheetUrl);
+        chrome.tabs.create({ url: props.spreadsheetUrl });
     }
 
     return (

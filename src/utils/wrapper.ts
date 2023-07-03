@@ -1,4 +1,4 @@
-export function wrap(el: Element, wrapper: Element) {
-    el.parentNode!.insertBefore(wrapper, el);
-    wrapper.appendChild(el);
+export function wrap(wrapee: Element, wrapper: Element) {
+    wrapee.parentNode!.insertBefore(wrapper, wrapee);
+    wrapper.appendChild(wrapee);
 }

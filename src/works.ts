@@ -1,4 +1,5 @@
 import { WorkStatus } from './data';
+import { log } from './utils';
 
 type WorkType = {
     workId: number;
@@ -11,7 +12,7 @@ export class Work implements WorkType {
     fandoms: string[];
     wordCount: number;
     totalChapters: number;
-    status?: WorkStatus;
+    status: WorkStatus;
 
     constructor(
         workId: number,
@@ -20,7 +21,7 @@ export class Work implements WorkType {
         fandoms: string[],
         wordCount: number,
         totalChapters: number,
-        status?: WorkStatus
+        status: WorkStatus
     ) {
         this.workId = workId;
         this.title = title;
@@ -32,7 +33,7 @@ export class Work implements WorkType {
     }
 
     //TODO: add fix for bookmarks instead of works
-    public static getWorkFromPage(workId: number): Work {
+    static getWorkFromPage(workId: number): Work {
         const workNode = document.querySelector(`#work_${workId}`);
 
         if (!workNode) {
@@ -65,34 +66,14 @@ export class Work implements WorkType {
             authors as string[],
             fandoms as string[],
             parseInt(wordCount!.replace(/,/g, '')),
-            parseInt(chapterCount!.replace(/,/g, ''))
+            parseInt(chapterCount!.replace(/,/g, '')),
+            ""
         );
     }
 
-    createJSON() {
-        const obj: { values: any[][] } = {
-            values: [
-                [
-                    this.workId,
-                    this.title,
-                    this.author,
-                    this.fandoms,
-                    this.wordCount,
-                    this.totalChapters,
-                    this.status,
-                ],
-            ],
-        };
-
-        return JSON.stringify(obj);
+    public toString(): string {
+        return JSON.stringify(this);
     }
+ 
 }
-/*public static getWorkFromPage(workId: number): Work {
-        const workNode = document.querySelector(`#work_${workId}`);
 
-        if (!workNode) {
-            throw new Error(`Work ${workId} not found on page`);
-        }
-        const title = workNode.querySelector(".heading > a").textContent;
-
-    })*/

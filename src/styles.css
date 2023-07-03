@@ -27,9 +27,20 @@ button {
     padding: 8px;
     width: 100%;
     font-size: 1rem;
+    text-decoration: none;
 }
 button:disabled {
     display: none;
+}
+button:active {
+    background: rgb( 118, 118, 118 );
+}
+button.visited {
+    background: rgb( 118, 118, 118 );
+}
+
+a.no-underline {
+    text-decoration: none;
 }
 
 .flex-container {
@@ -138,6 +149,17 @@ button:disabled {
     line-height: 12px;
     font-size: 10px;
     box-shadow: none;
+}
+
+.blurb-with-toggles {
+    box-shadow:1px 1px 1px 1px #000;
+    height: calc(100% - 1px);
+
+}
+
+li.work {
+    margin-top: 0px !important;
+    box-shadow: none !important;
 }
 
 .toggle {

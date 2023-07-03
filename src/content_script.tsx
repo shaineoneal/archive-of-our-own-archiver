@@ -6,6 +6,13 @@ import { Work } from './works';
 
 log('log: content_script.tsx loaded');
 
+//open up connection to background script
+
+
+
+
+
+
 const works = Array.from(
     document.querySelectorAll(
         'li.work, li.bookmark'
@@ -15,15 +22,11 @@ const works = Array.from(
 var searchList = new Array();
 works.forEach((work) => {
     var newEl = document.createElement('div');
-    newEl.style.boxShadow = '1px 1px 3px #000';
-    newEl.style.height = 'calc(100% - 1px)';
+    newEl.classList.add('blurb-with-toggles');
 
     wrap(work, newEl);
 
-    work.style.marginTop = '0px';
-    work.style.boxShadow = 'none';
-
-    blurbToggles(newEl);
+    blurbToggles(work);
     //if its a bookmark, use the class to get the work id
     if (work.classList.contains('bookmark')) {
         searchList.push(work.classList[3].split('-')[1]);
@@ -38,6 +41,16 @@ log('searchList: ', searchList);
 const workId = searchList[1];
 
 log('work: ', Work.getWorkFromPage(workId));
-addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
-    log('response: ', response);
-});
+//port.postMessage({ message: 'getAuthToken' });
+
+//port.onMessage.addListener((msg) => {
+//    log('msg: ', msg.token);
+//    if (msg.token !== '') {
+        addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
+            log('response: ', response);
+        }); 
+
+
+//addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
+//    log('response: ', response);
+//});

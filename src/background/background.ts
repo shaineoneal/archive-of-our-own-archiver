@@ -1,6 +1,61 @@
+import { fetchSpreadsheetUrl, fetchToken } from '../chrome-services';
 import { log } from '../utils/logger';
+import { Work } from '../works';
+import { batchUpdate } from '../chrome-services';
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+
+//chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+//    log('message recieved', request);
+//    if (request.message === 'getAuthToken') {
+//        log('getAuthToken message recieved');
+//        await fetchToken(false).then((token) => {
+//            log('message token', token);
+//            sendResponse({ token: token });
+//
+//        });
+//        return true;
+//    }
+//});
+
+
+
+chrome.runtime.onConnect.addListener(function (port) {
+    port.onMessage.addListener(function (msg) {
+        log('port message', msg);
+        if (msg.message === 'getAuthToken') {
+            log('getAuthToken message recieved');
+            fetchToken(false).then((token) => {
+                log('port token', token);
+                port.postMessage({ token: token });
+            });
+        } else if (msg.message === 'fetchSpreadsheetUrl') {
+            log('fetchSpreadsheetUrl message recieved');
+            fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                log('port spreadsheetUrl', spreadsheetUrl);
+                port.postMessage({ spreadsheetUrl: spreadsheetUrl });
+            });
+        } else if (msg.message === 'batchUpdate') {
+            log('batchUpdate message recieved');
+            fetchToken(false).then((token) => {
+                log('token', token);
+                fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                    batchUpdate(spreadsheetUrl, token, msg.work).then((response) => {
+                        log('response', response);
+                        port.postMessage({ response: response });
+                    });
+                });
+            });
+
+
+
+
+
+        
+        }
+    });
+});
+
+/*chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (
         changeInfo.status === 'complete' &&
         tab.url?.includes('archiveofourown.org')
@@ -20,7 +75,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
 });
 
-/*chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.set({ isLoggedIn: false });
 });
 

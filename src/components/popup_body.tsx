@@ -1,27 +1,27 @@
 import { GoToSheet, Login } from '../components';
 import { useContext, useEffect, useState } from 'react';
 import { log } from '../utils';
-import { fetchSheetUrl, fetchToken } from '../chrome-services';
+import { fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
 
 export const PopupBody = () => {
     //begin with loader on
     const { loader, setLoader } = useContext(LoaderContext);
-    const [sheetUrl, setSheetUrl] = useState<string>('');
+    const [spreadsheetUrl, setSpreadsheetUrl] = useState<string>('');
     const { authToken, setAuthToken } = useContext(TokenContext);
 
     useEffect(() => {
         log('useEffect');
 
         async function getUserInfo() {
-            fetchToken(false).then((token) => {
+            getSavedToken().then((token: string) => {
                 if (token === '') log('user is not logged in'); //can be removed when fetchToken is fixed
                 setAuthToken(token);
             });
 
-            fetchSheetUrl().then((url) => {
+            fetchSpreadsheetUrl().then((url) => {
                 log('url: ', url);
-                setSheetUrl(url);
+                setSpreadsheetUrl(url);
             });
         }
 
@@ -38,7 +38,7 @@ export const PopupBody = () => {
             <>
                 
                 <div>
-                    {!authToken ? (<Login />) : (<GoToSheet sheetUrl={sheetUrl} />)}
+                    {!authToken ? (<Login />) : (<GoToSheet spreadsheetUrl={spreadsheetUrl} />)}
                 </div>
                 
             </>
