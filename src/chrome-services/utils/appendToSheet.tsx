@@ -1,28 +1,41 @@
 import { log } from '../../utils/logger';
 import { Work } from '../../works';
+import { fetchSpreadsheetUrl, fetchToken } from '..';
+import { post } from 'jquery';
 
-export function addWorkToSheet(work: Work) {
+export async function addWorkToSheet(work: Work) {
+
+    const port = chrome.runtime.connect({ name: 'content_script' });
+
     log('addWorkToSheet', work);
+    let spreadsheetUrl = '';
+    let authToken = '';
 
-    const sheetID = localStorage.getItem('sheetID');
-    if (!sheetID) {
-        log('addWorkToSheet', 'sheetID not found');
-        return;
-    }
-    const sheetName = 'Sheet1';
-    const auth = localStorage.getItem('auth');
 
-    return fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${sheetName}:append?valueInputOption=USER_ENTERED`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + auth,
-            },
-            body: work.createJSON(),
+    port.postMessage({ message: 'batchUpdate', work: work });
+    //port.postMessage({ message: 'fetchSheetUrl' });
+
+    port.onMessage.addListener((msg) => {
+        log('msg: ', msg);
+        if (msg.token) {
+            log('got token: ', msg.token);
+            return authToken = msg.token;
+        } else if (msg.spreadsheetUrl) {
+            log('got spreadsheetUrl: ', msg.spreadsheetUrl);
+            spreadsheetUrl = msg.sheetUrl;
+
+            if (spreadsheetUrl && authToken) {
+                port.postMessage({ message: 'batchUpdate', work: work, spreadsheetUrl: spreadsheetUrl, authToken: authToken });
+            }
+        
+            log ('authToken check: ', authToken);
+        
+            port.onMessage.addListener((msg) => {
+                log('new msg: ', msg);
+            });
+        
         }
-    ).then((response) => {
-        response.json();
     });
 }
+
+    

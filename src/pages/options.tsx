@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import { fetchSheetUrl } from '../chrome-services/sheet';
-import { Logout, ForgetSheet } from '../components';
-import { log } from '../utils/logger';
+import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
+import { ForgetSheet, Logout } from '../components';
 import '../styles.css';
+import { log } from '../utils/logger';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
 
 const Options = () => {
-    const [sheetUrl, setSheetUrl] = useState('');
+    const [spreadsheetUrl, setSpreadsheetUrl] = useState('');
 
     useEffect(() => {
-        fetchSheetUrl().then((url) => {
+        fetchSpreadsheetUrl().then((url) => {
             log('url: ', url);
-            setSheetUrl(url);
+            setSpreadsheetUrl(url);
         });
-    }, [sheetUrl]);
+    }, [spreadsheetUrl]);
 
     return (
         <>
@@ -35,8 +35,8 @@ const Options = () => {
             </header>
             <main>
                 <div className="options-container">
-                    <div>Google Sheets URL</div>
-                    <input type="text" defaultValue={sheetUrl} />
+                    <div>Google Spreadsheets URL</div>
+                    <input type="text" defaultValue={spreadsheetUrl} />
                     <Logout />
                     <ForgetSheet />
                 </div>

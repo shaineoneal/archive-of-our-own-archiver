@@ -13,7 +13,7 @@
   },
   "key": "***REMOVED***",
   "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab"],
-  "host_permissions": ["*://*.archiveofourown.org/*", "https://docs.google.com/spreadsheets/*", "*://*.google.com/", "*://*.googleapis.com/*"],
+  "host_permissions": ["*://*.archiveofourown.org/*", "https://docs.google.com/spreadsheets/*", "*://*.google.com/"],
 
   "options_ui": {
     "page": "options.html",
@@ -33,15 +33,12 @@
       {
           "matches": ["*://*.archiveofourown.org/*"],
           "js": ["js/content_script.js"],
-          "css": ["js/content_script.css"]
+          "css": ["js/content_script.css"],
+          "run_at": "document_end"
       }
   ],
   "web_accessible_resources": [{
     "resources": ["js/content_script.css"],
-    "matches": ["*://*.archiveofourown.org/*"]
-  },
-  {
-    "resources": ["js/content_script.js"],
     "matches": ["*://*.archiveofourown.org/*"]
   }]
 }
