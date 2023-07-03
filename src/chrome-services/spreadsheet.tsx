@@ -3,29 +3,29 @@ import { log } from '../utils';
 
 /**
  *
- * @returns user's sheet URL
+ * @returns user's spreadsheet URL
  */
-export function fetchSheetUrl() {
-    log('getting sheet URL');
+export function fetchSpreadsheetUrl() {
+    log('getting spreadsheet URL');
     return new Promise<string>((resolve, reject) => {
-        // check for a stored sheet URL
-        chrome.storage.sync.get(['sheetUrl'], async (result) => {
-            const sheetUrl = result.sheetUrl;
+        // check for a stored spreadsheet URL
+        chrome.storage.sync.get(['spreadsheetUrl'], async (result) => {
+            const spreadsheetUrl = result.spreadsheetUrl;
 
-            // does the user have a sheet URL already?
-            if (sheetUrl !== undefined) {
-                log('user has sheet URL: ', sheetUrl);
-                log('sheetID: ', sheetUrl.split('/')[5]);
-                resolve(sheetUrl);
+            // does the user have a spreadsheet URL already?
+            if (spreadsheetUrl !== undefined) {
+                log('user has spreadsheet URL: ', spreadsheetUrl);
+                log('spreadsheetID: ', spreadsheetUrl.split('/')[5]);
+                resolve(spreadsheetUrl);
             } else {
-                log("user doesn't have sheet URL, creating sheet");
+                log("user doesn't have spreadsheet URL, creating spreadsheet");
                 //get authToken
-                const token = await fetchToken(true);
+                const token = await fetchToken();
                 if (token === null) {
                     reject('Error getting token');
                 } else {
-                    //create sheet
-                    await createSheet(token)
+                    //create spreadsheet
+                    await createSpreadsheet(token)
                         .then((url) => {
                             resolve(url);
                         })
@@ -43,14 +43,14 @@ export function fetchSheetUrl() {
  * @param token user's auth token
  * @returns
  */
-async function createSheet(token: string) {
+async function createSpreadsheet(token: string) {
     const title = 'AO3E';
-    const sheetName = 'Saved Works';
+    const spreadsheetName = 'Saved Works';
 
     const sheetLayout = {
         properties: { title: title },
         sheets: {
-            properties: { title: sheetName },
+            properties: { title: spreadsheetName },
             data: [
                 {
                     startRow: 0,
@@ -142,11 +142,11 @@ async function createSheet(token: string) {
         })
         .then((data) => {
             log('Success:', data);
-            chrome.storage.sync.set({ sheetUrl: data.spreadsheetUrl });
+            chrome.storage.sync.set({ spreadsheetUrl: data.spreadsheetUrl });
             return data.spreadsheetUrl;
         })
         .catch((error) => {
-            log('Error creating sheet:', error);
+            log('Error creating spreadsheet:', error);
             throw error;
         });
 }
