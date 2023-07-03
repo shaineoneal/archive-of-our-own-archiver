@@ -4,7 +4,7 @@ import '../styles.css';
 export function blurbToggles(workWrap: Element) {
     var on_list = false; //TODO: check if work is on list
 
-    workWrap.classList.add('blurb-with-toggles');
+    
 
     workWrap.insertAdjacentHTML(
         'beforebegin',

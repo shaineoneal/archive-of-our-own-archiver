@@ -1,7 +1,7 @@
 const log = (function (environment) {
-    if (environment === 'production') {
-        return () => {};
-    }
+    //if (environment === 'production') {
+    //    return () => {};
+    //}
     return (...args: any) => {
         console.log(...args);
     };

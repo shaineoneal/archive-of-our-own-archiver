@@ -1,7 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { fetchToken } from '../chrome-services/authToken';
+import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { LoaderContext, TokenContext } from '../contexts';
-import { fetchSheetUrl } from '../chrome-services/sheet';
 import { log } from '../utils';
 
 export const Login = () => {
@@ -20,11 +20,11 @@ export const Login = () => {
             setAuthToken(token);
         }
 
-        const url = await fetchSheetUrl();
+        const url = await fetchSpreadsheetUrl();
         if (url === null) {
-            throw new Error('Error getting sheet url');
+            throw new Error('Error getting spreadsheet url');
         } else {
-            chrome.storage.sync.set({ sheetUrl: url });
+            chrome.storage.sync.set({ spreadsheetUrl: url });
         }
 
         setLoader(false);
