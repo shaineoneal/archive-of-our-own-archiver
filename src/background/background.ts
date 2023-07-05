@@ -1,23 +1,8 @@
 import { fetchSpreadsheetUrl, fetchToken } from '../chrome-services';
 import { log } from '../utils/logger';
 import { Work } from '../works';
-import { batchUpdate } from '../chrome-services';
-
-
-//chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
-//    log('message recieved', request);
-//    if (request.message === 'getAuthToken') {
-//        log('getAuthToken message recieved');
-//        await fetchToken(false).then((token) => {
-//            log('message token', token);
-//            sendResponse({ token: token });
-//
-//        });
-//        return true;
-//    }
-//});
-
-
+import { addWorkToSheet } from '../chrome-services';
+import { query } from '../chrome-services/querySheet';
 
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
@@ -34,23 +19,29 @@ chrome.runtime.onConnect.addListener(function (port) {
                 log('port spreadsheetUrl', spreadsheetUrl);
                 port.postMessage({ spreadsheetUrl: spreadsheetUrl });
             });
-        } else if (msg.message === 'batchUpdate') {
-            log('batchUpdate message recieved');
+        } else if (msg.message === 'addWorkToSheet') {
+            log('addWorkToSheet message recieved');
             fetchToken(false).then((token) => {
                 log('token', token);
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                    batchUpdate(spreadsheetUrl, token, msg.work).then((response) => {
+                    addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
                         log('response', response);
                         port.postMessage({ response: response });
                     });
                 });
             });
-
-
-
-
-
-        
+        } else if (msg.message === 'querySheet') {
+            log('querySheet message recieved');
+            fetchToken(false).then((token) => {
+                log('token', token);
+                fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                    query(spreadsheetUrl, token, msg.list).then((response) => {
+                        log('response', response);
+                        port.postMessage({ response: response });
+                    });
+                });
+            }
+            );
         }
     });
 });
