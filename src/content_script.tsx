@@ -1,4 +1,3 @@
-import { addWorkToSheet } from './chrome-services/utils/appendToSheet';
 import { blurbToggles } from './components/blurbToggles';
 import { log } from './utils/logger';
 import { wrap } from './utils/wrapper';
@@ -7,6 +6,10 @@ import { Work } from './works';
 log('log: content_script.tsx loaded');
 
 //open up connection to background script
+
+
+
+const port = chrome.runtime.connect({ name: 'content_script' });
 
 
 
@@ -38,19 +41,12 @@ works.forEach((work) => {
 
 log('searchList: ', searchList);
 
-const workId = searchList[1];
+//only needs to be called when button is pressed
+//log('work: ', Work.getWorkFromPage(workId));
+//port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(workId)) });
 
-log('work: ', Work.getWorkFromPage(workId));
-//port.postMessage({ message: 'getAuthToken' });
+port.postMessage({ message: 'querySheet', list: searchList });
 
-//port.onMessage.addListener((msg) => {
-//    log('msg: ', msg.token);
-//    if (msg.token !== '') {
-        addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
-            log('response: ', response);
-        }); 
-
-
-//addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
-//    log('response: ', response);
-//});
+port.onMessage.addListener((msg) => {
+    log('content_script', 'port.onMessage: ', msg);
+});
