@@ -45,8 +45,10 @@ export async function removeToken() {
         throw new Error('Error getting token');
     }
     chrome.storage.sync.remove(['authToken']);
-    // remove identity token
-    chrome.identity.removeCachedAuthToken({ token: token });
+    // remove all identity tokens
+    chrome.identity.clearAllCachedAuthTokens(() => {
+        log('Cleared all cached');
+    })
 }
 
 

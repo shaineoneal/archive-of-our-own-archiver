@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import React, { useState } from 'react';
-import { blurbToggles } from '../components/blurbToggles';
+import { blurbToggle } from '../components/blurbToggles';
 
 const Page = () => {
     return (

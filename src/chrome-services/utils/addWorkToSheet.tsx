@@ -20,22 +20,45 @@ export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, 
         body: JSON.stringify({
             requests: [
                 {
+                    appendDimension: {
+                        sheetId: sheetId,
+                        dimension: 'ROWS',
+                        length: 1,
+                    } 
+                },
+                {
                     appendCells: {
                         sheetId: sheetId,
                         rows: [
                             { values: [
-                                { userEnteredValue: { numberValue: work.workId } },
-                                { userEnteredValue: { stringValue: work.title } },
-                                { userEnteredValue: { stringValue: work.author.toString() } },
-                                { userEnteredValue: { stringValue: work.fandoms.toString() } },
-                                { userEnteredValue: { numberValue: work.wordCount } },
-                                { userEnteredValue: { numberValue: work.totalChapters } },
-                                { userEnteredValue: { stringValue: work.status } },
+                                { userEnteredValue: { numberValue: work.workId } },                     //0
+                                { userEnteredValue: { stringValue: work.title } },                      //1
+                                { userEnteredValue: { stringValue: work.author.toString() },
+                                    userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //2   
+                                { userEnteredValue: { stringValue: work.fandoms.toString() },
+                                    userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //3
+                                { userEnteredValue: { stringValue: work.relationships.toString() },
+                                    userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //4
+                                { userEnteredValue: { stringValue: work.tags.toString() },
+                                    userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //5
+                                { userEnteredValue: { stringValue: work.description } },                //6
+                                { userEnteredValue: { numberValue: work.wordCount } },                  //7   
+                                { userEnteredValue: { numberValue: work.totalChapters } },              //8
+                                { userEnteredValue: { stringValue: work.status } },                     //9
+                                { userEnteredValue: { numberValue: work.rating } },                     //10
                             ] },
                         ], 
                         fields: '*',
                     }
-                }
+                },
+                {
+                    autoResizeDimensions: {
+                        dimensions: {
+                            sheetId: sheetId,
+                            dimension: 'ROWS'
+                        }
+                    }
+                }                
             ],
             includeSpreadsheetInResponse: false
         }),
