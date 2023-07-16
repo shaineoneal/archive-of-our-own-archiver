@@ -10,26 +10,42 @@ export class Work implements WorkType {
     title: string;
     author: string[];
     fandoms: string[];
+    relationships: string[];
+    tags: string[];
+    description: string;
     wordCount: number;
     totalChapters: number;
     status: WorkStatus;
+    rating: number;
+    rereadCount?: number;
+
 
     constructor(
         workId: number,
         title: string,
         author: string[],
         fandoms: string[],
+        relationships: string[],
+        tags: string[],
+        description: string,
         wordCount: number,
         totalChapters: number,
-        status: WorkStatus
+        status: WorkStatus,
+        rating: number,
+        rereadCount?: number
     ) {
         this.workId = workId;
         this.title = title;
         this.author = author;
         this.fandoms = fandoms;
+        this.relationships = relationships;
+        this.tags = tags;
+        this.description = description;
         this.wordCount = wordCount;
         this.totalChapters = totalChapters;
         this.status = status;
+        this.rating = rating;
+        this.rereadCount = rereadCount;
     }
 
     //TODO: add fix for bookmarks instead of works
@@ -51,6 +67,12 @@ export class Work implements WorkType {
             (fandomNode) => fandomNode.textContent
         );
 
+        const relationships = ['placeholder'];
+
+        const tags = ['placeholder'];
+
+        const description = 'longer placeholder';
+
         const wordCount = workNode.querySelector('dd.words')!.textContent;
 
         var chapterCount =
@@ -65,12 +87,74 @@ export class Work implements WorkType {
             title!,
             authors as string[],
             fandoms as string[],
+            relationships,
+            tags,
+            description,
             parseInt(wordCount!.replace(/,/g, '')),
             parseInt(chapterCount!.replace(/,/g, '')),
-            ""
+            "",
+            0,
+            0
         );
     }
 
+    static createWork(workNode: Element | null) {
+        if (!workNode) {
+            throw new Error(`Work not found on page`);
+        }
+
+        const workId = parseInt(workNode.id.split('_')[1]);
+
+        const title = workNode.querySelector('.heading > a')!.textContent;
+
+        const authorNodes = workNode.querySelectorAll("[rel='author']");
+        const authors = Array.from(authorNodes).map(
+            (authorNode) => authorNode.textContent
+        );
+
+        const fandomNodes = workNode.querySelectorAll('.fandoms > a');
+        const fandoms = Array.from(fandomNodes).map(
+            (fandomNode) => fandomNode.textContent
+        );
+
+        const relationshipNodes = workNode.querySelectorAll('.relationships > a');
+        const relationships = Array.from(relationshipNodes).map(
+            (relationshipNode) => relationshipNode.textContent
+        );
+
+        const tagNodes = workNode.querySelectorAll('.warnings > a, .characters > a, .freeforms > a');
+        const tags = Array.from(tagNodes).map(
+            (tagNode) => tagNode.textContent
+        );
+
+        const description = workNode.querySelector('.summary > p')!.textContent;
+
+        const wordCount = workNode.querySelector('dd.words')!.textContent;
+
+        var chapterCount =
+            workNode.querySelector('dd.chapters > a')?.textContent;
+        if (!chapterCount) {
+            //one-shot
+            chapterCount = '1';
+        }
+
+        return new this(
+            workId,
+            title!,
+            authors as string[],
+            fandoms as string[],
+            relationships as string[],
+            tags as string[],
+            description!,
+            parseInt(wordCount!.replace(/,/g, '')),
+            parseInt(chapterCount!.replace(/,/g, '')),
+            "",
+            0,
+            0
+        );
+    }
+
+    
     public toString(): string {
         return JSON.stringify(this);
     }
