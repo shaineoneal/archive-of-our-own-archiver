@@ -41,7 +41,8 @@ export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, 
                                     userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //4
                                 { userEnteredValue: { stringValue: work.tags.toString() },
                                     userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //5
-                                { userEnteredValue: { stringValue: work.description } },                //6
+                                { userEnteredValue: { stringValue: work.description },
+                                    userEnteredFormat: { wrapStrategy: 'WRAP' } },                      //6
                                 { userEnteredValue: { numberValue: work.wordCount } },                  //7   
                                 { userEnteredValue: { numberValue: work.totalChapters } },              //8
                                 { userEnteredValue: { stringValue: work.status } },                     //9
