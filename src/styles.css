@@ -170,3 +170,8 @@ li.work {
 #root {
     width: 350px;
 }
+
+.read-work {
+    border-left-color: #FFFFFF !important;
+    border-left-width: 10px !important;
+}

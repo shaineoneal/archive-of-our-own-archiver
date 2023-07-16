@@ -3,7 +3,7 @@ import { log } from '../utils';
 // query the spreadsheet for the works in the searchList
 export async function query(spreadsheetUrl: string, authToken: string, searchList: number[]) {
     
-    let query = `select A, B, C, D, E, F, G where A matches`;
+    let query = `select A where A matches`;
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;
@@ -27,5 +27,6 @@ export async function query(spreadsheetUrl: string, authToken: string, searchLis
             log('query', 'res', res);
             const json = JSON.parse(res.substring(47, res.length - 2));
             log('query', 'json', json);
+            return json;
         });
 }
