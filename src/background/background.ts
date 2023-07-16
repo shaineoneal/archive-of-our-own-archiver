@@ -46,6 +46,13 @@ chrome.runtime.onConnect.addListener(function (port) {
     });
 });
 
+chrome.storage.onChanged.addListener((changes) => {
+    if(changes.spreadsheetUrl) {
+        log('spreadsheetUrl changed', changes.spreadsheetUrl);
+        chrome.runtime.sendMessage({ message: "spreadsheetUrlChanged", newUrl: changes.spreadsheetUrl.newValue });
+    }
+});
+
 /*chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (
         changeInfo.status === 'complete' &&

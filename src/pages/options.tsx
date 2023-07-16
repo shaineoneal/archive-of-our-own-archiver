@@ -3,9 +3,10 @@ import ReactDOM from 'react-dom';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
-import { ForgetSheet, Logout } from '../components';
+import { NewSheet, Logout } from '../components';
 import '../styles.css';
 import { log } from '../utils/logger';
+import { LoaderContext } from '../contexts';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -13,6 +14,7 @@ export function openOptionsPage() {
 
 const Options = () => {
     const [spreadsheetUrl, setSpreadsheetUrl] = useState('');
+    const [ loader, setLoader ] = useState(false);
 
     useEffect(() => {
         fetchSpreadsheetUrl().then((url) => {
@@ -20,6 +22,14 @@ const Options = () => {
             setSpreadsheetUrl(url);
         });
     }, [spreadsheetUrl]);
+
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        log('heard message: ', message);
+        if (message.message === 'spreadsheetUrlChanged') {
+            setSpreadsheetUrl(message.newUrl);
+            setLoader(false);
+        }
+    });
 
     return (
         <>
@@ -38,7 +48,9 @@ const Options = () => {
                     <div>Google Spreadsheets URL</div>
                     <input type="text" defaultValue={spreadsheetUrl} />
                     <Logout />
-                    <ForgetSheet />
+                    <LoaderContext.Provider value={{ loader, setLoader }}>
+                        <NewSheet />
+                    </LoaderContext.Provider>
                 </div>
             </main>
         </>

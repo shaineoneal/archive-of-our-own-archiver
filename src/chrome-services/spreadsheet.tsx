@@ -10,12 +10,13 @@ export function fetchSpreadsheetUrl() {
     return new Promise<string>((resolve, reject) => {
         // check for a stored spreadsheet URL
         chrome.storage.sync.get(['spreadsheetUrl'], async (result) => {
+            log('fetchSpreadSheetUrl result: ', result);
             const spreadsheetUrl = result.spreadsheetUrl;
-
+            log('spreadsheetUrl type: ', typeof spreadsheetUrl);
             // does the user have a spreadsheet URL already?
-            if (spreadsheetUrl !== undefined) {
+            if (spreadsheetUrl !== undefined && Object.keys(spreadsheetUrl).length !== 0) {
                 log('user has spreadsheet URL: ', spreadsheetUrl);
-                log('spreadsheetID: ', spreadsheetUrl.split('/')[5]);
+                log('spreadsheetID: ', String(spreadsheetUrl).split('/')[5]);
                 resolve(spreadsheetUrl);
             } else {
                 log("user doesn't have spreadsheet URL, creating spreadsheet");
@@ -43,14 +44,130 @@ export function fetchSpreadsheetUrl() {
  * @param token user's auth token
  * @returns
  */
-async function createSpreadsheet(token: string) {
-    const title = 'AO3E';
-    const spreadsheetName = 'Saved Works';
+export async function createSpreadsheet(token: string) {
 
     const sheetLayout = {
-        properties: { title: title },
+        properties: { title: 'AO3E' },
+        namedRanges: [
+            {
+                namedRangeId: '0',
+                name: 'WorkID',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 0,
+                    endColumnIndex: 1
+                }
+            },
+            {
+                namedRangeId: '1',
+                name: 'title',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 1,
+                    endColumnIndex: 2
+                }
+            },
+            {
+                namedRangeId: '2',
+                name: 'authors',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 2,
+                    endColumnIndex: 3
+                }
+            },
+            {
+                namedRangeId: '3',
+                name: 'fandoms',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 3,
+                    endColumnIndex: 4
+                }
+            },
+            {
+                namedRangeId: '4',
+                name: 'relationships',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 4,
+                    endColumnIndex: 5
+                }
+            },
+            {
+                namedRangeId: '5',
+                name: 'tags',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 5,
+                    endColumnIndex: 6
+                }
+            },
+            {
+                namedRangeId: '6',
+                name: 'description',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 6,
+                    endColumnIndex: 7
+                }
+            },
+            {
+                namedRangeId: '7',
+                name: 'wordCount',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 7,
+                    endColumnIndex: 8
+                }
+            },
+            {
+                namedRangeId: '8',
+                name: 'chapterCount',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 8,
+                    endColumnIndex: 9
+                }
+            },
+            {
+                namedRangeId: '9',
+                name: 'status',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 9,
+                    endColumnIndex: 10
+                }
+            },
+            {
+                namedRangeId: '10',
+                name: 'rating',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 10,
+                    endColumnIndex: 11
+                }
+            }
+
+        ],
         sheets: {
-            properties: { title: spreadsheetName },
+            properties: {
+                title: 'Saved Works',
+                sheetId: 0,
+                gridProperties: {
+                    rowCount: 1,
+                    columnCount: 11,
+                    columnGroupControlAfter: true,
+                }
+            },
+            protectedRanges: [
+                {
+                    protectedRangeId: 0,
+                    range: {},
+                    description: 'Protected',
+                    warningOnly: true,
+                },
+            ],        
             data: [
                 {
                     startRow: 0,
@@ -90,6 +207,30 @@ async function createSpreadsheet(token: string) {
                                 },
                                 {
                                     userEnteredValue: {
+                                        stringValue: 'Relationships',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Tags',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Description',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
                                         stringValue: 'Word Count',
                                     },
                                     userEnteredFormat: {
@@ -105,7 +246,17 @@ async function createSpreadsheet(token: string) {
                                     },
                                 },
                                 {
-                                    userEnteredValue: { stringValue: 'Status' },
+                                    userEnteredValue: { 
+                                        stringValue: 'Status' 
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Rating',
+                                    },
                                     userEnteredFormat: {
                                         textFormat: { bold: true },
                                     },
@@ -150,3 +301,4 @@ async function createSpreadsheet(token: string) {
             throw error;
         });
 }
+
