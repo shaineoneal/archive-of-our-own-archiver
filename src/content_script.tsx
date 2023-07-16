@@ -1,4 +1,5 @@
 import { blurbToggle } from './components/blurbToggles';
+import { readWork } from './components/readWork';
 import { log } from './utils/logger';
 import { wrap } from './utils/wrapper';
 import { Work } from './works';
@@ -44,10 +45,18 @@ log('searchList: ', searchList);
 
 //only needs to be called when button is pressed
 log('work: ', Work.getWorkFromPage(searchList[0]));
-port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
+//port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
 
 port.postMessage({ message: 'querySheet', list: searchList });
 
 port.onMessage.addListener((msg) => {
     log('content_script', 'port.onMessage: ', msg);
+
+    if (msg.reason === 'querySheet') {
+        msg.response.forEach((workRef: boolean) => {
+            if (workRef) {
+                readWork(works[msg.response.indexOf(workRef)]);
+            }
+        });
+    }
 });

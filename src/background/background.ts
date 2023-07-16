@@ -3,6 +3,7 @@ import { log } from '../utils/logger';
 import { Work } from '../works';
 import { addWorkToSheet } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
+import { compareArrays } from '../utils/compareArrays';
 
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
@@ -37,7 +38,8 @@ chrome.runtime.onConnect.addListener(function (port) {
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
                     query(spreadsheetUrl, token, msg.list).then((response) => {
                         log('response', response);
-                        port.postMessage({ response: response });
+                        //log(compareArrays(msg.list, response.table.rows));
+                        port.postMessage({ reason: 'querySheet', response: compareArrays(msg.list, response.table.rows) });
                     });
                 });
             }
