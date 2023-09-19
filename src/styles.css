@@ -152,6 +152,7 @@ a.no-underline {
     border-top: 1px solid #555;
     padding:0.429em 0.75em;
     margin: 0;
+    cursor: pointer;
 }
 
 li.work {
