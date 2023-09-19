@@ -1,9 +1,7 @@
-import { fetchSpreadsheetUrl, fetchToken } from '../chrome-services';
-import { log } from '../utils/logger';
-import { Work } from '../works';
-import { addWorkToSheet } from '../chrome-services';
+import { addWorkToSheet, fetchSpreadsheetUrl, fetchToken } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
 import { compareArrays } from '../utils/compareArrays';
+import { log } from '../utils/logger';
 
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {

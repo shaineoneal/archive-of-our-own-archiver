@@ -1,7 +1,6 @@
-import { log } from '../utils/logger';
 import '../styles.css';
-import { addWorkToSheet } from '../chrome-services';
-import { Work } from '../works';
+import { log } from '../utils/logger';
+import { WorkBlurb } from '../works/WorkBlurb';
 
 /**
  * 
@@ -11,7 +10,7 @@ import { Work } from '../works';
 
 export function blurbToggle(workWrap: Element, port: chrome.runtime.Port) {
 
-    const work = workWrap.firstChild!;
+    const work = workWrap.firstChild! as HTMLElement;
     var on_list = false; //TODO: check if work is on list
 
     const innerToggle = document.createElement('a');
@@ -24,7 +23,8 @@ export function blurbToggle(workWrap: Element, port: chrome.runtime.Port) {
 
         log('blurbToggle clicked!: ', work);
 
-        port.postMessage({message: 'addWorkToSheet', work: Work.createWork(work as HTMLElement)});
+        port.postMessage({message: 'addWorkToSheet', work: WorkBlurb.createWork(work)});
+        work.classList.add('read-work');
     });
 
     log('blurbToggles: ', work);

@@ -1,9 +1,9 @@
 import { log } from '../../utils';
-import { Work } from '../../works';
+import { BaseWork } from '../../works/BaseWork';
 import { getSheetId } from './getSheetId';
 
 
-export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, work: Work) => {;
+export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, work: BaseWork) => {;
     log('addWorkToSheet', work);
 
     const sheetId: number = await getSheetId(spreadsheetUrl, authToken);
