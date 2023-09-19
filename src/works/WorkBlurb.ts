@@ -1,55 +1,7 @@
-import { WorkStatus } from './data';
-import { log } from './utils';
+import { BaseWork } from "./BaseWork";
 
-type WorkType = {
-    workId: number;
-};
-
-export class Work implements WorkType {
-    workId: number;
-    title: string;
-    author: string[];
-    fandoms: string[];
-    relationships: string[];
-    tags: string[];
-    description: string;
-    wordCount: number;
-    totalChapters: number;
-    status: WorkStatus;
-    rating: number;
-    rereadCount?: number;
-
-
-    constructor(
-        workId: number,
-        title: string,
-        author: string[],
-        fandoms: string[],
-        relationships: string[],
-        tags: string[],
-        description: string,
-        wordCount: number,
-        totalChapters: number,
-        status: WorkStatus,
-        rating: number,
-        rereadCount?: number
-    ) {
-        this.workId = workId;
-        this.title = title;
-        this.author = author;
-        this.fandoms = fandoms;
-        this.relationships = relationships;
-        this.tags = tags;
-        this.description = description;
-        this.wordCount = wordCount;
-        this.totalChapters = totalChapters;
-        this.status = status;
-        this.rating = rating;
-        this.rereadCount = rereadCount;
-    }
-
-    //TODO: add fix for bookmarks instead of works
-    static getWorkFromPage(workId: number): Work {
+export class WorkBlurb extends BaseWork {
+    static getWorkFromPage(workId: number): BaseWork {
         const workNode = document.querySelector(`#work_${workId}`);
 
         if (!workNode) {
@@ -154,10 +106,4 @@ export class Work implements WorkType {
         );
     }
 
-    
-    public toString(): string {
-        return JSON.stringify(this);
-    }
- 
 }
-

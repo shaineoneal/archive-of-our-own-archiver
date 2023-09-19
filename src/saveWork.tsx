@@ -1,9 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { log } from './utils/logger';
-import { Work } from './works';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { renderIntoDocument } from 'react-dom/test-utils';
 
 log('saveWork loaded');
 

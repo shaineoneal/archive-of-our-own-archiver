@@ -1,62 +1,20 @@
-import { blurbToggle } from './components/blurbToggles';
-import { readWork } from './components/readWork';
-import { log } from './utils/logger';
-import { wrap } from './utils/wrapper';
-import { Work } from './works';
+import { standardBlurbsPage } from './pages';
+import { log } from './utils';
 
 log('log: content_script.tsx loaded');
 
 //open up connection to background script
-
 const port = chrome.runtime.connect({ name: 'content_script' });
 
-const temp = document.querySelector('li.work, li.bookmark');
-log('temp: ', temp);
-log('temp style: ', getComputedStyle(temp!));
-log('temp style: ', JSON.stringify(getComputedStyle(temp!)));
-
-const works = Array.from(
-    document.querySelectorAll(
-        'li.work, li.bookmark'
-    ) as unknown as HTMLCollectionOf<HTMLElement>
-);
-
-var searchList = new Array();
-works.forEach((work) => {
-    var newEl = document.createElement('div');
-    newEl.classList.add('blurb-with-toggles');
+//TODO: check for work v. bookmark page first
 
 
-    newEl.style.cssText = JSON.stringify(getComputedStyle(work));
+if(document.querySelector('.index.group.work')) {    //AFIK, all blurbs pages have these classes
+    //standard 20 work page
+    standardBlurbsPage(port);
 
-    wrap(work, newEl);
-
-    blurbToggle(newEl, port);
-    //if its a bookmark, use the class to get the work id
-    if (work.classList.contains('bookmark')) {
-        searchList.push(work.classList[3].split('-')[1]);
-    } else {
-        //else its a work, use the id to get the work id
-        searchList.push(work.id.split('_')[1]);
-    }
-});
-
-log('searchList: ', searchList);
-
-//only needs to be called when button is pressed
-log('work: ', Work.getWorkFromPage(searchList[0]));
-//port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
-
-port.postMessage({ message: 'querySheet', list: searchList });
-
-port.onMessage.addListener((msg) => {
-    log('content_script', 'port.onMessage: ', msg);
-
-    if (msg.reason === 'querySheet') {
-        msg.response.forEach((workRef: boolean) => {
-            if (workRef) {
-                readWork(works[msg.response.indexOf(workRef)]);
-            }
-        });
-    }
-});
+} else if (document.querySelector('.work.meta.group')){ //only found if inside a work
+    log('Work Page');
+} else {
+    log('PANIK: Unknown page');
+}
