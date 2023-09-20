@@ -8,8 +8,7 @@
 
   "oauth2": {
     "client_id": "972283065139-0vv4km66vsale3ibeu2dr253gki1r8ln.apps.googleusercontent.com",
-    "scopes": ["https://www.googleapis.com/auth/spreadsheets",
-      "https://www.googleapis.com/auth/userinfo.profile"]
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets"]
   },
   "key": "***REMOVED***",
   "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab"],

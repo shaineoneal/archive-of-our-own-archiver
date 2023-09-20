@@ -43,7 +43,5 @@ export class InsideWork extends BaseWork {
 
 
 
-
-076666666666666666666666666666666666666666666666666666666
-
+    }
 }
