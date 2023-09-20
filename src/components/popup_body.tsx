@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { log } from '../utils';
 import { fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
+import { AuthLogin } from './testingButton';
 
 export const PopupBody = () => {
     //begin with loader on
@@ -40,10 +41,13 @@ export const PopupBody = () => {
                 <div>
                     {!authToken ? (<Login />) : (<GoToSheet spreadsheetUrl={spreadsheetUrl} />)}
                 </div>
+                <div>
+                    <AuthLogin />
+                </div>
                 
             </>
         );
     }
-};
+};88
 
 export default PopupBody;

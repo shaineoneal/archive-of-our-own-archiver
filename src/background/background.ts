@@ -3,6 +3,8 @@ import { query } from '../chrome-services/querySheet';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
 
+
+
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
         log('port message', msg);
