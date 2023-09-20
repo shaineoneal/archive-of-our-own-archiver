@@ -18,14 +18,16 @@
     "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
   },
   "dependencies": {
+    "google-auth-library": "^9.0.0",
     "jquery": "^3.7.0",
     "jsdom": "^22.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-google-one-tap-login": "^0.1.1",
     "react-icons": "^4.9.0"
   },
   "devDependencies": {
-    "@react-oauth/google": "^0.11.0",
+    "@react-oauth/google": "^0.11.1",
     "@types/chrome": "^0.0.158",
     "@types/gapi": "^0.0.44",
     "@types/gapi.auth2": "^0.0.57",
