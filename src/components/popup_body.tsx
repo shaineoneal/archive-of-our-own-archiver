@@ -4,6 +4,7 @@ import { log } from '../utils';
 import { fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
 import { AuthLogin } from './testingButton';
+import { getCookie } from '../chrome-services/utils/cookies';
 
 export const PopupBody = () => {
     //begin with loader on
@@ -14,16 +15,19 @@ export const PopupBody = () => {
     useEffect(() => {
         log('useEffect');
 
+        
+
         async function getUserInfo() {
+            
             getSavedToken().then((token: string) => {
                 if (token === '') log('user is not logged in'); //can be removed when fetchToken is fixed
                 setAuthToken(token);
             });
 
-            fetchSpreadsheetUrl().then((url) => {
-                log('url: ', url);
-                setSpreadsheetUrl(url);
-            });
+            //fetchSpreadsheetUrl().then((url) => {
+            //    log('url: ', url);
+            //    setSpreadsheetUrl(url);
+            //});
         }
 
         getUserInfo().then(() => {
