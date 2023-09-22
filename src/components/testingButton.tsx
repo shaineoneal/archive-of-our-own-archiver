@@ -1,20 +1,21 @@
 import { log } from '../utils';
 import { LoaderContext } from '../contexts';
 import { useContext } from 'react';
-import { oauthSignIn } from '../chrome-services/utils/oauthSignIn';
+import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
+import { getCookie } from '../chrome-services/utils/cookies';
 
 
 
 export const AuthLogin = () => {    log('AuthLogin');
     const { loader, setLoader } = useContext(LoaderContext);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         log('handleOauthLogin');
         setLoader(true);
-        oauthSignIn();
+        
+        launchWebAuthFlow(true);
         setLoader(false);
     };
-
 
     return (
         <>
