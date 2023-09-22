@@ -1,4 +1,5 @@
 import { log } from '../utils/logger';
+import { launchWebAuthFlow } from './utils/oauthSignIn';
 
 /** get token from identity API
  * 
@@ -55,11 +56,13 @@ export async function removeToken() {
 // Get the user's saved token from chrome storage
 export async function getSavedToken() {
     return new Promise<string>((resolve) => {
-        chrome.storage.sync.get('authToken', (result) => {
-            const token = result.authToken;
-            if (token !== undefined) {
-                log('user has token: ', token);
-                resolve(token);
+        chrome.cookies.get({
+            name: 'authToken',
+            url: 'https://archiveofourown.org',
+        }, (cookie) => {
+            if (cookie) {
+                log('cookie.value: ', cookie.value);
+                resolve(cookie.value);
             } else {
                 resolve('');
             }

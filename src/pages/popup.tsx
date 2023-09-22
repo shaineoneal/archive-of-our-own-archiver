@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { PopupBody, OptionsIcon } from '../components';
 import { LoaderProvider, TokenContext, TokenProvider } from '../contexts';
 import '../styles.css';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+
 
 
 const Popup = () => {

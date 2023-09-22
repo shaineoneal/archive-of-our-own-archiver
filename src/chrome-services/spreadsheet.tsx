@@ -286,6 +286,8 @@ export async function createSpreadsheet(token: string) {
         body: JSON.stringify(sheetLayout),
     };
 
+    log ('options: ', options);
+
     return fetch(url, options)
         .then((response) => {
             log('Response status:', response.status);
