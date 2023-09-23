@@ -1,4 +1,4 @@
-import { addWorkToSheet, fetchSpreadsheetUrl, fetchToken } from '../chrome-services';
+import { addWorkToSheet, fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
@@ -10,7 +10,7 @@ chrome.runtime.onConnect.addListener(function (port) {
         log('port message', msg);
         if (msg.message === 'getAuthToken') {
             log('getAuthToken message recieved');
-            fetchToken(false).then((token) => {
+            getSavedToken().then((token) => {
                 log('port token', token);
                 port.postMessage({ token: token });
             });
@@ -22,7 +22,7 @@ chrome.runtime.onConnect.addListener(function (port) {
             });
         } else if (msg.message === 'addWorkToSheet') {
             log('addWorkToSheet message recieved');
-            fetchToken(false).then((token) => {
+            getSavedToken().then((token) => {
                 log('token', token);
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
                     addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
@@ -33,7 +33,7 @@ chrome.runtime.onConnect.addListener(function (port) {
             });
         } else if (msg.message === 'querySheet') {
             log('querySheet message recieved');
-            fetchToken(false).then((token) => {
+            getSavedToken().then((token) => {
                 log('token', token);
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
                     query(spreadsheetUrl, token, msg.list).then((response) => {
