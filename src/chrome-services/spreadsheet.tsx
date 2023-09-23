@@ -1,4 +1,5 @@
-import { fetchToken } from '.';
+import { get } from 'jquery';
+import { getSavedToken } from '.';
 import { log } from '../utils';
 
 /**
@@ -21,7 +22,7 @@ export function fetchSpreadsheetUrl() {
             } else {
                 log("user doesn't have spreadsheet URL, creating spreadsheet");
                 //get authToken
-                const token = await fetchToken();
+                const token = await getSavedToken();
                 if (token === null) {
                     reject('Error getting token');
                 } else {

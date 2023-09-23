@@ -40,16 +40,19 @@ export function fetchToken(interactive?: boolean): Promise<string> {
 
 //remove token from chrome storage and identity API
 export async function removeToken() {
-    const token = await fetchToken();
+    const token = await getSavedToken();
 
     if (token === '') {
         throw new Error('Error getting token');
     }
     chrome.storage.sync.remove(['authToken']);
     // remove all identity tokens
-    chrome.identity.clearAllCachedAuthTokens(() => {
-        log('Cleared all cached');
-    })
+    chrome.cookies.remove({
+        name: 'authToken',
+        url: 'https://archiveofourown.org',
+    }, () => {
+        log('Removed cookie');
+    });
 }
 
 
@@ -64,6 +67,7 @@ export async function getSavedToken() {
                 log('cookie.value: ', cookie.value);
                 resolve(cookie.value);
             } else {
+                //can
                 resolve('');
             }
         });

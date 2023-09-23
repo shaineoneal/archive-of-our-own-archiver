@@ -3,6 +3,8 @@ import { fetchToken } from '../chrome-services/authToken';
 import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { LoaderContext, TokenContext } from '../contexts';
 import { log } from '../utils';
+import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
+import { getCookie } from '../chrome-services/utils/cookies';
 
 export const Login = () => {
     const { loader, setLoader } = useContext(LoaderContext);
@@ -11,14 +13,9 @@ export const Login = () => {
     const handleLogin = async () => {
         setLoader(true);
 
-        const token = await fetchToken(true);
-        if (token === null) {
-            throw new Error('Error getting token');
-        } else {
-            log('token: ', token);
-            chrome.storage.sync.set({ authToken: token });
-            setAuthToken(token);
-        }
+        launchWebAuthFlow(true).then((cookie) => {
+            setAuthToken(cookie.value);
+        });
 
         const url = await fetchSpreadsheetUrl();
         if (url === null) {
@@ -26,6 +23,8 @@ export const Login = () => {
         } else {
             chrome.storage.sync.set({ spreadsheetUrl: url });
         }
+
+        //log('loginCookie: ', getCookie('login', 'https://archiveofourown.org'));
 
         setLoader(false);
     };
