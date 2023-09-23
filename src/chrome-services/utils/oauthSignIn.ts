@@ -18,11 +18,14 @@ const authParams = new URLSearchParams({
 });
 const authURL = `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 
+//FIX: interactive can't be false
 export function launchWebAuthFlow (interactive: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: authURL, interactive }, (async (responseUrl: any) => {
     
+            log('responseUrl', responseUrl);
             const url = new URL(responseUrl);
+            log('url', url);
             const urlParams = new URLSearchParams(url.hash.slice(1));
             log('urlParams', urlParams);
             const params = Object.fromEntries(urlParams.entries()); // access_token, expires_in
@@ -58,3 +61,18 @@ export function launchWebAuthFlow (interactive: boolean): Promise<any> {
     //}).then(response => response.json()).then((data) => {
     //    alert(JSON.stringify(data));
     //});
+
+async function refreshToken (refreshToken: string) {
+    const response = await fetch('https://www.googleapis.com/oauth2/v4/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            client_id: clientId,
+            refresh_token: refreshToken,
+            grant_type: 'refresh_token',
+        }),
+    });
+    const data = await response.json();
+    log('refreshToken data', data);
+    return data;
+}
