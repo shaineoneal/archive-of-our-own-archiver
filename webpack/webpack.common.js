@@ -42,6 +42,18 @@ module.exports = {
                 test: /\.js$/,
                 enforce: "pre",
                 use: ["source-map-loader"]
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: 8192,
+                            name: path.join(__dirname, "../dist/icons/[name].[ext]")
+                        },
+                    },
+                ],
             }
         ],
     },

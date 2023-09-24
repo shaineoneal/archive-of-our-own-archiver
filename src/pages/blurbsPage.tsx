@@ -5,8 +5,10 @@ import { WorkBlurb } from '../works/WorkBlurb';
 
 
 export const standardBlurbsPage = (port: chrome.runtime.Port) => {
+
+
     const temp = document.querySelector('li.work, li.bookmark');
-    log('temp: ', temp);
+    log('port test: ', port);
     log('temp style: ', getComputedStyle(temp!));
     log('temp style: ', JSON.stringify(getComputedStyle(temp!)));
 
