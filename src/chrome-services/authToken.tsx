@@ -58,7 +58,7 @@ export async function removeToken() {
 
 // Get the user's saved token from chrome storage
 export async function getSavedToken() {
-    return new Promise<string>((resolve) => {
+    return new Promise<string>((resolve, reject) => {
         chrome.cookies.get({
             name: 'authToken',
             url: 'https://archiveofourown.org',
@@ -67,8 +67,7 @@ export async function getSavedToken() {
                 log('cookie.value: ', cookie.value);
                 resolve(cookie.value);
             } else {
-                //can
-                resolve('');
+                reject('Error getting token');
             }
         });
     });

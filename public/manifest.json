@@ -11,7 +11,7 @@
     "scopes": ["https://www.googleapis.com/auth/spreadsheets"]
   },
   "key": "***REMOVED***",
-  "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab", "cookies"],
+  "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab", "cookies", "notifications"],
   "host_permissions": ["*://*.archiveofourown.org/*", "https://docs.google.com/spreadsheets/*", "*://*.google.com/", "*://*.googleapis.com/*"],
 
   "options_ui": {
