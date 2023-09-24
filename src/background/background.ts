@@ -1,9 +1,11 @@
+import { get } from 'jquery';
 import { addWorkToSheet, fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
+import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
 
-
+//window.alert('background script loaded');
 
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
@@ -13,6 +15,26 @@ chrome.runtime.onConnect.addListener(function (port) {
             getSavedToken().then((token) => {
                 log('port token', token);
                 port.postMessage({ token: token });
+            }).catch(() => {
+                log('port token', 'none');
+                chrome.scripting.executeScript({
+                    target: { tabId: port.sender?.tab?.id || 0 },
+                    func: () => {
+                        window.confirm('You need an auth token! Log back in?');
+                    }
+                }).then((response) => {
+                    log('im a genius', response);
+                    launchWebAuthFlow(true).then((cookie) => {
+                        log('cookie', cookie);
+                        chrome.runtime.reload();
+                        chrome.scripting.executeScript({
+                            target: { tabId: port.sender?.tab?.id || 0 },
+                            func: () => {
+                               window.location.reload();
+                            }
+                        });
+                    });
+                });
             });
         } else if (msg.message === 'fetchSpreadsheetUrl') {
             log('fetchSpreadsheetUrl message recieved');
@@ -42,8 +64,13 @@ chrome.runtime.onConnect.addListener(function (port) {
                         port.postMessage({ reason: 'querySheet', response: compareArrays(msg.list, response.table.rows) });
                     });
                 });
-            }
-            );
+            }).catch((error) => {
+                log('error', error);
+                port.postMessage({ reason: 'querySheet', response: error });
+            });
+        } else if (msg.message === 'sendLoginNotification') {
+            log('sendLoginNotification message recieved');
+            
         }
     });
 });
