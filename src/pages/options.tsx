@@ -1,61 +1,66 @@
-import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { IconContext } from "react-icons";
-import { BiArrowBack } from "react-icons/bi";
-import { Logout, ForgetSheet } from "../components";
-import { log } from "../utils/logger";
-import "../styles.css";
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
+import { IconContext } from 'react-icons';
+import { BiArrowBack } from 'react-icons/bi';
+import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
+import { NewSheet, Logout } from '../components';
+import '../styles.css';
+import { log } from '../utils/logger';
+import { LoaderContext } from '../contexts';
 
 export function openOptionsPage() {
-  chrome.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage();
 }
 
 const Options = () => {
-  const [sheetURL, setSheetUrl] = useState<string>("");
+    const [spreadsheetUrl, setSpreadsheetUrl] = useState('');
+    const [ loader, setLoader ] = useState(false);
 
-  useEffect(() => {
-  
-    const getSheetURL = async () => {
-      const result = await new Promise((resolve) => {
-        chrome.storage.sync.get(["sheetURL"], (result) => {
-          log("sheet URL", result.sheetURL);
-          setSheetUrl(result.sheetURL);
-          resolve(result);
+    useEffect(() => {
+        fetchSpreadsheetUrl().then((url) => {
+            log('url: ', url);
+            setSpreadsheetUrl(url);
         });
-      });
-      return result;
-    };
-    getSheetURL();
-  }, []);
+    }, [spreadsheetUrl]);
 
-  return (
-    <>
-      <header>
-        <div className="flex-container">
-          <IconContext.Provider value={{ className: "back-icon" }}>
-            <a href="popup.html">
-              <BiArrowBack />
-            </a>
-          </IconContext.Provider>
-          <div className="title">AO3E Rewritten&apos;s Options</div>
-        </div>
-      </header>
-      <main>
-        <div className="options-container">
-          <div>Google Sheets URL</div>
-          <input type="text" value={sheetURL}/>
-          <Logout />
-          <ForgetSheet />
-        </div>
-      </main>
-      <div></div>
-    </>
-  );
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        log('heard message: ', message);
+        if (message.message === 'spreadsheetUrlChanged') {
+            setSpreadsheetUrl(message.newUrl);
+            setLoader(false);
+        }
+    });
+
+    return (
+        <>
+            <header>
+                <div className="flex-container">
+                    <IconContext.Provider value={{ className: 'back-icon' }}>
+                        <a href="popup.html">
+                            <BiArrowBack />
+                        </a>
+                    </IconContext.Provider>
+                    <div className="title">AO3E Rewritten&apos;s Options</div>
+                </div>
+            </header>
+            <main>
+                <div className="options-container">
+                    <div>Google Spreadsheets URL</div>
+                    <input type="text" defaultValue={spreadsheetUrl} />
+                    <Logout />
+                    <LoaderContext.Provider value={{ loader, setLoader }}>
+                        <NewSheet />
+                    </LoaderContext.Provider>
+                </div>
+            </main>
+        </>
+    );
 };
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Options />
-  </React.StrictMode>,
-  document.getElementById("root")
+    <React.StrictMode>
+        <Options />
+    </React.StrictMode>,
+
+    document.getElementById('root')
 );

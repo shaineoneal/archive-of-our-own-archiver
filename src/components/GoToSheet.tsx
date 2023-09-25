@@ -1,21 +1,16 @@
-import React, { useContext, useEffect } from "react";
-import { LoaderContext } from "../contexts/LoaderContext";
-import { UserContext } from "../contexts/UserContext";
-import { log } from "../utils/logger";
+import { log } from '../utils/logger';
 
-export const GoToSheet = () => {
-    const { user } = useContext(UserContext);
-
+export const GoToSheet = (props: any) => {
     function handleGoToSheet() {
-        log("url: ", user?.sheetUrl);
-        chrome.tabs.create({ url: user?.sheetUrl });
+        log('going to url: ', props.spreadsheetUrl);
+        chrome.tabs.create({ url: props.spreadsheetUrl });
     }
 
-  return (
-      <div className="loggedIn">
-          <button id="sheet-button" onClick={handleGoToSheet}>
-              View your sheet
-          </button>
-      </div>
-  );
+    return (
+        <div className="loggedIn">
+            <button id="sheet-button" onClick={handleGoToSheet}>
+                View your sheet
+            </button>
+        </div>
+    );
 };

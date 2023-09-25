@@ -3,6 +3,7 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const srcDir = path.join(__dirname, "..", "src");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -41,6 +42,18 @@ module.exports = {
                 test: /\.js$/,
                 enforce: "pre",
                 use: ["source-map-loader"]
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: 8192,
+                            name: path.join(__dirname, "../dist/icons/[name].[ext]")
+                        },
+                    },
+                ],
             }
         ],
     },
@@ -48,6 +61,9 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js"],
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            filename: '[name].html',
+        }),
         new CopyPlugin({
             patterns: [{ from: ".", to: "../", context: "public" }],
             options: {},
