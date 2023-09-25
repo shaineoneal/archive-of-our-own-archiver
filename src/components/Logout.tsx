@@ -1,22 +1,21 @@
-import React from "react";
-import { removeToken } from "../chrome-services/authToken";
-import { UserContext, defaultUser } from "../contexts";
+import { useState } from 'react';
+import { removeToken } from '../chrome-services';
 
 export const Logout = () => {
+    const [style, setStyle] = useState("");
 
-  const { setUser } = React.useContext(UserContext);
+    const handleLogout = () => {
+        setStyle("visited");
+        removeToken();
+    };
 
-  const handleLogout = () => {
-    removeToken();
-    setUser(defaultUser);
-    chrome.storage.sync.remove(["userInfo"]);
-  };
-
-  return (
-    <div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
-  );
+    return (
+        <div >
+            <a className='no-underline' href="popup.html">
+                <button className={style} onClick={handleLogout} >Logout</button>
+            </a>
+        </div>
+    );
 };
 
 export default Logout;

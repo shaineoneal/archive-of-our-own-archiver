@@ -1,45 +1,46 @@
-import React, { useState, useContext } from "react";
-import { fetchToken } from "../chrome-services/authToken";
-import { UserContext } from "../contexts";
-import { fetchSheetURL } from "../chrome-services/sheet";
-import { log } from "../utils/logger";
-
-
+import { useContext } from 'react';
+import { fetchToken } from '../chrome-services/authToken';
+import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
+import { LoaderContext, TokenContext } from '../contexts';
+import { log } from '../utils';
+import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
+import { getCookie } from '../chrome-services/utils/cookies';
 
 export const Login = () => {
+    const { loader, setLoader } = useContext(LoaderContext);
+    const { setAuthToken } = useContext(TokenContext);
 
-    const { user, setUser, getUser } = useContext(UserContext);
-    const [loader, setLoader] = useState(false);
-
-    async function handleLogin() {
+    const handleLogin = async () => {
         setLoader(true);
-        const token = await fetchToken(true);
-        if (token === null) {
-            throw new Error("Error getting token");
-        }
-        fetchSheetURL(token).then(async (url) => {
-            log("handleLogin url: ", url);
 
-            setUser({
-                authToken: token,
-                sheetId: url.split("/")[5],
-                sheetUrl: url,
-            });
-            chrome.storage.sync.set({ userInfo: await getUser() });
-            log("await getUser: ", getUser());
-            setLoader(false);      
+        launchWebAuthFlow(true).then((cookie) => {
+            setAuthToken(cookie.value);
         });
-  }
 
-  
+        const url = await fetchSpreadsheetUrl();
+        if (url === null) {
+            throw new Error('Error getting spreadsheet url');
+        } else {
+            chrome.storage.sync.set({ spreadsheetUrl: url });
+        }
+
+        //log('loginCookie: ', getCookie('login', 'https://archiveofourown.org'));
+
+        setLoader(false);
+    };
+
     return (
-      <>
-      <h1>Please log in to begin</h1>
-      <div className="login">
-        <button id="login-button" onClick={handleLogin} disabled={loader}>
-          Login to Google
-        </button>
-      </div>
-      </>
+        <>
+            <h1>Please log in to begin</h1>
+            <div className="login">
+                <button
+                    id="login-button"
+                    onClick={() => handleLogin()}
+                    disabled={loader}
+                >
+                    Login to Google
+                </button>
+            </div>
+        </>
     );
-  };
+};
