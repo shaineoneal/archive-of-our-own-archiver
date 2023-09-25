@@ -1,4 +1,4 @@
-import { blurbToggle } from '../components/blurbToggles';
+import { addBlurbToggle } from '../components/blurbToggles';
 import { readWork } from '../components/readWork';
 import { log, wrap } from '../utils';
 import { WorkBlurb } from '../works/WorkBlurb';
@@ -28,7 +28,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
         wrap(work, newEl);
 
-        blurbToggle(newEl, port);
+        addBlurbToggle(newEl);
         //if its a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
             searchList.push(work.classList[3].split('-')[1]);
@@ -53,8 +53,10 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
             msg.response.forEach((workRef: boolean) => {
                 if (workRef) {
                     readWork(works[msg.response.indexOf(workRef)], Date.now());
+                    
                 }
             });
+            
         }
     });
 }
