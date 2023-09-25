@@ -1,5 +1,5 @@
 import { addBlurbToggle } from '../components/blurbToggles';
-import { readWork } from '../components/readWork';
+import { looksRead } from '../components/looksRead';
 import { log, wrap } from '../utils';
 import { WorkBlurb } from '../works/WorkBlurb';
 
@@ -54,7 +54,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
                 msg.response.forEach((workRef: boolean, index: number) => {
                     log('workRef: ', workRef)
                     if (workRef) {
-                        readWork(works[index]);
+                        looksRead(true, works[index]);
                     }
                 });
             }
