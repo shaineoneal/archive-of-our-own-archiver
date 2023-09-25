@@ -50,12 +50,14 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
         log('content_script', 'port.onMessage: ', msg);
 
         if (msg.reason === 'querySheet') {
-            msg.response.forEach((workRef: boolean) => {
-                if (workRef) {
-                    readWork(works[msg.response.indexOf(workRef)], Date.now());
-                    
-                }
-            });
+            if (msg.response) {
+                msg.response.forEach((workRef: boolean, index: number) => {
+                    log('workRef: ', workRef)
+                    if (workRef) {
+                        readWork(works[index]);
+                    }
+                });
+            }
             
         }
     });
