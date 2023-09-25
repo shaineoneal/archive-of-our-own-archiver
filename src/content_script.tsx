@@ -1,45 +1,61 @@
-import { addWorkToSheet } from "./chrome-services/utils/appendToSheet";
-import { blurbToggles } from "./components/blurbToggles";
-import { log } from "./utils/logger";
-import { wrap } from "./utils/wrapper";
-import { Work } from "./works";
+import { get } from 'jquery';
+import { standardBlurbsPage } from './pages';
+import { log } from './utils';
 
-
-
-log("log: content_script.tsx loaded");
-
-const works = Array.from(
-  document.querySelectorAll(
-    "li.work, li.bookmark"
-  ) as unknown as HTMLCollectionOf<HTMLElement>
+log('log: content_script.tsx loaded');
+connectPort().then((port) => {
+    getToken(port).then((token) => {
+        log('token: ', token);
+        pageTypeDetect(port);
+    });
+}
 );
+//open up connection to background script
+async function connectPort(): Promise<chrome.runtime.Port> {
+    const port = await chrome.runtime.connect({ name: 'content_script' });
+    log('port: ', port);
+    return port;
+}
 
-var searchList = new Array();
-works.forEach((work) => {
-  var newEl = document.createElement("div");
-  newEl.style.boxShadow = "1px 1px 3px #000";
-  newEl.style.height = "calc(100% - 1px)";
+//confirm port connection and get auth token
+async function getToken(port: chrome.runtime.Port) {
+    const token = new Promise<string>((resolve) => {
+        port.postMessage({ message: 'getAuthToken' });
+        port.onMessage.addListener((msg) => {
+            log('content_script', 'port.onMessage: ', msg);
+            if (msg.token) {
+                log('resolved token: ', msg.token);
+                resolve(msg.token);
+            }
+            if(msg.error) {     //user is not logged in
+                log('error: ', msg.error);
+                resolve('');
+            }
+        });
+        //reject('Error getting token');
+    });
 
-  wrap(work, newEl);
+    log('token check: ', token);
+    token.then((token) => {
+        log('token: ', token);
+        return token;
+    }).catch((err) => {
+        log('error: ', err);
+        return '';
+    });
+}
 
-  work.style.marginTop = "0px";
-  work.style.boxShadow = "none";
 
-  blurbToggles(newEl);
-  //if its a bookmark, use the class to get the work id
-  if (work.classList.contains("bookmark")) {
-    searchList.push(work.classList[3].split("-")[1]);
-  } else {
-    //else its a work, use the id to get the work id
-    searchList.push(work.id.split("_")[1]);
-  }
-});
+//TODO: check for work v. bookmark page first
 
-log("searchList: ", searchList);
+async function pageTypeDetect(port: chrome.runtime.Port) {
+    if(document.querySelector('.index.group.work')) {    //AFIK, all blurbs pages have these classes
+        //standard 20 work page
+        standardBlurbsPage(port);
 
-const workId = searchList[1];
-
-log("work: ", Work.getWorkFromPage(workId));
-addWorkToSheet(Work.getWorkFromPage(workId))?.then((response) => {
-  log("response: ", response);
-});
+    } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
+        log('Work Page');
+    } else {
+        log('PANIK: Unknown page');
+    }
+}
