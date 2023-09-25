@@ -11,7 +11,6 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
     
     searchList.forEach((searchItem) => {
         response.forEach((responseItem) => {
-            log('responseItem', responseItem.c[0].f);
             if (searchItem === responseItem.c[0].f) {
                 boolArray[searchList.indexOf(searchItem)] = true;
                 response.splice(response.indexOf(responseItem), 1);
