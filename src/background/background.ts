@@ -42,17 +42,6 @@ chrome.runtime.onConnect.addListener(function (port) {
                 log('port spreadsheetUrl', spreadsheetUrl);
                 port.postMessage({ spreadsheetUrl: spreadsheetUrl });
             });
-        } else if (msg.message === 'addWorkToSheet') {
-            log('addWorkToSheet message recieved');
-            getSavedToken().then((token) => {
-                log('token', token);
-                fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                    addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
-                        log('response', response);
-                        port.postMessage({ response: response });
-                    });
-                });
-            });
         } else if (msg.message === 'querySheet') {
             log('querySheet message recieved');
             getSavedToken().then((token) => {
@@ -60,8 +49,8 @@ chrome.runtime.onConnect.addListener(function (port) {
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
                     query(spreadsheetUrl, token, msg.list).then((response) => {
                         log('response', response);
-                        //log(compareArrays(msg.list, response.table.rows));
-                        port.postMessage({ reason: 'querySheet', response: compareArrays(msg.list, response.table.rows) });
+                        const responseArray = compareArrays(msg.list, response.table.rows);
+                        port.postMessage({ reason: 'querySheet', response: responseArray });
                     });
                 });
             }).catch((error) => {
@@ -73,6 +62,24 @@ chrome.runtime.onConnect.addListener(function (port) {
             
         }
     });
+    port.onDisconnect.addListener(function () {
+        log('port disconnected');
+    });
+});
+
+chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+    if (msg.message === 'addWorkToSheet') {
+        log('addWorkToSheet message recieved');
+        getSavedToken().then((token) => {
+            log('token', token);
+            fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+                    log('response', response);
+                    sendResponse({ response: response });
+                });
+            });
+        });
+    }
 });
 
 chrome.storage.onChanged.addListener((changes) => {

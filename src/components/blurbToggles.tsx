@@ -8,7 +8,7 @@ import { WorkBlurb } from '../works/WorkBlurb';
  * @returns 
  */
 
-export function blurbToggle(workWrap: Element, port: chrome.runtime.Port) {
+export function addBlurbToggle(workWrap: Element) {
 
     const work = workWrap.firstChild! as HTMLElement;
     var on_list = false; //TODO: check if work is on list
@@ -23,7 +23,7 @@ export function blurbToggle(workWrap: Element, port: chrome.runtime.Port) {
 
         log('blurbToggle clicked!: ', work);
 
-        port.postMessage({message: 'addWorkToSheet', work: WorkBlurb.createWork(work)});
+        chrome.runtime.sendMessage({message: 'addWorkToSheet', work: WorkBlurb.createWork(work)});
         work.classList.add('read-work');
     });
 
@@ -37,6 +37,4 @@ export function blurbToggle(workWrap: Element, port: chrome.runtime.Port) {
     toggle.appendChild(innerToggle);
 
     workWrap.insertBefore(toggle, workWrap.firstChild);
-
-    return blurbToggle;
 }
