@@ -1,5 +1,5 @@
-import { addBlurbToggle } from '../components/blurbToggles';
-import { looksRead } from '../components/looksRead';
+import { addToggles } from '../components/blurbToggles';
+import { looksSeen } from '../components/looksSeen';
 import { log, wrap } from '../utils';
 import { WorkBlurb } from '../works/WorkBlurb';
 
@@ -28,7 +28,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
         wrap(work, newEl);
 
-        addBlurbToggle(newEl);
+        addToggles(newEl);
         //if its a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
             searchList.push(work.classList[3].split('-')[1]);
@@ -54,7 +54,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
                 msg.response.forEach((workRef: boolean, index: number) => {
                     log('workRef: ', workRef)
                     if (workRef) {
-                        looksRead(true, works[index]);
+                        looksSeen(true, works[index]);
                     }
                 });
             }
