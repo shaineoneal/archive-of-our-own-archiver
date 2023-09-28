@@ -1,16 +1,33 @@
 import { log } from '../utils';
 
+export async function query(spreadsheetUrl: string, authToken: string, searchList: number[]): Promise<any>;
+export async function query(spreadsheetUrl: string, authToken: string, work: number): Promise<any>;
+
+
+
 // query the spreadsheet for the works in the searchList
-export async function query(spreadsheetUrl: string, authToken: string, searchList: number[]) {
+export async function query(spreadsheetUrl: string, authToken: string, searchList: unknown): Promise<unknown> {
     
     let query = `select A where A matches`;
-    searchList.forEach((workId) => {
-        if (workId === searchList[0]) {
-            query += ` '${workId}'`;
-        } else {
-            query += ` or A matches '${workId}'`;
-        }
-    });
+
+    log('query', 'searchList', searchList);
+
+    //if searchList is a number, it is a single work
+    if (typeof searchList === 'number') {
+        query += ` '${searchList}'`;
+
+    }
+    //if searchList is an array, it is a list of works
+    else if (Array.isArray(searchList)) {
+        searchList.forEach((workId) => {
+            //if its the first work, dont add an or
+            if (workId === searchList[0]) {
+                query += ` '${workId}'`;
+            } else {
+                query += ` or A matches '${workId}'`;
+            }
+        });
+    }
 
     encodeURIComponent(query);
 
