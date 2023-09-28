@@ -266,13 +266,17 @@ export async function createSpreadsheet(token: string) {
                         },
                     ],
                 },
-                { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
-                { startColumn: 1, columnMetadata: { pixelSize: 300 } }, //title
-                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
+                { startColumn: 0, columnMetadata: { pixelSize: 75 } }, //work ID
+                { startColumn: 1, columnMetadata: { pixelSize: 200 } }, //title
+                { startColumn: 2, columnMetadata: { pixelSize: 150 } }, //authors
                 { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
-                { startColumn: 4, columnMetadata: { pixelSize: 100 } }, //word count
-                { startColumn: 5, columnMetadata: { pixelSize: 100 } }, //chapter count
-                { startColumn: 6, columnMetadata: { pixelSize: 100 } }, //status
+                { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //relationships
+                { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //tags
+                { startColumn: 6, columnMetadata: { pixelSize: 400 } }, //description
+                { startColumn: 7, columnMetadata: { pixelSize: 100 } }, //word count
+                { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //chapter count
+                { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //status
+                { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //rating
             ],
         },
     };
