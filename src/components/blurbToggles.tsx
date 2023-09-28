@@ -1,31 +1,56 @@
 import '../styles.css';
 import { log } from '../utils/logger';
 import { WorkBlurb } from '../works/WorkBlurb';
+import { enumKeys } from '../utils';
 
+type ToggleType = {
+    htmlTag: string,
+    text: string,
+    funcName: string,
+    func: (work: HTMLElement) => void;
+}
+
+const toggleTypes: ToggleType[] = [
+    {
+        htmlTag: 'seen-work',
+        text: 'Add Work',
+        funcName: 'addWorkToSheet',
+        func: (work) => { work.classList.add('seen-work'); }
+    },
+    {
+        htmlTag: '',
+        text: 'Remove Work',
+        funcName: 'removeWorkFromSheet',
+        func: (work) => { work.classList.remove('seen-work'); }
+    }
+]
 /**
  * 
  * @param workWrap 
  * @returns 
  */
 
-export function addBlurbToggle(workWrap: Element) {
+export function addToggles(workWrap: Element) {
 
     const work = workWrap.firstChild! as HTMLElement;
     var on_list = false; //TODO: check if work is on list
 
-    const innerToggle = document.createElement('a');
-    innerToggle.textContent = 'Add Work';           //TODO: change for all buttons
-    innerToggle.className = 'toggle';
+    for (const index in toggleTypes) {
 
-    innerToggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+        const innerToggle = document.createElement('a');
+        innerToggle.textContent = toggleTypes[index].text;           //TODO: change for all buttons
+        innerToggle.className = 'toggle';
 
-        log('blurbToggle clicked!: ', work);
+        innerToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-        chrome.runtime.sendMessage({message: 'addWorkToSheet', work: WorkBlurb.createWork(work)});
-        work.classList.add('read-work');
-    });
+            log('blurbToggle clicked!: ', work);
+            log('testing: ', toggleTypes[index].funcName, WorkBlurb.createWork(work));
+
+            chrome.runtime.sendMessage({message: toggleTypes[index].funcName, work: WorkBlurb.createWork(work)});
+            toggleTypes[index].func(work);
+        });
 
     log('blurbToggles: ', work);
 
@@ -37,4 +62,5 @@ export function addBlurbToggle(workWrap: Element) {
     toggle.appendChild(innerToggle);
 
     workWrap.insertBefore(toggle, workWrap.firstChild);
+}
 }
