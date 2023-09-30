@@ -35,6 +35,12 @@ export function addToggles(workWrap: Element) {
     const work = workWrap.firstChild! as HTMLElement;
     var on_list = false; //TODO: check if work is on list
 
+    const toggle = work.cloneNode(false) as HTMLElement;
+    toggle.className = 'blurb-toggles';
+    toggle.removeAttribute('id');
+    toggle.removeAttribute('role');
+    workWrap.insertBefore(toggle, workWrap.firstChild);
+    
     for (const index in toggleTypes) {
 
         const innerToggle = document.createElement('a');
@@ -52,15 +58,7 @@ export function addToggles(workWrap: Element) {
             toggleTypes[index].func(work);
         });
 
-    log('blurbToggles: ', work);
-
-    const toggle = work.cloneNode(false) as HTMLElement;
-    toggle.className = 'blurb-toggle';
-    toggle.removeAttribute('id');
-    toggle.removeAttribute('role');
-
-    toggle.appendChild(innerToggle);
-
-    workWrap.insertBefore(toggle, workWrap.firstChild);
-}
+        log('blurbToggles: ', work);
+        toggle.appendChild(innerToggle);
+    }
 }
