@@ -79,7 +79,10 @@ export class WorkBlurb extends BaseWork {
             (tagNode) => tagNode.textContent
         );
 
-        const description = workNode.querySelector('.summary > p')!.textContent;
+        const descriptionNodes = workNode.querySelectorAll('.summary > p') as NodeListOf<HTMLElement>;
+        const description = Array.from(descriptionNodes)
+            .map((node) => node.textContent)
+            .join('\n');
 
         const wordCount = workNode.querySelector('dd.words')!.textContent;
 

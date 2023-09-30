@@ -47,3 +47,4 @@ export async function query(spreadsheetUrl: string, authToken: string, searchLis
             return json;
         });
 }
+

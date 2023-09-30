@@ -153,7 +153,7 @@ export async function createSpreadsheet(token: string) {
         ],
         sheets: {
             properties: {
-                title: 'Saved Works',
+                title: 'SavedWorks',
                 sheetId: 0,
                 gridProperties: {
                     rowCount: 1,
@@ -271,8 +271,8 @@ export async function createSpreadsheet(token: string) {
                 { startColumn: 2, columnMetadata: { pixelSize: 150 } }, //authors
                 { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
                 { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //relationships
-                { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //tags
-                { startColumn: 6, columnMetadata: { pixelSize: 400 } }, //description
+                { startColumn: 5, columnMetadata: { pixelSize: 300 } }, //tags
+                { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //description
                 { startColumn: 7, columnMetadata: { pixelSize: 100 } }, //word count
                 { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //chapter count
                 { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //status

@@ -1,5 +1,5 @@
 import { get } from 'jquery';
-import { addWorkToSheet, fetchSpreadsheetUrl, getSavedToken, removeWorkFromSheet } from '../chrome-services';
+import { ALTaddWorkToSheet, addWorkToSheet, fetchSpreadsheetUrl, getSavedToken, removeWorkFromSheet } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         getSavedToken().then((token) => {
             log('token', token);
             fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+                ALTaddWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
                     log('response', response);
                     sendResponse({ response: response });
                 });
