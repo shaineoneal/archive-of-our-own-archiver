@@ -6,3 +6,11 @@ export function looksSeen(tf: Boolean, work: Element) {
     else work.classList.remove('seen-work');
 
 }
+/*export function looksSeen(tf: Boolean, work: Element, row: Number) {
+
+    //if true, add class 'seen-work' to work element
+    if (tf) work.classList.add('seen-work-' + row);
+    //if false, remove class 'seen-work' from work element
+    else work.classList.remove('seen-work-' + row);
+
+}*/
