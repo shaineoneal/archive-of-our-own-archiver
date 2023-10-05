@@ -17,12 +17,12 @@ const toggleTypes: ToggleType[] = [
         funcName: 'addWorkToSheet',
         func: (work) => { work.classList.add('seen-work'); }
     },
-    {
+    /*{
         htmlTag: '',
         text: 'Remove Work',
         funcName: 'removeWorkFromSheet',
         func: (work) => { work.classList.remove('seen-work'); }
-    }
+    }*/
 ]
 /**
  * 
