@@ -33,7 +33,7 @@ export async function query(spreadsheetUrl: string, authToken: string, searchLis
 
     log('query', encodeURIComponent(query));
     return fetch(
-        `https://docs.google.com/spreadsheets/d/${spreadsheetUrl.split('/')[5]}/gviz/tq?tq=${encodeURIComponent(query)}&access_token=${authToken}`,
+        `https://docs.google.com/spreadsheets/d/${spreadsheetUrl.split('/')[5]}/gviz/tq?tq=${encodeURIComponent(query)}`,
         {
             method: 'GET',
             headers: {
