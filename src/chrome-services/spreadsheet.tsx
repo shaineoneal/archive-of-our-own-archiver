@@ -52,7 +52,7 @@ export async function createSpreadsheet(token: string) {
         namedRanges: [
             {
                 namedRangeId: '0',
-                name: 'WorkID',
+                name: 'rowNumber',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 0,
@@ -61,7 +61,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '1',
-                name: 'title',
+                name: 'WorkID',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 1,
@@ -70,7 +70,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '2',
-                name: 'authors',
+                name: 'title',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 2,
@@ -79,7 +79,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '3',
-                name: 'fandoms',
+                name: 'authors',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 3,
@@ -88,7 +88,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '4',
-                name: 'relationships',
+                name: 'fandoms',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 4,
@@ -97,7 +97,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '5',
-                name: 'tags',
+                name: 'relationships',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 5,
@@ -106,7 +106,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '6',
-                name: 'description',
+                name: 'tags',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 6,
@@ -115,7 +115,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '7',
-                name: 'wordCount',
+                name: 'description',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 7,
@@ -124,7 +124,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '8',
-                name: 'chapterCount',
+                name: 'wordCount',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 8,
@@ -133,7 +133,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '9',
-                name: 'status',
+                name: 'chapterCount',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 9,
@@ -142,11 +142,20 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '10',
-                name: 'rating',
+                name: 'status',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 10,
                     endColumnIndex: 11
+                }
+            },
+            {
+                namedRangeId: '11',
+                name: 'rating',
+                range: {
+                    sheetId: 0,
+                    startColumnIndex: 11,
+                    endColumnIndex: 12
                 }
             }
 
@@ -157,7 +166,7 @@ export async function createSpreadsheet(token: string) {
                 sheetId: 0,
                 gridProperties: {
                     rowCount: 1,
-                    columnCount: 11,
+                    columnCount: 12,
                     columnGroupControlAfter: true,
                 }
             },
@@ -172,111 +181,70 @@ export async function createSpreadsheet(token: string) {
             data: [
                 {
                     startRow: 0,
-                    startColumn: 0,
+                    startColumn: 1,
                     rowData:  [
                         {
                             values: [
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Work ID',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Work ID' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
                                     userEnteredValue: { stringValue: 'Title' },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Authors',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Authors' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Fandoms',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Fandoms' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Relationships',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Relationships' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Tags',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Tags' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Description',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Description' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Word Count',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Word Count' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Chapter Count',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Chapter Count' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: { 
-                                        stringValue: 'Status' 
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: {  stringValue: 'Status' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                                 {
-                                    userEnteredValue: {
-                                        stringValue: 'Rating',
-                                    },
-                                    userEnteredFormat: {
-                                        textFormat: { bold: true },
-                                    },
+                                    userEnteredValue: { stringValue: 'Rating' },
+                                    userEnteredFormat: { textFormat: { bold: true } },
                                 },
                             ],
                         },
                     ],
                 },
-                { startColumn: 0, columnMetadata: { pixelSize: 75 } }, //work ID
-                { startColumn: 1, columnMetadata: { pixelSize: 200 } }, //title
-                { startColumn: 2, columnMetadata: { pixelSize: 150 } }, //authors
-                { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
-                { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //relationships
-                { startColumn: 5, columnMetadata: { pixelSize: 300 } }, //tags
-                { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //description
-                { startColumn: 7, columnMetadata: { pixelSize: 100 } }, //word count
-                { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //chapter count
-                { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //status
-                { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //rating
+                { startColumn: 0, columnMetadata: { hiddenByUser: true } }, //row number
+                { startColumn: 1, columnMetadata: { pixelSize: 75 } }, //work ID
+                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
+                { startColumn: 3, columnMetadata: { pixelSize: 150 } }, //authors
+                { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
+                { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
+                { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //tags
+                { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
+                { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
+                { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
+                { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
+                { startColumn: 11, columnMetadata: { pixelSize: 100 } }, //rating
             ],
         },
     };
