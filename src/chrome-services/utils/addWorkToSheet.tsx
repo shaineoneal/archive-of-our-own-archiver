@@ -59,7 +59,7 @@ export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, 
                             dimension: 'ROWS'
                         }
                     }
-                }                
+                }
             ],
             includeSpreadsheetInResponse: false
         }),
