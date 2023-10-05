@@ -88,20 +88,25 @@ export const ALTaddWorkToSheet = async (spreadsheetUrl: string, authToken: strin
             'majorDimension': 'ROWS',
             'values': [
                 [
-                    work.workId,                     //0
-                    work.title,                      //1
-                    work.author.toString(),          //2   
-                    work.fandoms.toString(),        //3
-                    work.relationships.toString(), //4
-                    work.tags.toString(),              //5
-                    work.description,                   //6
-                    work.wordCount,                  //7   
-                    work.totalChapters,              //8
-                    work.status,                     //9
-                    work.rating,                     //10
-                ], 
+                    work.workId,                        //A
+                    work.title,                         //B
+                    work.author.toString(),             //C 
+                    work.fandoms.toString(),            //D
+                    work.relationships.toString(),      //E
+                    work.tags.toString(),               //F
+                    work.description,                   //G
+                    work.wordCount,                     //H
+                    work.totalChapters,                 //I
+                    work.status,                        //J
+                    work.rating,                        //K
+                ],  
             ],
         }),
     }
     ).then((res) => res.json());
+}
+
+export const getRowFromResponse = (response: any) => {
+    log('getRowFromResponse', response);
+    return response.updates.updatedRange.split('!')[1].split(':')[0][1];
 }
