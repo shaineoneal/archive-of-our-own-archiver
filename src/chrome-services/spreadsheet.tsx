@@ -61,7 +61,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '1',
-                name: 'WorkID',
+                name: 'WorkId',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 1,
