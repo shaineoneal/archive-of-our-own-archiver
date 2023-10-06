@@ -3,8 +3,10 @@ import { BaseWork } from '../../works/BaseWork';
 import { getSheetId } from './getSheetId';
 
 
+
 export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, work: BaseWork) => {;
     log('addWorkToSheet', work);
+    
 
     const sheetId: number = await getSheetId(spreadsheetUrl, authToken);
     log('addWorkToSheet', 'sheetId', sheetId);

@@ -8,11 +8,12 @@ export async function query(spreadsheetUrl: string, authToken: string, work: num
 // query the spreadsheet for the works in the searchList
 export async function query(spreadsheetUrl: string, authToken: string, searchList: unknown): Promise<unknown> {
     
-    let query = `select A where A matches`;
+    let query = `select B where B matches`;
 
-    log('query', 'searchList', searchList);
+    log('query', 'count', searchList);
 
     //if searchList is a number, it is a single work
+
     if (typeof searchList === 'number') {
         query += ` '${searchList}'`;
 
@@ -24,27 +25,34 @@ export async function query(spreadsheetUrl: string, authToken: string, searchLis
             if (workId === searchList[0]) {
                 query += ` '${workId}'`;
             } else {
-                query += ` or A matches '${workId}'`;
+                query += ` or B matches '${workId}'`;
             }
         });
     }
+
+    const query2 = `select max(A)`
 
     encodeURIComponent(query);
 
     log('query', encodeURIComponent(query));
     return fetch(
-        `https://docs.google.com/spreadsheets/d/${spreadsheetUrl.split('/')[5]}/gviz/tq?tq=${encodeURIComponent(query)}`,
+        `https://docs.google.com/spreadsheets/d/${spreadsheetUrl.split('/')[5]}/gviz/tq?tq=${encodeURIComponent(query)}&tq=${encodeURIComponent(query2)}`,
         {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-            },
-        }).then((res) => res.text()).then((res) => {
-            log('query', 'res', res);
-            const json = JSON.parse(res.substring(47, res.length - 2));
-            log('query', 'json', json);
-            return json;
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+        .then((res) => {
+          log('res', res);
+          return res.text();
+        })
+        .then((resText) => {
+            log('query', 'resText', resText);
+          const json = JSON.parse(resText.substring(47, resText.length - 2));
+          log('query', 'json', json);
+          return json;
         });
 }
 

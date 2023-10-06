@@ -75,7 +75,8 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
             fetchSpreadsheetUrl().then((spreadsheetUrl) => {
                 ALTaddWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
                     log('response', response);
-                    log('row', getRowFromResponse(response));
+                    globalThis.LASTROW = getRowFromResponse(response);
+                    log('LASTROW', globalThis.LASTROW);
                     sendResponse({ response: response });
                 });
             });
