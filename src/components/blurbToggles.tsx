@@ -55,6 +55,9 @@ export function addToggles(workWrap: Element) {
             log('testing: ', toggleTypes[index].funcName, WorkBlurb.createWork(work));
 
             chrome.runtime.sendMessage({message: toggleTypes[index].funcName, work: WorkBlurb.createWork(work)});
+            
+            log(chrome.storage.sync.get('lastRow'));
+
             toggleTypes[index].func(work);
         });
 
