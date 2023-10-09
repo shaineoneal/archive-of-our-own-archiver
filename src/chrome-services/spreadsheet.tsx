@@ -1,6 +1,77 @@
-import { get } from 'jquery';
-import { getSavedToken } from '.';
+import { getSavedToken, postRequest } from '.';
 import { log } from '../utils';
+
+const headerRowData = [
+    {
+        startRow: 0,
+        startColumn: 0,
+        rowData:  [
+            {
+                values: [
+                    {
+                        userEnteredValue: { numberValue: 0 },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Work ID' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Title' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Authors' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Fandoms' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Relationships' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Tags' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Description' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Word Count' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Chapter Count' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: {  stringValue: 'Status' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                    {
+                        userEnteredValue: { stringValue: 'Rating' },
+                        userEnteredFormat: { textFormat: { bold: true } },
+                    },
+                ],
+            },
+        ],
+    },
+    { startColumn: 0, columnMetadata: { hiddenByUser: true } }, //row number
+    { startColumn: 1, columnMetadata: { pixelSize: 75 } }, //work ID
+    { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
+    { startColumn: 3, columnMetadata: { pixelSize: 150 } }, //authors
+    { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
+    { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
+    { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //tags
+    { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
+    { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
+    { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
+    { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
+    { startColumn: 11, columnMetadata: { pixelSize: 100 } }, //rating
+]
 
 /**
  *
@@ -24,15 +95,15 @@ export function fetchSpreadsheetUrl() {
                 //get authToken
                 const token = await getSavedToken();
                 if (token === null) {
-                    reject('Error getting token');
+                    return Promise.reject('Error getting token');
                 } else {
                     //create spreadsheet
-                    await createSpreadsheet(token)
+                    return createSpreadsheet(token)
                         .then((url) => {
-                            resolve(url);
+                            return Promise.resolve(url);
                         })
                         .catch((error) => {
-                            reject(error);
+                            return Promise.reject(error);
                         });
                 }
             }
@@ -43,7 +114,7 @@ export function fetchSpreadsheetUrl() {
 /**
  *
  * @param token user's auth token
- * @returns
+ * @returns spreadsheet URL
  */
 export async function createSpreadsheet(token: string) {
 
@@ -160,111 +231,87 @@ export async function createSpreadsheet(token: string) {
             }
 
         ],
-        sheets: {
-            properties: {
-                title: 'SavedWorks',
-                sheetId: 0,
-                gridProperties: {
-                    rowCount: 1,
-                    columnCount: 12,
-                    columnGroupControlAfter: true,
-                }
+        sheets: [
+            {
+                properties: {
+                    title: 'SavedWorks',
+                    sheetId: 0,
+                },
+                protectedRanges: [
+                    {
+                        protectedRangeId: 0,
+                        range: {},
+                        description: 'Protected',
+                        warningOnly: true,
+                    },
+                ],
+                data: headerRowData,
             },
-            protectedRanges: [
-                {
-                    protectedRangeId: 0,
-                    range: {},
-                    description: 'Protected',
-                    warningOnly: true,
+            {
+                properties: {
+                    
+                    title: 'Query',
+                    sheetId: 1,
+                    //gridProperties: {
+                    //    rowCount: 2,
+                    //    columnCount: 1,
+                    //},
+                    //hidden: true,
                 },
-            ],        
-            data: [
-                {
-                    startRow: 0,
-                    startColumn: 1,
-                    rowData:  [
-                        {
-                            values: [
-                                {
-                                    userEnteredValue: { stringValue: 'Work ID' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Title' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Authors' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Fandoms' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Relationships' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Tags' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Description' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Word Count' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Chapter Count' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: {  stringValue: 'Status' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                                {
-                                    userEnteredValue: { stringValue: 'Rating' },
-                                    userEnteredFormat: { textFormat: { bold: true } },
-                                },
-                            ],
-                        },
-                    ],
-                },
-                { startColumn: 0, columnMetadata: { hiddenByUser: true } }, //row number
-                { startColumn: 1, columnMetadata: { pixelSize: 75 } }, //work ID
-                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
-                { startColumn: 3, columnMetadata: { pixelSize: 150 } }, //authors
-                { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
-                { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
-                { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //tags
-                { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
-                { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
-                { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
-                { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
-                { startColumn: 11, columnMetadata: { pixelSize: 100 } }, //rating
-            ],
-        },
+                data: [
+                    {
+                        startRow: 0,
+                        startColumn: 0,
+                        rowData: [
+                            { 
+                                values: [
+                                    {
+    //query takes up A1:A2, make sure both are empty and only read back in A2
+                                        userEnteredValue: { formulaValue: '=QUERY(SavedWorks!A1:A, "select max(A)")' }
+                                    }
+                                ] 
+                            },
+                        ],
+                    },
+                    {
+                        startRow: 0,
+                        startColumn: 1,
+                        rowData: [
+                            { 
+                                values: [
+                                    { 
+                                        userEnteredValue: { stringValue: ''} 
+                                    }
+                                ] 
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],          
     };
+        //developerMetadata: [
+        //    {
+        //        metadataKey: 'rowNumber',
+        //        metadataValue: '0',
+        //        location: {
+        //            dimensionRange: {
+        //                sheetId: 0,
+        //                dimension: 'ROWS',
+        //                startIndex: 0,
+        //                endIndex: 1,
+        //            },
+        //        },
+        //        visibility: 'DOCUMENT',
+        //    },
+        //],
 
-    const url = 'https://sheets.googleapis.com/v4/spreadsheets';
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-        },
-        body: JSON.stringify(sheetLayout),
-    };
 
-    log ('options: ', options);
 
-    return fetch(url, options)
+    postRequest('https://sheets.googleapis.com/v4/spreadsheets', token, sheetLayout)
         .then((response) => {
-            log('Response status:', response.status);
-            return response.json();
+            log('Response status:', response);
+            return response;
         })
         .then((data) => {
             log('Success:', data);

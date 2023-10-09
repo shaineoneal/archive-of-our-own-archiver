@@ -4,6 +4,19 @@ import { getSheetId } from './getSheetId';
 
 
 
+/**
+ * The `addWorkToSheet` function is used to add a new work to a Google Sheets document using the Google
+ *  Sheets API.
+ * @param {string} spreadsheetUrl - The `spreadsheetUrl` parameter is a string that represents the URL
+ *      of the Google Sheets spreadsheet where the work will be added.
+ * @param {string} authToken - The `authToken` parameter is a string that represents the authentication
+ *      token required to access the Google Sheets API. This token is used to authorize the API requests
+ *      made by the code.
+ * @param {BaseWork} work - The `work` parameter is an object of type `BaseWork` which contains the
+ *      following properties:
+ * @returns the result of the fetch request, which is a Promise that resolves to the JSON response from
+ *      the API.
+ */
 export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, work: BaseWork) => {;
     log('addWorkToSheet', work);
     
