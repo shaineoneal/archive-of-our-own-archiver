@@ -72,3 +72,8 @@ export async function getSavedToken() {
         });
     });
 }
+
+export function doesTokenExist(): Boolean {
+    if (globalThis.AUTH_TOKEN) return true;
+    else return false;
+}

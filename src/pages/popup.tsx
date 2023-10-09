@@ -9,6 +9,7 @@ import '../styles.css';
 const Popup = () => {
 
     const { authToken } = useContext(TokenContext);
+    //global.AUTH_TOKEN = authToken;
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in

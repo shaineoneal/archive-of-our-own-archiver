@@ -8,16 +8,19 @@ import { getCookie } from '../chrome-services/utils/cookies';
 
 export const Login = () => {
     const { loader, setLoader } = useContext(LoaderContext);
-    const { setAuthToken } = useContext(TokenContext);
+    const { authToken, setAuthToken } = useContext(TokenContext);
 
     const handleLogin = async () => {
         setLoader(true);
 
-        launchWebAuthFlow(true).then((cookie) => {
-            setAuthToken(cookie.value);
-        });
+        const cookie = await launchWebAuthFlow(true);
 
+        setAuthToken(cookie.value);
+        //globalThis.AUTH_TOKEN = cookie.value;
+        //log('global.AUTH_TOKEN: ', globalThis.AUTH_TOKEN);
+        
         const url = await fetchSpreadsheetUrl();
+
         if (url === null) {
             throw new Error('Error getting spreadsheet url');
         } else {

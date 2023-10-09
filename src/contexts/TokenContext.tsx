@@ -3,7 +3,7 @@ import { PropsWithChildren } from '../types';
 
 export const TokenContext = createContext({
     authToken: '',
-    setAuthToken: (authToken: string) => {},
+    setAuthToken: (authToken: string) => { global.AUTH_TOKEN = authToken},
 });
 
 export function TokenProvider({ children }: PropsWithChildren) {
