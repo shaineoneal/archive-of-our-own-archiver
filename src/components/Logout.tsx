@@ -6,6 +6,7 @@ export const Logout = () => {
 
     const handleLogout = () => {
         setStyle("visited");
+        global.AUTH_TOKEN = '';
         removeToken();
     };
 
