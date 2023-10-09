@@ -22,13 +22,14 @@ export const PopupBody = () => {
         async function getUserInfo() {
             //const token = refreshToken(token);
 
-            log('authToken: ', authToken);
+            log('popup body authToken: ', global.AUTH_TOKEN);
             
             getSavedToken().then((token: string) => {
                 if (token === '') log('user is not logged in'); //can be removed when fetchToken is fixed
                 //try to ask for a new token
                 else {
                     setAuthToken(token);
+                    global.AUTH_TOKEN = token;
                     log('user is logged in');
                 }
             });

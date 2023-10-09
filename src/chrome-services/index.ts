@@ -5,4 +5,4 @@ export * from './utils/getSheetId';
 export * from './utils/cookies'
 export * from './utils/oauthSignIn';
 export * from './utils/removeWorkFromSheet';
-
+export * from './httpsRequest';
