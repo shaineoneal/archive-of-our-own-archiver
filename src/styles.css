@@ -38,7 +38,7 @@ a.no-underline {
     text-decoration: none;
 }
 
-.flex-container {
+.popup.flex-container {
     display: flex;
     flex-direction: row;
     height: 35px;
@@ -146,7 +146,7 @@ a.no-underline {
 	}
 }
 
-.blurb-toggles {
+.toggle-box {
     border-left: 1px solid #555;
     border-right: 1px solid #555;
     border-top: 1px solid #555;
