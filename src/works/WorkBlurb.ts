@@ -1,3 +1,4 @@
+import { log } from "../utils";
 import { BaseWork } from "./BaseWork";
 
 export class WorkBlurb extends BaseWork {
@@ -51,6 +52,9 @@ export class WorkBlurb extends BaseWork {
     }
 
     static createWork(workNode: Element | null) {
+
+        log('creating work from node', workNode);
+
         if (!workNode) {
             throw new Error(`Work not found on page`);
         }

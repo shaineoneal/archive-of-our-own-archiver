@@ -3,43 +3,26 @@ import { log } from '../utils/logger';
 import { WorkBlurb } from '../works/WorkBlurb';
 import { enumKeys } from '../utils';
 
-type ToggleType = {
-    htmlTag: string,
-    text: string,
-    funcName: string,
-    func: (work: HTMLElement) => void;
-}
+import ReactDOM from 'react-dom';
+import { addStars } from './stars';
 
-const toggleTypes: ToggleType[] = [
-    {
-        htmlTag: 'seen-work',
-        text: 'Add Work',
-        funcName: 'addWorkToSheet',
-        func: (work) => { work.classList.add('seen-work'); }
-    },
-    /*{
-        htmlTag: '',
-        text: 'Remove Work',
-        funcName: 'removeWorkFromSheet',
-        func: (work) => { work.classList.remove('seen-work'); }
-    }*/
-]
+
 /**
  * 
  * @param workWrap 
  * @returns 
- */
+ 
 
 export function addToggles(workWrap: Element) {
 
-    const work = workWrap.firstChild! as HTMLElement;
-    var on_list = false; //TODO: check if work is on list
-
-    const toggle = work.cloneNode(false) as HTMLElement;
-    toggle.className = 'blurb-toggles';
-    toggle.removeAttribute('id');
-    toggle.removeAttribute('role');
-    workWrap.insertBefore(toggle, workWrap.firstChild);
+    //const work = workWrap.firstChild! as HTMLElement;
+    //var on_list = false; //TODO: check if work is on list
+//
+    //const toggle = work.cloneNode(false) as HTMLElement;
+    //toggle.className = 'blurb-toggles';
+    //toggle.removeAttribute('id');
+    //toggle.removeAttribute('role');
+    //workWrap.insertBefore(toggle, workWrap.firstChild);
     
     for (const index in toggleTypes) {
 
@@ -61,7 +44,13 @@ export function addToggles(workWrap: Element) {
             toggleTypes[index].func(work);
         });
 
+        //ReactDOM.render(<Stars />, innerToggle);
+
         log('blurbToggles: ', work);
         toggle.appendChild(innerToggle);
+        addStars(toggle);
+        
+        
     }
 }
+*/
