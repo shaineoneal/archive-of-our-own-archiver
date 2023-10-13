@@ -1,7 +1,11 @@
-import { addToggles } from '../components/blurbToggles';
+import { addToggleBox, addToggleToBox } from '../components/baseToggleBox';
 import { looksSeen } from '../components/looksSeen';
+import { createToggle } from '../types/toggleTypes';
 import { log, wrap } from '../utils';
 import { WorkBlurb } from '../works/WorkBlurb';
+import { TOGGLE, toggleTypes } from '../types/toggleTypes';
+
+
 
 
 export const standardBlurbsPage = (port: chrome.runtime.Port) => {
@@ -28,7 +32,11 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
         wrap(work, newEl);
 
-        addToggles(newEl);
+        //TODO: change per work type
+        
+        addToggleToBox(addToggleBox(newEl), createToggle(toggleTypes[TOGGLE.ADD_WORK], work));
+        
+
         //if its a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
             searchList.push(work.classList[3].split('-')[1]);

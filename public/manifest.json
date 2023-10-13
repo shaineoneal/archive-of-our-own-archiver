@@ -31,6 +31,7 @@
   "content_scripts": [
       {
           "matches": ["*://*.archiveofourown.org/*"],
+          "run_at": "document_end",
           "js": ["js/content_script.js"],
           "css": ["js/content_script.css"]
       }
