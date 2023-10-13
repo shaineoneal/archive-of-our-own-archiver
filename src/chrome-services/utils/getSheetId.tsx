@@ -2,6 +2,7 @@ import { log } from '../../utils';
 
 // Get the sheetId from the spreadsheetUrl
 // TODO: save the sheetId in session storage
+// TODO: check efficiency
 export const getSheetId = async (spreadsheetUrl: string, authToken: string) => {
     log('getSheetId: ', spreadsheetUrl);
     log('getSheetId', authToken);

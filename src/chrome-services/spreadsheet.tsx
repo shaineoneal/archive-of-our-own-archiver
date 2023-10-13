@@ -290,23 +290,6 @@ export async function createSpreadsheet(token: string) {
             },
         ],          
     };
-        //developerMetadata: [
-        //    {
-        //        metadataKey: 'rowNumber',
-        //        metadataValue: '0',
-        //        location: {
-        //            dimensionRange: {
-        //                sheetId: 0,
-        //                dimension: 'ROWS',
-        //                startIndex: 0,
-        //                endIndex: 1,
-        //            },
-        //        },
-        //        visibility: 'DOCUMENT',
-        //    },
-        //],
-
-
 
     postRequest('https://sheets.googleapis.com/v4/spreadsheets', token, sheetLayout)
         .then((response) => {
