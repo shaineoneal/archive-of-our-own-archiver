@@ -1,8 +1,30 @@
-import { get } from 'jquery';
+import { removeMutedWarning } from './content-scripts/removeMutedUserWarning';
 import { standardBlurbsPage } from './pages';
 import { log } from './utils';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
-log('log: content_script.tsx loaded');
+
+console.log('log: content_script.tsx loaded');
+
+
+const body = document.querySelector('body');
+
+const app = document.createElement('link');
+
+
+//log('log: content_script.tsx loaded');
+app.id = 'root';
+app.setAttribute('rel', 'stylesheet');
+app.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+if (body) {
+    body.prepend(app);
+}
+
+removeMutedWarning();
+
+
 connectPort().then((port) => {
     getToken(port).then((token) => {
         log('token: ', token);
@@ -59,3 +81,8 @@ async function pageTypeDetect(port: chrome.runtime.Port) {
         log('PANIK: Unknown page');
     }
 }
+
+
+//const star = document.createElement('i');
+//star.className = 'fa fa-regular fa-star';
+//toggle.append(star);

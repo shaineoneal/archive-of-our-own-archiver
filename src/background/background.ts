@@ -1,11 +1,29 @@
 import { get } from 'jquery';
 import { ALTaddWorkToSheet, addWorkToSheet, fetchSpreadsheetUrl, getRowFromResponse, getSavedToken, removeWorkFromSheet } from '../chrome-services';
-import { query } from '../chrome-services/querySheet';
+//import { query } from '../chrome-services/querySheet';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
+import { addQuerySheet, getValsFromQuerySheet } from '../chrome-services/utils/createQuerySheet';
 
 //window.alert('background script loaded');
+
+chrome.scripting.registerContentScripts(
+    [
+        {
+            id: "content_script",
+            matches: ["https://archiveofourown.org/works/*"],
+            js: ["./js/content_script.js"],
+            css: ["./js/content_script.css"],
+            runAt: "document_end"
+        }
+    ],
+    () => {
+        log('content script registered');
+    }
+);
+
+
 
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
@@ -47,9 +65,15 @@ chrome.runtime.onConnect.addListener(function (port) {
             getSavedToken().then((token) => {
                 log('token', token);
                 fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                    query(spreadsheetUrl, token, msg.list).then((response) => {
+                    
+                    addQuerySheet(spreadsheetUrl, token, msg.list).then((response: any) => {
                         log('response', response);
-                        const responseArray = compareArrays(msg.list, response.table.rows);
+                        log('getVals', getValsFromQuerySheet(response));
+                        let vals = getValsFromQuerySheet(response);
+
+                        if (vals.rowNumber) { global.LASTROW = vals.rowNumber; }
+                                         
+                        const responseArray = compareArrays(msg.list, vals.workList);
                         port.postMessage({ reason: 'querySheet', response: responseArray });
                     });
                 });
@@ -58,8 +82,7 @@ chrome.runtime.onConnect.addListener(function (port) {
                 port.postMessage({ reason: 'querySheet', response: error });
             });
         } else if (msg.message === 'sendLoginNotification') {
-            log('sendLoginNotification message recieved');
-            
+            log('sendLoginNotification message recieved');   
         }
     });
     port.onDisconnect.addListener(function () {
@@ -73,10 +96,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         getSavedToken().then((token) => {
             log('token', token);
             fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                ALTaddWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+                addWorkToSheet(spreadsheetUrl, token, msg.work, global.LASTROW).then((response) => {
+                    global.LASTROW++;
                     log('response', response);
-                    globalThis.LASTROW = getRowFromResponse(response);
-                    log('LASTROW', globalThis.LASTROW);
                     sendResponse({ response: response });
                 });
             });
