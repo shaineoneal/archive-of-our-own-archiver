@@ -1,12 +1,62 @@
+/*import { getRequest } from '.';
 import { log } from '../utils';
-
-export async function query(spreadsheetUrl: string, authToken: string, searchList: number[]): Promise<any>;
-export async function query(spreadsheetUrl: string, authToken: string, work: number): Promise<any>;
 
 // TODO: switch the entire thing to a spreadsheets.values.get request instead
 
+const worksQuery = (searchList: string[] | string) => {
+
+  let queryVal = `select B where B matches`;
+
+  //if searchList is a number, it is a single work
+  if (typeof searchList === 'number') {
+      queryVal += ` '${searchList}'`;
+  }
+  
+  //if searchList is an array, it is a list of works
+  else if (Array.isArray(searchList)) {
+      searchList.forEach((workId) => {
+          //if its the first work, dont add an or
+          if (workId === searchList[0]) {
+              queryVal += ` '${workId}'`;
+          } else {
+              queryVal += ` or B matches '${workId}'`;
+          }
+      });
+  }
+
+  return queryVal;
+} 
+
+const queryBody = {
+    spreadsheetId: '1',
+    valueRanges: [
+        {
+            range: 'query!A2:B2',
+            majorDimension: 'ROWS',
+            values: [
+                ['lastRow', 'queryResponse'],
+            ],
+        }
+    ],
+  };
+
+export async function getFromQuerySheet(spreadsheetUrl: string, authToken: string, searchList: number[]): Promise<any> {
+    getRequest(`https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetUrl.split('/')[5]}/values:batchGet`, authToken, queryBody)
+    .then((res) => {
+        log('query', 'res', res);
+        return res.text();
+      })
+      .then((resText) => {
+          log('query', 'resText', resText);
+        const json = JSON.parse(resText.substring(47, resText.length - 2));
+        log('query', 'json', json);
+        return json;
+      });
+}
+
+
 // query the spreadsheet for the works in the searchList
-export async function query(spreadsheetUrl: string, authToken: string, searchList: unknown) {
+export async function oldquery(spreadsheetUrl: string, authToken: string, searchList: unknown) {
     
     let query = `select B where B matches`;
 
@@ -53,7 +103,7 @@ export async function query(spreadsheetUrl: string, authToken: string, searchLis
           const json = JSON.parse(resText.substring(47, resText.length - 2));
           log('query', 'json', json);
           return json;
-        });*/
+        });
         const url = `https://docs.google.com/spreadsheets/d/${spreadsheetUrl.split('/')[5]}/gviz/tq?tq=${encodeURIComponent(query2)}&tq=${encodeURIComponent(query)}`;
         getVisualizationData(url, authToken, query, query2, spreadsheetUrl)
         .then(data => {
@@ -91,3 +141,4 @@ async function getVisualizationData(url: string, authToken: string, query: strin
   return JSON.parse(dataText);
 
 }
+*/

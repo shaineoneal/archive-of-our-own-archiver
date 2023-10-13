@@ -1,6 +1,9 @@
-const query = (searchList: string[] | string) => {
+import { log } from '../../utils';
+import { postRequest } from '../httpsRequest';
 
-    let queryVal = `select B where B matches`;
+const worksQuery = (searchList: string[] | string) => {
+
+    let queryVal = `"select B where B matches`;
 
     //if searchList is a number, it is a single work
     if (typeof searchList === 'number') {
@@ -10,7 +13,7 @@ const query = (searchList: string[] | string) => {
     //if searchList is an array, it is a list of works
     else if (Array.isArray(searchList)) {
         searchList.forEach((workId) => {
-            //if its the first work, dont add an or
+            //if its the first work, dont add an 'or'
             if (workId === searchList[0]) {
                 queryVal += ` '${workId}'`;
             } else {
@@ -19,50 +22,83 @@ const query = (searchList: string[] | string) => {
         });
     }
 
+    queryVal += `"`;
+
     return queryVal;
 } 
-export const newQuerySheet = (searchList: string[] | string) => { 
-    return JSON.stringify({
+
+const querySheetBody = (searchList: string[] | string) => { 
+    return {
         requests: [
             {
-                addSheet: {
-
+                deleteSheet: {
+                    sheetId: 1,
                 },
+            },
+            {
+                addSheet: {
+                    properties: {
+                        title: 'Query',
+                        sheetId: 1,
+                    }
+                },
+            },
+            {
                 updateCells: {
                     range: {
-                        sheetId: 'query',
+                        sheetId: 1,
                         startRowIndex: 0,
-                        endRowIndex: 1,
+                        endRowIndex: 2,
                         startColumnIndex: 0,
-                        endColumnIndex: 1,
+                        endColumnIndex: 2,
                     },
                     rows: [
                         {
                             values: [
                                 {
                                     userEnteredValue: {
-                                        stringValue: '=QUERY(A1:A, "max(A)")',
+                                        formulaValue: '=QUERY(SavedWorks!A1:A, "select max(A)")',
                                     },
                                 },
-                            ],
-                        },
-                        {
-                            values: [
                                 {
                                     userEnteredValue: {
-                                        stringValue: query(searchList),
+                                        formulaValue: '=QUERY(SavedWorks!B1:B, ' + worksQuery(searchList) + ')',
                                     },
                                 },
                             ],
                         },
                     ],
-                    fields: 'userEnteredValue',
+                    fields: '*',
                 },
             }
         ],
         includeSpreadsheetInResponse: true,
-        responseRanges: [ 'query!A1:A2' ],
-    }); 
+        responseIncludeGridData: true,
+        //responseRanges: [ 'query!A2:B2' ],
+    }; 
 }
 
+export function addQuerySheet(spreadsheetUrl: string, token: string, searchList: string[] | string): Promise<any> {
+    log('addQuerySheet', querySheetBody(searchList));
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetUrl.split('/')[5]}:batchUpdate`;
+    const body = querySheetBody(searchList);
+    return postRequest(url, token, body);
+}
 
+export function getValsFromQuerySheet(response: any) {
+    const rowNumber: number = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[0].effectiveValue.numberValue;
+    const workNum = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[1];
+
+    let workList: string[] = [];
+    if (workNum) {
+        for (let i = 1; i < response.updatedSpreadsheet.sheets[0].data[0].rowData.length; i++) {
+            workList.push(response.updatedSpreadsheet.sheets[0].data[0].rowData[i].values[1].effectiveValue.numberValue);
+        }
+    }
+
+    
+    log('workList', workList);
+
+    global.LASTROW = rowNumber;
+    return { rowNumber, workList };
+}

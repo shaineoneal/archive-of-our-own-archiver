@@ -20,7 +20,7 @@ const Popup = () => {
         
         <TokenProvider>
             <header>
-                <div className="flex-container">
+                <div className="flex-container popup">
                     <div className="logo">
                         <img src="icons/icon-32.png" alt="extension-icon" />
                     </div>

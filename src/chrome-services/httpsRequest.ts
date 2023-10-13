@@ -31,3 +31,24 @@ export async function postRequest(url: string, token: string, body: any) {
     const jsonResponse = await response.json();
     return jsonResponse;
 }
+
+export async function getRequest(url: string, token: string, body: any) {
+
+    log ('getRequest', ' auth token: ', global.AUTH_TOKEN);
+
+    if( !doesTokenExist() ) log('ERROR in postUrl: ', 'token does not exist!');
+
+    log('getRequest: ', url);
+
+    const options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+        },
+    };
+
+    const response = await fetch(url, options);
+    const jsonResponse = await response.json();
+    return jsonResponse;
+}
