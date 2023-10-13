@@ -1,9 +1,9 @@
 import { addToggleBox, addToggleToBox } from '../components/baseToggleBox';
 import { looksSeen } from '../components/looksSeen';
-import { createToggle } from '../types/toggleTypes';
+import { createToggle } from '../components/toggleTypes';
 import { log, wrap } from '../utils';
 import { WorkBlurb } from '../works/WorkBlurb';
-import { TOGGLE, toggleTypes } from '../types/toggleTypes';
+import { TOGGLE, toggleTypes } from '../components/toggleTypes';
 
 
 
