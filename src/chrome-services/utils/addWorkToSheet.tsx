@@ -3,7 +3,8 @@ import { BaseWork } from '../../works/BaseWork';
 import { getSheetId } from './getSheetId';
 
 
-
+//TODO: make sure addWorkToSheet is still efficient after changing storage locations
+// still works tho
 /**
  * The `addWorkToSheet` function is used to add a new work to a Google Sheets document using the Google
  *  Sheets API.
@@ -75,48 +76,4 @@ export const addWorkToSheet = async (spreadsheetUrl: string, authToken: string, 
         }),
     }
     ).then((res) => res.json());
-}
-
-    
-//need to use values.append so row can be attached to ao3 blurb
-export const ALTaddWorkToSheet = async (spreadsheetUrl: string, authToken: string, work: BaseWork) => {;
-    log('addWorkToSheet', work);
-
-    const sheetId: number = await getSheetId(spreadsheetUrl, authToken);
-    log('addWorkToSheet', 'sheetId', sheetId);
-
-    return fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetUrl.split('/')[5]}/values/SavedWorks!A1:K1:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
-    {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-            'range': 'SavedWorks!A1:K1',
-            'majorDimension': 'ROWS',
-            'values': [
-                [
-                    work.workId,                        //A
-                    work.title,                         //B
-                    work.author.toString(),             //C 
-                    work.fandoms.toString(),            //D
-                    work.relationships.toString(),      //E
-                    work.tags.toString(),               //F
-                    work.description,                   //G
-                    work.wordCount,                     //H
-                    work.totalChapters,                 //I
-                    work.status,                        //J
-                    work.rating,                        //K
-                ],  
-            ],
-        }),
-    }
-    ).then((res) => res.json());
-}
-
-export const getRowFromResponse = (response: any) => {
-    log('getRowFromResponse', response);
-    return response.updates.updatedRange.split('!')[1].split(':')[0][1];
 }
