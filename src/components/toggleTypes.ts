@@ -1,5 +1,6 @@
 import { WorkBlurb } from "../works/WorkBlurb";
 import { log } from "../utils/logger";
+import { getWorkFromWorksPage } from '../pages/worksPage';
 
 type ToggleType = {
     htmlTag: string,
@@ -40,7 +41,7 @@ export function createToggle(toggleType: ToggleType, work: Element): HTMLElement
 
         toggleType.func(work as HTMLElement);
 
-        chrome.runtime.sendMessage({ message: toggleType.funcName, work: WorkBlurb.createWork(work)});
+        chrome.runtime.sendMessage({ message: toggleType.funcName, work: WorkBlurb.getWorkFromWorksPage(work)});
     });
 
     return innerToggle;
