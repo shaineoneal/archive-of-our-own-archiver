@@ -71,9 +71,10 @@ async function getToken(port: chrome.runtime.Port) {
 //TODO: check for work v. bookmark page first
 
 async function pageTypeDetect(port: chrome.runtime.Port) {
-    if(document.querySelector('.index.group.work')) {    //AFIK, all blurbs pages have these classes
+    
+    if(document.querySelector('.group.work')) {    //AFIK, all blurbs pages have these classes
         //standard 20 work page
-        standardBlurbsPage(port);
+        standardBlurbsPage(port);    
 
     } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
         log('Work Page');
