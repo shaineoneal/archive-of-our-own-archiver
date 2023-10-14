@@ -87,12 +87,15 @@ export function addQuerySheet(spreadsheetUrl: string, token: string, searchList:
 
 export function getValsFromQuerySheet(response: any) {
     const rowNumber: number = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[0].effectiveValue.numberValue;
-    const workNum = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[1];
+    const firstWorkNum = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[1];
 
-    let workList: string[] = [];
-    if (workNum) {
+    var workList: string[] = [];
+    log('fisrt workList', typeof workList, workList);
+    workList.length = 0;      //seems redundant, but it's not
+    log('second workList', typeof workList, workList);
+    if (firstWorkNum) {
         for (let i = 1; i < response.updatedSpreadsheet.sheets[0].data[0].rowData.length; i++) {
-            workList.push(response.updatedSpreadsheet.sheets[0].data[0].rowData[i].values[1].effectiveValue.numberValue);
+            workList.push(response.updatedSpreadsheet.sheets[0].data[0].rowData[i].values[1].formattedValue);
         }
     }
 
