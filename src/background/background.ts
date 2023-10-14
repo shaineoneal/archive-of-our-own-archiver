@@ -6,23 +6,6 @@ import { addQuerySheet, getValsFromQuerySheet } from '../chrome-services/utils/c
 
 //window.alert('background script loaded');
 
-chrome.scripting.registerContentScripts(
-    [
-        {
-            id: "content_script",
-            matches: ["https://archiveofourown.org/works/*"],
-            js: ["./js/content_script.js"],
-            css: ["./js/content_script.css"],
-            runAt: "document_end"
-        }
-    ],
-    () => {
-        log('content script registered');
-    }
-);
-
-
-
 chrome.runtime.onConnect.addListener(function (port) {
     port.onMessage.addListener(function (msg) {
         log('port message', msg);

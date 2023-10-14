@@ -49,7 +49,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
     log('searchList: ', searchList);
 
     //only needs to be called when button is pressed
-    log('work: ', WorkBlurb.getWorkFromPage(searchList[0]));
+    //log('work: ', WorkBlurb.getWorkFromWorksPage(searchList[0]));
     //port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
 
     port.postMessage({ message: 'querySheet', list: searchList });
