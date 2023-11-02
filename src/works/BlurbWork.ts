@@ -1,8 +1,15 @@
+import { WorkStatus } from "../data";
 import { log } from "../utils";
 import { BaseWork } from "./BaseWork";
-export class WorkBlurb extends BaseWork {
 
-    static getWorkFromWorksPage(workNode: Element | null) {
+//if work on page is listed as work NOT bookmark
+export class BlurbWork extends BaseWork {
+
+    constructor () {
+        super(0, '', [], [], [], [], '', 0, 0, '', 0);
+    }
+
+    static getWorkFromBlurb(workNode: Element | null, status: WorkStatus) {
 
         log('creating work from node', workNode);
 
@@ -48,18 +55,17 @@ export class WorkBlurb extends BaseWork {
             chapterCount = '1';
         }
 
-        return new this(
+        return new BaseWork(
             workId,
             title!,
             authors as string[],
             fandoms as string[],
             relationships as string[],
             tags as string[],
-            description!,
-            parseInt(wordCount!.replace(/,/g, '')),
-            parseInt(chapterCount!.replace(/,/g, '')),
-            "",
-            0,
+            description,
+            parseInt(wordCount!),
+            parseInt(chapterCount),
+            status,
             0
         );
     }
