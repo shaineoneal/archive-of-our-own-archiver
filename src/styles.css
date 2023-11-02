@@ -85,7 +85,7 @@ a.no-underline {
     height: 2.25rem;
 
 }
-.login {
+.popup.login {
 	display: grid;
 	place-items: center;
 	transition: opacity 0.4s ease;
@@ -147,9 +147,6 @@ a.no-underline {
 }
 
 .toggle-box {
-    border-left: 1px solid #555;
-    border-right: 1px solid #555;
-    border-top: 1px solid #555;
     padding:0.429em 0.75em;
     margin: 0;
 }
@@ -160,7 +157,14 @@ li.work {
 }
 
 .blurb-with-toggles {
-    box-shadow: 1px 1px 3px #000;
+    padding: 0 !important;
+}
+
+.blurb-with-toggles .work {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    margin: none;
 }
 
 .toggle {
