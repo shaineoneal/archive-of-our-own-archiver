@@ -35,7 +35,7 @@ export const Login = () => {
     return (
         <>
             <h1>Please log in to begin</h1>
-            <div className="login">
+            <div className="popup login">
                 <button
                     id="login-button"
                     onClick={() => handleLogin()}

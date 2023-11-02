@@ -90,7 +90,7 @@ export function getValsFromQuerySheet(response: any) {
     const firstWorkNum = response.updatedSpreadsheet.sheets[1].data[0].rowData[1].values[1];
 
     var workList: string[] = [];
-    log('fisrt workList', typeof workList, workList);
+    log('first workList', typeof workList, workList);
     workList.length = 0;      //seems redundant, but it's not
     log('second workList', typeof workList, workList);
     if (firstWorkNum) {

@@ -1,15 +1,11 @@
-import { addToggleBox, addToggleToBox } from '../components/baseToggleBox';
-import { looksSeen } from '../components/looksSeen';
-import { createToggle } from '../components/toggleTypes';
+import { addToggleToBox } from '../toggles/baseToggleBox';
+import { BlurbToggles } from '../toggles/blurbToggles';
+import { looksSeen } from '../toggles/looksSeen';
+import { TOGGLE, createToggle, toggleTypes } from '../toggles/toggleTypes';
 import { log, wrap } from '../utils';
-import { WorkBlurb } from '../works/WorkBlurb';
-import { TOGGLE, toggleTypes } from '../components/toggleTypes';
-
-
 
 
 export const standardBlurbsPage = (port: chrome.runtime.Port) => {
-
 
     const temp = document.querySelector('li.work, li.bookmark');
     log('port test: ', port);
@@ -24,17 +20,17 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
     var searchList = new Array();
     works.forEach((work) => {
-        var newEl = document.createElement('div');
+        var newEl = document.createElement('li');
         newEl.classList.add('blurb-with-toggles');
+        newEl.classList.add('blurb');
 
-
-        newEl.style.cssText = JSON.stringify(getComputedStyle(work));
+        //newEl.style.cssText = document.defaultView!.getComputedStyle(work).cssText;
 
         wrap(work, newEl);
 
         //TODO: change per work type
         
-        addToggleToBox(addToggleBox(newEl), createToggle(toggleTypes[TOGGLE.ADD_WORK], work));
+        addToggleToBox(BlurbToggles.addToggleBox(newEl), [createToggle(toggleTypes[TOGGLE.ADD_WORK], work), createToggle(toggleTypes[TOGGLE.SKIP_WORK], work)]);
         
 
         //if its a bookmark, use the class to get the work id
