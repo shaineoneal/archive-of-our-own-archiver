@@ -3,6 +3,8 @@ import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
 import { addQuerySheet, getValsFromQuerySheet } from '../chrome-services/utils/createQuerySheet';
+import { BlurbWork } from '../works/BlurbWork';
+import { BaseWork } from '../works/BaseWork';
 
 //window.alert('background script loaded');
 
@@ -72,11 +74,13 @@ chrome.runtime.onConnect.addListener(function (port) {
 });
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
+
     if (msg.message === 'addWorkToSheet') {
         log('addWorkToSheet message recieved');
         getSavedToken().then((token) => {
             log('token', token);
             fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                (msg.work as BlurbWork).markWorkAsSeen();
                 addWorkToSheet(spreadsheetUrl, token, msg.work, global.LASTROW).then((response) => {
                     global.LASTROW++;
                     log('response', response);
@@ -95,6 +99,9 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
                 });
             });
         });
+    } else if (msg.message = 'markWorkAsSkipped') {
+        log('markWorkAsSkipped message recieved');
+        sendResponse({ response: 'success' });
     }
 });
 
@@ -104,4 +111,5 @@ chrome.storage.onChanged.addListener((changes) => {
         chrome.runtime.sendMessage({ message: "spreadsheetUrlChanged", newUrl: changes.spreadsheetUrl.newValue });
     }
 });
+
 
