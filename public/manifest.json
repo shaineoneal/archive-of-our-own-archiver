@@ -32,8 +32,7 @@
       {
           "matches": ["*://*.archiveofourown.org/*"],
           "run_at": "document_end",
-          "js": ["js/content_script.js"],
-          "css": ["js/content_script.css"]
+          "js": ["js/content_script.js"]
       }
   ],
   "web_accessible_resources": [{

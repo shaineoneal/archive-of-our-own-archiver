@@ -30,7 +30,9 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
         //TODO: change per work type
         
-        addToggleToBox(BlurbToggles.addToggleBox(newEl), [createToggle(toggleTypes[TOGGLE.ADD_WORK], work), createToggle(toggleTypes[TOGGLE.SKIP_WORK], work)]);
+        log('toggleTypes: ', toggleTypes);
+
+        addToggleToBox(BlurbToggles.addToggleBox(newEl), [createToggle(toggleTypes[0], work), createToggle(toggleTypes[1], work), createToggle(toggleTypes[2], work)]);
         
 
         //if its a bookmark, use the class to get the work id
