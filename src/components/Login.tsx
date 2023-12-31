@@ -16,8 +16,8 @@ export const Login = () => {
         const cookie = await launchWebAuthFlow(true);
 
         setAuthToken(cookie.value);
-        //globalThis.AUTH_TOKEN = cookie.value;
-        //log('global.AUTH_TOKEN: ', globalThis.AUTH_TOKEN);
+        globalThis.AUTH_TOKEN = cookie.value;
+        log('global.AUTH_TOKEN: ', globalThis.AUTH_TOKEN);
         
         const url = await fetchSpreadsheetUrl();
 

@@ -1,3 +1,4 @@
+import { WorkStatus } from "../data";
 import { BlurbWork } from "../works/BlurbWork";
 
 
@@ -6,21 +7,23 @@ type ToggleType = {
     htmlTag: string,
     text: string,
     funcName: string,
+    status: WorkStatus,
     func: (work: HTMLElement) => void;
 }
 
 export enum TOGGLE {
-    SEEN_WORK,
-    REMOVE_WORK,
-    SKIP_WORK
+    SEEN_WORK = 'read',
+    REMOVE_WORK = '',
+    SKIP_WORK = 'skipped'
 }
 
 export const toggleTypes: ToggleType[] = [
     {
-        togTag: 'add-work',
+        togTag: 'seen-work',
         htmlTag: 'seen-work',
         text: 'Add Work',
         funcName: 'markWorkAsSeen',
+        status: TOGGLE.SEEN_WORK,
         func: (work) => { work.classList.add('seen-work'); }
     },
     {
@@ -28,6 +31,7 @@ export const toggleTypes: ToggleType[] = [
         htmlTag: '',
         text: 'Remove Work',
         funcName: 'removeWorkFromSheet',
+        status: TOGGLE.REMOVE_WORK,
         func: (work) => { work.classList.remove('seen-work'); }
     },
     {
@@ -35,6 +39,7 @@ export const toggleTypes: ToggleType[] = [
         htmlTag: 'skipped-work',
         text: 'Mark as Skipped',
         funcName: 'markWorkAsSkipped',
+        status: TOGGLE.SKIP_WORK,
         func: (work) => { work.classList.add('skipped-work'); }
     }
 ]
@@ -52,7 +57,7 @@ export function createToggle(toggleType: ToggleType, work: Element): HTMLElement
 
         toggleType.func(work as HTMLElement);
 
-        chrome.runtime.sendMessage({ message: toggleType.funcName, work: BlurbWork.getWorkFromBlurb(work,)});
+        chrome.runtime.sendMessage({ message: toggleType.funcName, work: BlurbWork.getWorkFromBlurb(work, toggleType.status)});
     });
 
     return innerToggle;
