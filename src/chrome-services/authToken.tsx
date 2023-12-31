@@ -1,5 +1,16 @@
 import { log } from '../utils/logger';
 import { launchWebAuthFlow } from './utils/oauthSignIn';
+import { google } from 'googleapis';
+
+const oauth2Client = new google.auth.OAuth2(
+    process.env.REACT_APP_GOOGLE_CLIENT_ID,
+    process.env.REACT_APP_GOOGLE_CLIENT_SECRET,
+    process.env.REACT_APP_GOOGLE_REDIRECT_URI
+);
+
+const scopes = [
+    'https://www.googleapis.com/auth/spreadsheets',
+]
 
 /** get token from identity API
  * 

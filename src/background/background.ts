@@ -1,4 +1,4 @@
-import { addWorkToSheet, fetchSpreadsheetUrl, getSavedToken, removeWorkFromSheet } from '../chrome-services';
+import { fetchSpreadsheetUrl, getSavedToken, markWorkAsSeen, removeWorkFromSheet } from '../chrome-services';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
@@ -9,6 +9,7 @@ import { BaseWork } from '../works/BaseWork';
 //window.alert('background script loaded');
 
 chrome.runtime.onConnect.addListener(function (port) {
+    
     port.onMessage.addListener(function (msg) {
         log('port message', msg);
         if (msg.message === 'getAuthToken') {
@@ -75,13 +76,13 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
 
-    if (msg.message === 'addWorkToSheet') {
-        log('addWorkToSheet message recieved');
+    if (msg.message === 'markWorkAsSeen') {
+        log('markWorkAsSeen message recieved');
         getSavedToken().then((token) => {
             log('token', token);
             fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                (msg.work as BlurbWork).markWorkAsSeen();
-                addWorkToSheet(spreadsheetUrl, token, msg.work, global.LASTROW).then((response) => {
+                //(msg.work as BlurbWork).markWorkAsSeen();
+                markWorkAsSeen(spreadsheetUrl, token, msg.work, global.LASTROW).then((response) => {
                     global.LASTROW++;
                     log('response', response);
                     sendResponse({ response: response });
