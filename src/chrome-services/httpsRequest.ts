@@ -1,4 +1,4 @@
-import { doesTokenExist } from ".";
+import { doesTokenExist, launchWebAuthFlow } from ".";
 import { log } from "../utils";
 
 /**
@@ -12,9 +12,12 @@ import { log } from "../utils";
  */
 export async function postRequest(url: string, token: string, body: any) {
 
-    log ('postRequest', ' auth token: ', global.AUTH_TOKEN);
+    log ('postRequest', ' auth token: ', token);
 
-    if( !doesTokenExist() ) log('ERROR in postUrl: ', 'token does not exist!');
+    if( !doesTokenExist() ) {
+        log('ERROR in postUrl:', 'token does not exist!');
+        //launchWebAuthFlow(true);
+    }
 
     log('postRequest: ', url, body);
 

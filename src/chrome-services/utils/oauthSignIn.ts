@@ -9,17 +9,17 @@ if (!oauth2) {
   throw new Error('You need to specify oauth2 in manifest.json');
 }
 const clientId = oauth2.client_id;
-const authParams = new URLSearchParams({
-    //access_type: 'offline',
+var authParams = new URLSearchParams({
     client_id: clientId,
     response_type: 'token',
     redirect_uri: redirectURL,
     scope: ['https://www.googleapis.com/auth/spreadsheets'].join(' '),
 });
-const authURL = `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
+var authURL = `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 
 //FIX: interactive can't be false
 export function launchWebAuthFlow (interactive: boolean): Promise<any> {
+
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: authURL, interactive }, (async (responseUrl: any) => {
     

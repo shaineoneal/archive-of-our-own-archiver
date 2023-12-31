@@ -4,7 +4,8 @@ export const WORK_STATUSES = [
     'toRead',
     'onHold',
     'dropped',
-    'read'    
+    'read',
+    'skipped',
 ] as const;
 
 export type WorkStatus = (typeof WORK_STATUSES)[number];
