@@ -39,5 +39,8 @@ module.exports = {
             patterns: [{ from: ".", to: "../", context: "public" }],
             options: {},
         }),
+        new webpack.DefinePlugin({
+            process: {env :{}}
+        }),
     ],
 };
