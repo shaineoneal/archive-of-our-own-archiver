@@ -14,6 +14,7 @@ export const Login = () => {
         setLoader(true);
 
         const cookie = await launchWebAuthFlow(true);
+        log('cookie: ', await getCookie('login', 'https://archiveofourown.org'));
 
         setAuthToken(cookie.value);
         globalThis.AUTH_TOKEN = cookie.value;

@@ -17,8 +17,14 @@ var authParams = new URLSearchParams({
 });
 var authURL = `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 
+
 //FIX: interactive can't be false
 export function launchWebAuthFlow (interactive: boolean): Promise<any> {
+
+
+    const UnixDate = new Date().getTime() / 1000; //Current time in seconds since 1 Jan 1970
+
+    log('UnixDate', UnixDate);
 
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: authURL, interactive }, (async (responseUrl: any) => {
@@ -38,7 +44,7 @@ export function launchWebAuthFlow (interactive: boolean): Promise<any> {
                 name: 'authToken',
                 url: 'https://www.archiveofourown.org/',
                 value: token,
-                expirationDate: Date.now() / 1000 + 43199,  // 12 hours
+                expirationDate: UnixDate + (43199),  // 12 hours
                 domain: '.archiveofourown.org',
             });
 
