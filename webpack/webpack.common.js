@@ -94,6 +94,9 @@ module.exports = {
             $: require.resolve('jquery'),
             jQuery: require.resolve('jquery'),
         }),
-        new MiniCssExtractPlugin()
+        new MiniCssExtractPlugin(),
+        new webpack.DefinePlugin({
+            process: {env: {}}
+        }),
     ],
 };
