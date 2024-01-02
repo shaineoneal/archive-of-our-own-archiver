@@ -1,6 +1,10 @@
 import { createSpreadsheet } from "..";
 import { log } from "../../utils";
 import { createCookie } from "./cookies";
+import { postRequest } from "..";
+import { post } from "jquery";
+
+const clientSecret = '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';
 
 const redirectURL = chrome.identity.getRedirectURL();
 const { oauth2 } = chrome.runtime.getManifest();
@@ -10,21 +14,24 @@ if (!oauth2) {
 }
 const clientId = oauth2.client_id;
 var authParams = new URLSearchParams({
+    access_type: 'offline',
     client_id: clientId,
-    response_type: 'token',
+    response_type: 'code',
     redirect_uri: redirectURL,
     scope: ['https://www.googleapis.com/auth/spreadsheets'].join(' '),
 });
+
 var authURL = `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 
 
 //FIX: interactive can't be false
 export function launchWebAuthFlow (interactive: boolean): Promise<any> {
-
+    // https://fpolkflkolbgaceliloehfofnoiklngb.chromiumapp.org/?code=4%2F0AfJohXlKVn_2H24Ht__KzT_cf9kU3oMFEhbeQatKhwA_7v_LOAmcdPWZVbQEtTKWIO0Dgg&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fspreadsheets
 
     const UnixDate = new Date().getTime() / 1000; //Current time in seconds since 1 Jan 1970
 
     log('UnixDate', UnixDate);
+    log('initial authParams', Object.fromEntries(authParams.entries()));
 
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: authURL, interactive }, (async (responseUrl: any) => {
@@ -32,13 +39,30 @@ export function launchWebAuthFlow (interactive: boolean): Promise<any> {
             log('responseUrl', responseUrl);
             const url = new URL(responseUrl);
             log('url', url);
-            const urlParams = new URLSearchParams(url.hash.slice(1));
+            const urlParams = new URLSearchParams(url.search);
             log('urlParams', urlParams);
             const params = Object.fromEntries(urlParams.entries()); // access_token, expires_in
-            params.expires_in = '43199';  // 12 hours
+            //params.expires_in = '43199';  // 12 hours
             log('params', params);
+            log('getAuthTokenResult', urlParams.get('code'));
 
             const token = params.access_token;
+
+            postRequest('https://oauth2.googleapis.com/token', token, {
+                code: urlParams.get('code'),
+                client_id: clientId,
+                client_secret: clientSecret,
+                redirect_uri: redirectURL,
+                grant_type: 'authorization_code',
+            }).then((data) => {
+                log('postRequest data', data);
+            });
+
+
+
+
+
+
 
             const cookie = await createCookie({
                 name: 'authToken',
