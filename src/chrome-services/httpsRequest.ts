@@ -10,14 +10,7 @@ import { log } from "../utils";
  * can be any valid JSON object.
  * @returns a Promise that resolves to a JSON response.
  */
-export async function postRequest(url: string, token: string, body: any) {
-
-    log ('postRequest', ' auth token: ', token);
-
-    if( !doesTokenExist() ) {
-        log('ERROR in postUrl:', 'token does not exist!');
-        //launchWebAuthFlow(true);
-    }
+export async function postRequest(url: string, body: any, token?: string) {
 
     log('postRequest: ', url, body);
 

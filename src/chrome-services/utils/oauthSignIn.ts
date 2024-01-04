@@ -30,8 +30,7 @@ export function launchWebAuthFlow (interactive: boolean): Promise<any> {
 
     const UnixDate = new Date().getTime() / 1000; //Current time in seconds since 1 Jan 1970
 
-    log('UnixDate', UnixDate);
-    log('initial authParams', Object.fromEntries(authParams.entries()));
+    log('launchWebAuthFlow authParams', Object.fromEntries(authParams.entries()));
 
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: authURL, interactive }, (async (responseUrl: any) => {
@@ -42,27 +41,17 @@ export function launchWebAuthFlow (interactive: boolean): Promise<any> {
             const urlParams = new URLSearchParams(url.search);
             log('urlParams', urlParams);
             const params = Object.fromEntries(urlParams.entries()); // access_token, expires_in
-            //params.expires_in = '43199';  // 12 hours
-            log('params', params);
-            log('getAuthTokenResult', urlParams.get('code'));
-
             const token = params.access_token;
 
-            postRequest('https://oauth2.googleapis.com/token', token, {
+            postRequest('https://oauth2.googleapis.com/token', {
                 code: urlParams.get('code'),
                 client_id: clientId,
                 client_secret: clientSecret,
                 redirect_uri: redirectURL,
                 grant_type: 'authorization_code',
-            }).then((data) => {
+            }, token).then((data) => {
                 log('postRequest data', data);
             });
-
-
-
-
-
-
 
             const cookie = await createCookie({
                 name: 'authToken',
