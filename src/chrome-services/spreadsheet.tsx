@@ -291,7 +291,7 @@ export async function createSpreadsheet(token: string) {
         ],          
     };
 
-    postRequest('https://sheets.googleapis.com/v4/spreadsheets', token, sheetLayout)
+    postRequest('https://sheets.googleapis.com/v4/spreadsheets', sheetLayout, token)
         .then((response) => {
             log('Response status:', response);
             return response;

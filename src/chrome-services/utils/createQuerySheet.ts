@@ -82,7 +82,7 @@ export function addQuerySheet(spreadsheetUrl: string, token: string, searchList:
     log('addQuerySheet', querySheetBody(searchList));
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetUrl.split('/')[5]}:batchUpdate`;
     const body = querySheetBody(searchList);
-    return postRequest(url, token, body);
+    return postRequest(url, body, token);
 }
 
 export function getValsFromQuerySheet(response: any) {
