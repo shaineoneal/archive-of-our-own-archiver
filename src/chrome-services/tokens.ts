@@ -1,5 +1,6 @@
 import { get } from 'jquery';
 import { HttpRequest } from '../types/types';
+import { makeRequest } from './httpRequests';
 //import { sendHttpRequest } from './httpRequests';
 
 function refreshAccessToken(refreshToken: string): Promise<string> {
@@ -15,7 +16,7 @@ function refreshAccessToken(refreshToken: string): Promise<string> {
                     },
                     body: `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${refreshToken}&grant_type=refresh_token`
                 };
-                await sendHttpRequest(request);
+                await makeRequest(request);
             })
             .catch((err) => {
                 reject(err);

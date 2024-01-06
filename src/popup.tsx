@@ -1,52 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext } from "./contexts";
+import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
 
+const notLoggedIn = () => {
+    return (
+        <div className="not-logged-in">
+            <p>Not logged in.</p>
+            <p>
+                Please log in to your AO3 account and refresh the page.
+            </p>
+        </div>
+    );
+}
+
 const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
+    const { loader } = useContext(LoaderContext);
+    const { authToken } = useContext(AuthTokenContext);
 
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+    useEffect(() => {
+      //to ensure that the options icon reloads when the user logs in
+    }, [loader, authToken]);
 
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
-    });
-  }, []);
 
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
+    return (
+        <AuthTokenProvider>
+            <header>
+                <div className="flex-container popup">
+                    <div className="logo">
+                        <img src="icons/icon-32.png" alt="extension-icon" />
+                    </div>
+                    <div className="title">AO3E: Rewritten</div>
+                    <OptionsIcon />
+                </div>
+            </header>
+            <main>
+                <LoaderProvider>
+                    <div className="body">
+                    </div>
+                </LoaderProvider>
+            </main>
+        </AuthTokenProvider>
+    )
 
-  return (
-    <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
-      </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
-    </>
-  );
 };
 
 const root = createRoot(document.getElementById("root")!);
