@@ -8,12 +8,10 @@ export const OptionsIcon = () => {
     const { authToken } = useContext(AuthTokenContext);
 
     useEffect(() => {
-        console.log('useEffect');
+        //to ensure that the options icon reloads when the user logs in
     }, [authToken]);
 
     return (
-        
-
         <IconContext.Provider value={{ className: 'settings-icon' }}>
             <a href="options.html">
                 {authToken ? <BsFillGearFill /> : null}
