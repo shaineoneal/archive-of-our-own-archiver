@@ -8,8 +8,17 @@ export type HttpRequest = {
     body: string;
 };
 
+export type HttpResponse = {
+    status: number;
+    body: string;
+};
+
 export type AuthFlowResponse = {
     url: string | undefined;
     accessToken: string;
     expiresIn: number;
+};
+
+export type PropsWithChildren = {
+    children: JSX.Element | JSX.Element[];
 };
