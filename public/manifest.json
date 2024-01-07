@@ -17,7 +17,7 @@
   "key": "***REMOVED***",
 
   "action": {
-    "default_icon": "icon.png",
+    "default_icon": "/icons/icon-16.png",
     "default_popup": "popup.html"
   },
 
