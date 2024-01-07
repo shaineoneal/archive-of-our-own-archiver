@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { LoaderContext } from "../../contexts";
 import { chromeLaunchWebAuthFlow, getTokenFromAuthCode } from "../../chrome-services/oauth";
 import log from "../../utils/logger";
+import { syncStorageSet } from "../../chrome-services/storage";
 
 export const LoginButton = () => {
 
@@ -21,9 +22,9 @@ export const LoginButton = () => {
                 }
                 setLoader(false);
             } else if (response.url && response.code) {
-                log(response);
                 getTokenFromAuthCode(response.url, response.code).then((token) => {
                     log(token);
+                    syncStorageSet('token', token);
                     setLoader(false);
                 });
             }
