@@ -4,12 +4,42 @@ import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
 import { LoginButton } from "./components";
 import "./styles/popup.css";
+import { retrieveToken, revokeToken } from "./chrome-services/tokens";
+import log from "./utils/logger";
+import { syncStorageGet } from "./chrome-services/storage";
+
+const RemoveToken = () => {
+
+    const removeToken = () => {
+        log ('Remove token button clicked');
+        syncStorageGet('token').then((token) => {
+            if (token) {
+                log ('token to remove: ' + token);
+               revokeToken(token).then(() => {
+                       console.log('Token revoked');
+                   });
+               }
+            }
+        );
+    }
+
+
+    return (
+        <button className="remove-token" onClick={removeToken}>
+            Remove token
+        </button>
+    );
+}
+
+
+
 
 const notLoggedIn = () => {
     return (
         <div className="not-logged-in">
             <p>Not logged in.</p>
             <LoginButton />
+            <RemoveToken />
         </div>
     );
 }

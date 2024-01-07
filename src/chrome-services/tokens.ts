@@ -61,7 +61,7 @@ export function retrieveToken(): Promise<string> {
     });
 }
 
-function revokeToken(token: string) {
+export function revokeToken(token: string): Promise<void> {
 
     //if successful HTTP response code will be 200
     return new Promise<void>((resolve, reject) => {

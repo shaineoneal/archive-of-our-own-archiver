@@ -28,20 +28,20 @@ function createAuthUrl() {
 // launches the 
 export function chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
     return new Promise((resolve, reject) => {
-        chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: true }, (async (redirectUri: string | undefined) => {
+        chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: true }, (async (responseUrl: string | undefined) => {
 
-            if (chrome.runtime.lastError || !redirectUri) {     // if there was an error or the user closed the window
+            if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
                 reject(chrome.runtime.lastError);
             }
             else {
-                const url = new URL(redirectUri);
+                const url = new URL(responseUrl);
 
                 var params = Object.fromEntries((url.searchParams).entries());
 
-                log('chromeLaunchWebAuthFlow Response\n    URL: ', redirectUri, '\n    Params: ', params);
+                log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
                 const response: AuthFlowResponse = {
-                    url: redirectUri,
+                    url: responseUrl,
                     code: params.code
                 };
                 
@@ -51,7 +51,7 @@ export function chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
     });
 }
 
-export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<any> {
+export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<string> {
     return new Promise((resolve, reject) => {
         log('client_secret: ', client_secret)
 
@@ -71,12 +71,14 @@ export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<
                 code: code,
                 client_id: oauth2.client_id,
                 client_secret: client_secret,
-                redirect_uri: redirectURI,
+                redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
             }
         }).then((response: any) => {
+            response = JSON.parse(response.body);
             log('getTokenFromAuthCode Response: ', response);
-            resolve(response);
+            
+            resolve(response.access_token);
         }).catch((error: any) => {
             reject(error);
         });
