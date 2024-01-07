@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext } from "./contexts";
 import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
+import { LoginButton } from "./components";
+import "./styles.css";
 
 const notLoggedIn = () => {
     return (
         <div className="not-logged-in">
             <p>Not logged in.</p>
-            <p>
-                Please log in to your AO3 account and refresh the page.
-            </p>
+            <LoginButton />
         </div>
     );
 }
@@ -37,6 +37,7 @@ const Popup = () => {
             <main>
                 <LoaderProvider>
                     <div className="body">
+                        {authToken ? null : notLoggedIn()}
                     </div>
                 </LoaderProvider>
             </main>
@@ -48,7 +49,7 @@ const Popup = () => {
 const root = createRoot(document.getElementById("root")!);
 
 root.render(
-  <React.StrictMode>
-    <Popup />
-  </React.StrictMode>
+    <React.StrictMode>
+        <Popup />
+    </React.StrictMode>
 );
