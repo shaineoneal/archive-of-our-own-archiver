@@ -3,7 +3,7 @@ import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext } fro
 import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
 import { LoginButton } from "./components";
-import "./styles.css";
+import "./styles/popup.css";
 
 const notLoggedIn = () => {
     return (
