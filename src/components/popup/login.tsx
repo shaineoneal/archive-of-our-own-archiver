@@ -1,9 +1,17 @@
-import React from 'react';
+import { useContext } from "react";
+import { LoaderContext } from "../../contexts";
 
-export const Login = () => {
+export const LoginButton = () => {
+
+    const { loader, setLoader } = useContext(LoaderContext);
+
 
     const handleLogin = async () => {
-        console.log('login');
+        console.log('Login button clicked');
+
+        setLoader(true);
+
+        
     }
 
     return (

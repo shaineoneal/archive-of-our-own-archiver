@@ -1,4 +1,3 @@
-import { get } from 'jquery';
 import { HttpRequest } from '../types/types';
 import { makeRequest } from './httpRequests';
 //import { sendHttpRequest } from './httpRequests';
