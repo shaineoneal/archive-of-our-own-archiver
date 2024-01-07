@@ -16,7 +16,11 @@ export const LoginButton = () => {
 
     return (
         <div>
-            <button onClick={handleLogin}>Login</button>
+            <button
+                className="login-button"
+                onClick={handleLogin}
+                disabled={loader}
+                >Login</button>
         </div>
     )
 }
