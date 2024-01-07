@@ -2,18 +2,30 @@ import { HttpRequest } from '../types/types';
 import { makeRequest } from './httpRequests';
 //import { sendHttpRequest } from './httpRequests';
 
+const client_secret = process.env.REACT_APP_CLIENT_SECRET;
+const { oauth2 } = chrome.runtime.getManifest();
+
 function refreshAccessToken(refreshToken: string): Promise<string> {
+
+    if (!oauth2 || !client_secret) {
+        throw new Error('Invalid oauth2 configuration');
+    }
+
     return new Promise((resolve, reject) => {
         getRefreshToken()
             .then(async (refreshToken) => {
                 const request: HttpRequest = {
-                    accessToken: '',    // not needed for this request
                     url: 'https://oauth2.googleapis.com/token',
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&refresh_token=${refreshToken}&grant_type=refresh_token`
+                    body: {
+                        client_id: oauth2.client_id,
+                        client_secret: client_secret,
+                        refresh_token: refreshToken,
+                        grant_type: 'refresh_token',
+                    }
                 };
                 await makeRequest(request);
             })

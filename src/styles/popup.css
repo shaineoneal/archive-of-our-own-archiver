@@ -71,6 +71,8 @@ a.no-underline {
     height: 24px;
     margin: auto;
 }
+
+
 .options-container {
     display: flex;
     flex-direction: column;
