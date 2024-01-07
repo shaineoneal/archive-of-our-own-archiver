@@ -14,7 +14,7 @@ export const OptionsIcon = () => {
     return (
         <IconContext.Provider value={{ className: 'settings-icon' }}>
             <a href="options.html">
-                { authToken ? <BsFillGearFill /> : <BsFillGearFill disabled={true} /> }
+                { authToken ? <BsFillGearFill /> : null }
             </a>
         </IconContext.Provider>
     );

@@ -11,7 +11,7 @@
 
     "oauth2": {
         "client_id": "972283065139-htoh4g22degpr245e6eupmbn2ij8ofde.apps.googleusercontent.com",
-        "scopes": [ "https://www.googleapis.com/*", "https://www.googleapis.com/auth/spreadsheets" ]
+        "scopes": [ "https://www.googleapis.com/auth/spreadsheets" ]
     },
 
     "key": "***REMOVED***",
