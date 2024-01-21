@@ -5,7 +5,7 @@ import { makeRequest } from './httpRequests';
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 const { oauth2 } = chrome.runtime.getManifest();
 
-function refreshAccessToken(refreshToken: string): Promise<string> {
+function getNewAccessToken(refreshToken: string): Promise<string> {
 
     if (!oauth2 || !client_secret) {
         throw new Error('Invalid oauth2 configuration');
@@ -48,14 +48,14 @@ function getRefreshToken(): Promise<string> {
         });
     });
 }
-export function retrieveToken(): Promise<string> {
+export function retrieveRefreshToken(): Promise<string> {
     return new Promise((resolve, reject) => {
-        chrome.identity.getAuthToken({ interactive: true }, (token) => {
-            if (chrome.runtime.lastError || !token) {
+        chrome.storage.sync.get(['refresh_token'], (result) => {
+            if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             }
             else {
-                resolve(token);
+                resolve(result.refresh_token);
             }
         });
     });
@@ -65,7 +65,8 @@ export function revokeToken(token: string): Promise<void> {
 
     //if successful HTTP response code will be 200
     return new Promise<void>((resolve, reject) => {
-        chrome.identity.removeCachedAuthToken({ token }, () => {
+        chrome.identity.clearAllCachedAuthTokens(() => {
+    
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             }

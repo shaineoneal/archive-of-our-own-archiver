@@ -1,6 +1,6 @@
 import log from "../utils/logger";
 import { AuthFlowResponse } from "../types";
-import { HttpRequest } from '../types/types';
+import { HttpRequest, TokenRequestResponse } from '../types/types';
 import { makeRequest } from "./httpRequests";
 
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
@@ -22,11 +22,19 @@ function createAuthUrl() {
         scope: oauth2.scopes.join(' '),
     });
 
+    log('Auth URL Params: ', authParams.toString());
+
     return `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 }
 
-// launches the 
-export function chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
+
+/**
+ * The function `chromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
+ * API and returns a promise that resolves with the response URL and authorization code.
+ * @returns The function `chromeLaunchWebAuthFlow` is returning a Promise that resolves to an
+ * `AuthFlowResponse` object.
+ */
+export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
     return new Promise((resolve, reject) => {
         chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: true }, (async (responseUrl: string | undefined) => {
 
@@ -44,14 +52,14 @@ export function chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
                     url: responseUrl,
                     code: params.code
                 };
-                
                 resolve(response);
             }
+
         }));
     });
 }
 
-export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<string> {
+export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<TokenRequestResponse> {
     return new Promise((resolve, reject) => {
         log('client_secret: ', client_secret)
 
@@ -77,11 +85,12 @@ export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<
         }).then((response: any) => {
             response = JSON.parse(response.body);
             log('getTokenFromAuthCode Response: ', response);
+            resolve(response);
             
-            resolve(response.access_token);
         }).catch((error: any) => {
             reject(error);
         });
         
     });
 }
+
