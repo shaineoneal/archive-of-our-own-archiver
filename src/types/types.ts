@@ -21,3 +21,11 @@ export type AuthFlowResponse = {
 export type PropsWithChildren = {
     children: JSX.Element | JSX.Element[];
 };
+
+export type TokenRequestResponse = {
+    access_token: string;
+    expires_in: number;
+    refresh_token?: string;
+    scope: string;
+    token_type: string;
+};

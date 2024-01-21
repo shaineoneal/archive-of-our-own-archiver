@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext } from "./contexts";
+import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
 import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
 import { LoginButton } from "./components";
 import "./styles/popup.css";
-import { retrieveToken, revokeToken } from "./chrome-services/tokens";
+import { retrieveRefreshToken, revokeToken } from "./chrome-services/tokens";
 import log from "./utils/logger";
 import { syncStorageGet } from "./chrome-services/storage";
+import { NoRefreshToken } from "./components/popup/NoRefreshToken";
 
 const RemoveToken = () => {
 
@@ -23,7 +24,6 @@ const RemoveToken = () => {
         );
     }
 
-
     return (
         <button className="remove-token" onClick={removeToken}>
             Remove token
@@ -31,30 +31,90 @@ const RemoveToken = () => {
     );
 }
 
+const AccessTokenRefresh = () => {
 
+    const { authToken, setAuthToken } = useContext(AuthTokenContext);
+    const { refreshToken } = useContext(RefreshTokenContext);
+    const { loader, setLoader } = useContext(LoaderContext);
 
+    const [refreshed, setRefreshed] = useState<boolean>(false);
+
+    useEffect(() => {
+        //to ensure that the access token refreshes
+    }, [refreshToken]);
+
+    useEffect(() => {
+        if (refreshToken !== '') {
+            retrieveRefreshToken().then((response) => {
+                if (response) {
+                    log('Access token refreshed');
+                    setAuthToken(response);
+                    setRefreshed(true);
+                    setLoader(false);
+                } else {
+                    log('Access token not refreshed');
+                    setRefreshed(false);
+                    setLoader(false);
+                }
+            });
+        }
+    }, [refreshToken, setAuthToken, setLoader]);
+
+    if (refreshed) {
+        return (
+            <div className="access-token-refresh">
+                <p>Access token refreshed!</p>
+            </div>
+        );
+    } else {
+        return (
+            <div className="access-token-refresh">
+                <p>Access token not refreshed.</p>
+            </div>
+        );
+    }
+}
 
 const notLoggedIn = () => {
-    return (
-        <div className="not-logged-in">
-            <p>Not logged in.</p>
-            <LoginButton />
-            <RemoveToken />
-        </div>
-    );
+    const { refreshToken } = useContext(RefreshTokenContext);
+
+    useEffect(() => {
+        //to ensure that refresh token reloads
+    }, [refreshToken]);
+
+
+    if (refreshToken === 'error') {
+        return (
+            <div className="not-logged-in">
+                <NoRefreshToken />
+            </div>
+        );
+    } else {
+
+        return (
+            <div className="not-logged-in">
+                <p>Not logged in.</p>
+                <LoginButton />
+                <RemoveToken />
+                <AccessTokenRefresh />
+            </div>
+        );
+    }
 }
 
 const Popup = () => {
     const { loader } = useContext(LoaderContext);
     const { authToken } = useContext(AuthTokenContext);
+    const { refreshToken } = useContext(RefreshTokenContext);
 
     useEffect(() => {
       //to ensure that the options icon reloads when the user logs in
-    }, [loader, authToken]);
+    }, [loader, authToken, refreshToken]);
 
 
     return (
         <AuthTokenProvider>
+        <RefreshTokenProvider>
             <header>
                 <div className="flex-container popup">
                     <div className="logo">
@@ -67,10 +127,11 @@ const Popup = () => {
             <main>
                 <LoaderProvider>
                     <div className="body">
-                        {authToken ? null : notLoggedIn()}
+                        {( refreshToken === 'error') ? NoRefreshToken() : notLoggedIn()}
                     </div>
                 </LoaderProvider>
             </main>
+        </RefreshTokenProvider>
         </AuthTokenProvider>
     )
 
