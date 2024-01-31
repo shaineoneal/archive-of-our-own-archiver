@@ -4,6 +4,7 @@
   "description": "chrome-extension-typescript-starter",
   "main": "index.js",
   "scripts": {
+    "typedoc": "typedoc",
     "watch": "webpack --config webpack/webpack.dev.js --watch",
     "dev": "webpack --config webpack/webpack.dev.js",
     "build": "webpack --config webpack/webpack.prod.js",
@@ -39,9 +40,9 @@
     "style-loader": "^3.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^8.0.0",
+    "ts-node": "^10.9.2",
     "typedoc": "^0.25.7",
-    "typedoc-plugin-markdown": "^3.17.1",
-    "typescript": "^5.0.4",
+    "typescript": "^5.3.3",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.0.0",
     "webpack-merge": "^5.0.0"
