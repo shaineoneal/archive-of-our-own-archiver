@@ -1,0 +1,34 @@
+{
+    "name": "Archive of Our Own Archiver",
+    "out": "./docs",
+    "exclude": ["node_modules"],
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "cleanOutputDir": true,
+    "entryPoints": ["src/index.ts"],
+    "darkHighlightTheme": "dark-plus",
+    "blockTags": [ 
+        "@deprecated", 
+        "@remarks",
+        "@throws",
+        "@privateRemarks",
+        "@defaultValue",
+        "@typeParam",
+        "@module",
+        "@inheritDoc",
+        "@category",
+        "@template",
+        "@type",
+        "@typedef",
+        "@callback",
+        "@prop",
+        "@satisfies"
+    ],
+    "sort": ["source-order"],
+    "navigation": {
+        "includeGroups": true,
+        "includeCategories": false
+
+    },
+    "tsconfig": "tsconfig.json",
+}
