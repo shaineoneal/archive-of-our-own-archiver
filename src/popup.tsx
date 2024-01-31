@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { ReactElement, useContext, useEffect, useState } from "react";
 import { LoaderProvider, AuthTokenContext,AuthTokenProvider, LoaderContext, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
 import { OptionsIcon } from "./components";
 import { createRoot } from "react-dom/client";
@@ -8,6 +8,7 @@ import { retrieveRefreshToken, revokeToken } from "./chrome-services/tokens";
 import log from "./utils/logger";
 import { syncStorageGet } from "./chrome-services/storage";
 import { NoRefreshToken } from "./components/popup/NoRefreshToken";
+import { doesUserHaveRefreshToken } from ".";
 
 const RemoveToken = () => {
 
@@ -75,22 +76,38 @@ const AccessTokenRefresh = () => {
     }
 }
 
-const notLoggedIn = () => {
-    const { refreshToken } = useContext(RefreshTokenContext);
+export function PopupBody(): ReactElement {
+    const { loader, setLoader } = useContext(LoaderContext);
+    const { refreshToken, setRefreshToken } = useContext(RefreshTokenContext);
+
+    log('PopupBody() called', 'refreshToken: ' + refreshToken);
 
     useEffect(() => {
+        async function checkRefreshToken() {
+            const refreshToken = await doesUserHaveRefreshToken();
+            if (refreshToken) {
+                setRefreshToken(refreshToken);
+                log('User has refresh token');
+            } else {
+                setRefreshToken('');
+                log('User does not have refresh token');
+            }
+        }
+
+        checkRefreshToken().then(() => {
+            setLoader(false);
+        });
         //to ensure that refresh token reloads
     }, [refreshToken]);
-
 
     if (refreshToken === 'error') {
         return (
             <div className="not-logged-in">
+                <p>Refresh token error.</p>
                 <NoRefreshToken />
             </div>
         );
-    } else {
-
+    } else if (refreshToken === '') {
         return (
             <div className="not-logged-in">
                 <p>Not logged in.</p>
@@ -99,21 +116,38 @@ const notLoggedIn = () => {
                 <AccessTokenRefresh />
             </div>
         );
+    } else {
+        return (
+            <div className="logged-in">
+                <p>Logged in.</p>
+                <RemoveToken />
+                <AccessTokenRefresh />
+            </div>
+        );
     }
 }
 
-const Popup = () => {
-    const { loader } = useContext(LoaderContext);
-    const { authToken } = useContext(AuthTokenContext);
-    const { refreshToken } = useContext(RefreshTokenContext);
 
+/**
+ * Main Popup UI component.
+ * Renders header, content based on auth state.
+ * 
+ * @category Component
+ * @group Popup
+ * @returns {ReactElement} `<Popup />` component.
+ */
+export const Popup = (): ReactElement => {
+    const { refreshToken, setRefreshToken } = useContext(RefreshTokenContext);
+
+    /**
+     * Reload popup when auth state changes. 
+     */
     useEffect(() => {
       //to ensure that the options icon reloads when the user logs in
-    }, [loader, authToken, refreshToken]);
+    }, [refreshToken]);
 
 
     return (
-        <AuthTokenProvider>
         <RefreshTokenProvider>
             <header>
                 <div className="flex-container popup">
@@ -127,12 +161,11 @@ const Popup = () => {
             <main>
                 <LoaderProvider>
                     <div className="body">
-                        {( refreshToken === 'error') ? NoRefreshToken() : notLoggedIn()}
+                        <PopupBody />
                     </div>
                 </LoaderProvider>
             </main>
         </RefreshTokenProvider>
-        </AuthTokenProvider>
     )
 
 };

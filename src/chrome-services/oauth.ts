@@ -1,5 +1,4 @@
 import log from "../utils/logger";
-import { AuthFlowResponse } from "../types";
 import { HttpRequest, TokenRequestResponse } from '../types/types';
 import { makeRequest } from "./httpRequests";
 
@@ -27,12 +26,32 @@ function createAuthUrl() {
     return `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 }
 
+/**
+ * The AuthFlowResponse type represents the response object containing a URL and a code.
+ * @property {string} url - A string representing the URL for the authentication flow.
+ * @property {string} code - The `code` property is a string that represents the authorization code
+ * generated during the authentication flow. This code is typically used to exchange for an access
+ * token, which can then be used to make authorized API requests.
+ */
+export interface AuthFlowResponse {
+    url: string,
+    code: string
+}
 
 /**
  * The function `chromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
  * API and returns a promise that resolves with the response URL and authorization code.
+ * 
+ * ```
+ * chrome.identity.launchWebAuthFlow(
+ *      details: WebAuthFlowDetails,
+ *      callback?: function,
+ * )
+ * ```
+ * @see {@link  https://developer.chrome.com/docs/extensions/reference/identity/#method-launchWebAuthFlow | Chrome Developer API Reference - launchWebAuthFlow }
  * @returns The function `chromeLaunchWebAuthFlow` is returning a Promise that resolves to an
- * `AuthFlowResponse` object.
+ * {@link AuthFlowResponse} object.
+ * 
  */
 export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
     return new Promise((resolve, reject) => {
@@ -59,7 +78,14 @@ export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
     });
 }
 
-export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<TokenRequestResponse> {
+/**
+ * Retrieves a token from the authorization code obtained during the OAuth flow.
+ * 
+ * @param authFlowResponse The response object containing the authorization code.
+ * @returns A promise that resolves to the token request response.
+ * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code | Google Identity API - Exchange authorization code for refresh and access tokens}
+ */
+export function requestToken(authFlowResponse: AuthFlowResponse): Promise<TokenRequestResponse> {
     return new Promise((resolve, reject) => {
         log('client_secret: ', client_secret)
 
@@ -76,7 +102,7 @@ export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<
                 Authorization: 'Bearer ',
             },
             body: {
-                code: code,
+                code: authFlowResponse.code,
                 client_id: oauth2.client_id,
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
@@ -84,7 +110,7 @@ export function getTokenFromAuthCode(redirectURI:string, code: string): Promise<
             }
         }).then((response: any) => {
             response = JSON.parse(response.body);
-            log('getTokenFromAuthCode Response: ', response);
+            log('requestToken Response: ', response);
             resolve(response);
             
         }).catch((error: any) => {
