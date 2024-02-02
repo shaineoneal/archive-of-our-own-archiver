@@ -19,7 +19,7 @@ A string representing the URL for the authentication flow.
 
 #### Defined in
 
-[chrome-services/oauth.ts:36](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L36)
+[chrome-services/oauth.ts:36](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L36)
 
 ___
 
@@ -33,4 +33,4 @@ token, which can then be used to make authorized API requests.
 
 #### Defined in
 
-[chrome-services/oauth.ts:37](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L37)
+[chrome-services/oauth.ts:37](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L37)

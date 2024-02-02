@@ -19,7 +19,7 @@ Represents the HTTP method for to use in the request.
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:7](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L7)
+[chrome-services/httpRequests.ts:7](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L7)
 
 ___
 
@@ -29,7 +29,7 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:8](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L8)
+[chrome-services/httpRequests.ts:8](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L8)
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:9](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L9)
+[chrome-services/httpRequests.ts:9](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L9)
 
 ___
 
@@ -49,4 +49,4 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:10](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L10)
+[chrome-services/httpRequests.ts:10](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L10)

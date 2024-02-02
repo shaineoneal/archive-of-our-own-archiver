@@ -20,7 +20,7 @@ Represents an HTTP request.
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:33](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L33)
+[chrome-services/httpRequests.ts:33](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L33)
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:34](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L34)
+[chrome-services/httpRequests.ts:34](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L34)
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:35](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L35)
+[chrome-services/httpRequests.ts:35](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L35)
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:36](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L36)
+[chrome-services/httpRequests.ts:36](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L36)
 
 ___
 
@@ -60,4 +60,4 @@ ___
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:37](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L37)
+[chrome-services/httpRequests.ts:37](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L37)
