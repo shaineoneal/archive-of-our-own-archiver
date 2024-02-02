@@ -18,6 +18,7 @@ import { NoRefreshToken } from "./NoRefreshToken";
  *          Login
  *      </button>
  * </div>
+ * ```
  */
 export function LoginButton(): ReactElement {
 

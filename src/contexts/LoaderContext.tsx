@@ -19,6 +19,7 @@ export const LoaderContext = createContext({
  * <LoaderContext.Provider value={{ loader, setLoader }}>
  *    {children}
  * </LoaderContext.Provider>
+ * ```
  */
 export function LoaderProvider({ children }: PropsWithChildren) {
     const [isLoading, setLoaderState] = useState<boolean>(false);
