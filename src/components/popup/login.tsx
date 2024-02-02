@@ -1,6 +1,6 @@
 import { ReactElement, useContext } from "react";
 import { LoaderContext, RefreshTokenContext } from "../../contexts";
-import { chromeLaunchWebAuthFlow, requestToken } from "../../chrome-services/oauth";
+import { AuthFlowResponse, chromeLaunchWebAuthFlow, requestAuthorizaton } from "../../chrome-services/oauth";
 import log from "../../utils/logger";
 import { syncStorageSet } from "../../chrome-services/storage";
 import { NoRefreshToken } from "./NoRefreshToken";
@@ -14,18 +14,14 @@ import { NoRefreshToken } from "./NoRefreshToken";
  * @returns the LoginButton component 
  * ```tsx
  * <div>
- *      <button
- *          className="login-button"
- *          onClick={handleLogin}
- *          disabled={loader}
- *      >
+ *      <button>
  *          Login
  *      </button>
  * </div>
  */
 export function LoginButton(): ReactElement {
 
-    const { loader, setLoader } = useContext(LoaderContext);
+    const { isLoading, setLoader } = useContext(LoaderContext);
     const { refreshToken, setRefreshToken } = useContext(RefreshTokenContext);
 
     /**
@@ -40,47 +36,40 @@ export function LoginButton(): ReactElement {
 
         setLoader(true);
 
-        chromeLaunchWebAuthFlow().then((authResponse) => {
+        chromeLaunchWebAuthFlow().then((authFlowResponse: AuthFlowResponse) => {
             if (chrome.runtime.lastError ) {
 
                 if (chrome.runtime.lastError) {
                     log(chrome.runtime.lastError.message);
                 }
-                setLoader(false);
-            } else if (authResponse.url && authResponse.code) {
-                requestToken(authResponse).then((tokenResponse) => {
-                    syncStorageSet('access_token', tokenResponse.access_token);
-                    if (tokenResponse.refresh_token) {
-                        setRefreshToken(tokenResponse.refresh_token);
-                        syncStorageSet('refresh_token', tokenResponse.refresh_token);
+                
+            } else if (authFlowResponse.url && authFlowResponse.code) {
+                requestAuthorizaton(authFlowResponse).then((authRequestResponse) => {
+                    syncStorageSet('access_token', authRequestResponse.access_token);
+                    if (authRequestResponse.refresh_token) {
+                        setRefreshToken(authRequestResponse.refresh_token);
+                        syncStorageSet('refresh_token', authRequestResponse.refresh_token);
                     } else { 
                         setRefreshToken('error');
                         syncStorageSet('refresh_token', 'error');
                     }
-                    setLoader(false);
                 });
             }
-    });
+    }).then(() => {setLoader(false)});
 
     }
-    if (refreshToken === 'error') {
+
         return (
-            <div className="not-logged-in">
-                <NoRefreshToken />
+
+            <div>
+                <button
+                    className="login-button"
+                    onClick={handleLogin}
+                    disabled={isLoading}
+                >
+                    Login
+                </button>
             </div>
-        );
-    }
-    else{
-    return (
-        
-        <div>
-            <button
-                className="login-button"
-                onClick={handleLogin}
-                disabled={loader}
-            >
-                Login
-            </button>
-        </div>
-    )}
+        )
+    
 }

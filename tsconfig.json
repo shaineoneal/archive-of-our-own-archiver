@@ -12,9 +12,5 @@
         "noImplicitAny": false,
         "jsx": "react-jsx",
         "typeRoots": [ "node_modules/@types" ]
-    },
-    "typedocOptions": {
-        "entryPoints": ["src/index.ts"],
-        "out": "docs",
-    }
+    } 
 }

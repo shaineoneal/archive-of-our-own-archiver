@@ -1,13 +1,12 @@
 import log from "../utils/logger";
-import { HttpRequest, TokenRequestResponse } from '../types/types';
-import { makeRequest } from "./httpRequests";
+import { HttpMethod, HttpRequest, makeRequest } from './httpRequests';
 
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 
 const { oauth2 } = chrome.runtime.getManifest();
 const redirectUri = chrome.identity.getRedirectURL();
 
-function createAuthUrl() {
+const createAuthUrl = (): string => {
 
     if (!oauth2 || !oauth2.client_id || !oauth2.scopes) {
         throw new Error('Invalid oauth2 configuration');
@@ -37,6 +36,23 @@ export interface AuthFlowResponse {
     url: string,
     code: string
 }
+
+/**
+ * Represents the response of an authentication request.
+ * 
+ * @property {string} access_token - Short lived token used to access Google APIs.
+ * @property {number} expires_in - The number of seconds the access token is valid for.
+ * @property {string} refresh_token - (optional) A long lived token used to obtain new access tokens.
+ * @property {string} scope - The scope of the access token.
+ * @property {string} token_type - The type of token.
+ */
+export interface AuthRequestResponse {
+    access_token: string;
+    expires_in: number;
+    refresh_token?: string;
+    scope: string;
+    token_type: string;
+};
 
 /**
  * The function `chromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
@@ -85,7 +101,7 @@ export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
  * @returns A promise that resolves to the token request response.
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code | Google Identity API - Exchange authorization code for refresh and access tokens}
  */
-export function requestToken(authFlowResponse: AuthFlowResponse): Promise<TokenRequestResponse> {
+export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise<AuthRequestResponse> {
     return new Promise((resolve, reject) => {
         log('client_secret: ', client_secret)
 
@@ -96,7 +112,7 @@ export function requestToken(authFlowResponse: AuthFlowResponse): Promise<TokenR
 
         makeRequest({
             url: 'https://www.googleapis.com/oauth2/v4/token',
-            method: 'POST',
+            method: HttpMethod.POST,
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ',
@@ -110,7 +126,7 @@ export function requestToken(authFlowResponse: AuthFlowResponse): Promise<TokenR
             }
         }).then((response: any) => {
             response = JSON.parse(response.body);
-            log('requestToken Response: ', response);
+            log('requestAuthorization Response: ', response);
             resolve(response);
             
         }).catch((error: any) => {
@@ -119,4 +135,3 @@ export function requestToken(authFlowResponse: AuthFlowResponse): Promise<TokenR
         
     });
 }
-

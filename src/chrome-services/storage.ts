@@ -3,6 +3,7 @@ import log from "../utils/logger"
 /**
  * Sets a value in chrome synchronized storage.
  * 
+ * @category chrome-services
  * @param key - The key to set the value for.
  * @param value - The value to be set.
  * @returns A promise that resolves when the value is successfully set, or rejects with an error if there was an issue.
@@ -26,8 +27,10 @@ export function syncStorageSet(key: string, value: string) {
 /**
  * Retrieves the value associated with the specified key from the synchronized storage.
  * 
+ * @category chrome-services
  * @param key - The key of the value to retrieve.
  * @returns A promise that resolves with the retrieved value as a string.
+ * @see {@link https://developer.chrome.com/docs/extensions/reference/storage/ | Chrome Storage API}
  */
 export function syncStorageGet(key: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -37,6 +40,19 @@ export function syncStorageGet(key: string): Promise<string> {
             }
             else {
                 resolve(result[key]);
+            }
+        });
+    });
+}
+
+export function syncStorageRemove(key: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.remove([key], () => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            }
+            else {
+                resolve();
             }
         });
     });

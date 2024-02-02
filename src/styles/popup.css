@@ -38,7 +38,7 @@ a.no-underline {
     text-decoration: none;
 }
 
-.popup.flex-container {
+.flex-container {
     display: flex;
     flex-direction: row;
     height: 35px;
@@ -57,12 +57,14 @@ a.no-underline {
     width: 32px;
     height: 32px;
 }
+
 .title {
     flex: auto;
     font-size: 1.25rem;
     font-weight: 750;
     margin: auto;
 }
+
 .settings-icon {
     flex: none;
     flex-direction: column;
@@ -71,7 +73,6 @@ a.no-underline {
     height: 24px;
     margin: auto;
 }
-
 
 .options-container {
     display: flex;
