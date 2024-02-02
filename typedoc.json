@@ -1,6 +1,6 @@
 {
     "name": "Archive of Our Own Archiver",
-    "out": "./docs",
+    "out": "./archive-of-our-own-archiver.wiki",
     "exclude": ["node_modules"],
     "excludePrivate": true,
     "excludeProtected": true,
@@ -31,4 +31,8 @@
 
     },
     "tsconfig": "tsconfig.json",
+    "plugin": [
+        "typedoc-plugin-markdown",
+        "typedoc-github-wiki-theme"
+    ]
 }
