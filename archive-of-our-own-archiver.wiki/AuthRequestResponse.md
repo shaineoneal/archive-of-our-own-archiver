@@ -22,7 +22,7 @@ Short lived token used to access Google APIs.
 
 #### Defined in
 
-[chrome-services/oauth.ts:50](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L50)
+[chrome-services/oauth.ts:50](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L50)
 
 ___
 
@@ -34,7 +34,7 @@ The number of seconds the access token is valid for.
 
 #### Defined in
 
-[chrome-services/oauth.ts:51](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L51)
+[chrome-services/oauth.ts:51](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L51)
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 #### Defined in
 
-[chrome-services/oauth.ts:52](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L52)
+[chrome-services/oauth.ts:52](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L52)
 
 ___
 
@@ -58,7 +58,7 @@ The scope of the access token.
 
 #### Defined in
 
-[chrome-services/oauth.ts:53](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L53)
+[chrome-services/oauth.ts:53](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L53)
 
 ___
 
@@ -70,4 +70,4 @@ The type of token.
 
 #### Defined in
 
-[chrome-services/oauth.ts:54](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L54)
+[chrome-services/oauth.ts:54](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L54)

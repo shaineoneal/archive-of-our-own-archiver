@@ -70,7 +70,7 @@ Components
 
 #### Defined in
 
-[components/popup/NoRefreshToken.tsx:15](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/components/popup/NoRefreshToken.tsx#L15)
+[components/popup/NoRefreshToken.tsx:15](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/components/popup/NoRefreshToken.tsx#L15)
 
 ___
 
@@ -92,10 +92,11 @@ the LoginButton component
          Login
      </button>
 </div>
+```
 
 #### Defined in
 
-[components/popup/login.tsx:22](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/components/popup/login.tsx#L22)
+[components/popup/login.tsx:23](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/components/popup/login.tsx#L23)
 
 ___
 
@@ -114,7 +115,7 @@ Renders header, content based on auth state.
 
 #### Defined in
 
-[popup.tsx:104](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/popup.tsx#L104)
+[popup.tsx:104](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/popup.tsx#L104)
 
 ## Other
 
@@ -133,7 +134,7 @@ The above type represents an HTTP response with a status code and a body.
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:49](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L49)
+[chrome-services/httpRequests.ts:49](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L49)
 
 ___
 
@@ -164,7 +165,7 @@ The function `chromeLaunchWebAuthFlow` is returning a Promise that resolves to a
 
 #### Defined in
 
-[chrome-services/oauth.ts:72](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L72)
+[chrome-services/oauth.ts:72](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L72)
 
 ___
 
@@ -192,7 +193,7 @@ A promise that resolves to the token request response.
 
 #### Defined in
 
-[chrome-services/oauth.ts:104](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/oauth.ts#L104)
+[chrome-services/oauth.ts:104](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/oauth.ts#L104)
 
 ___
 
@@ -210,7 +211,7 @@ A promise that resolves with the refresh token if the user has one, or rejects w
 
 #### Defined in
 
-[chrome-services/refresh_token.ts:8](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/refresh_token.ts#L8)
+[chrome-services/refresh_token.ts:8](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/refresh_token.ts#L8)
 
 ___
 
@@ -231,7 +232,7 @@ ___
 
 #### Defined in
 
-[chrome-services/refresh_token.ts:26](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/refresh_token.ts#L26)
+[chrome-services/refresh_token.ts:26](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/refresh_token.ts#L26)
 
 ___
 
@@ -251,7 +252,7 @@ ___
 
 #### Defined in
 
-[chrome-services/storage.ts:48](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/storage.ts#L48)
+[chrome-services/storage.ts:48](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/storage.ts#L48)
 
 ___
 
@@ -271,7 +272,7 @@ ___
 
 #### Defined in
 
-[chrome-services/tokens.ts:58](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/tokens.ts#L58)
+[chrome-services/tokens.ts:58](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/tokens.ts#L58)
 
 ___
 
@@ -289,7 +290,7 @@ The rendered options icon component.
 
 #### Defined in
 
-[components/popup/optionsIcon.tsx:11](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/components/popup/optionsIcon.tsx#L11)
+[components/popup/optionsIcon.tsx:11](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/components/popup/optionsIcon.tsx#L11)
 
 ___
 
@@ -299,7 +300,7 @@ ___
 
 #### Defined in
 
-[contexts/AuthTokenContext.tsx:7](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/AuthTokenContext.tsx#L7)
+[contexts/AuthTokenContext.tsx:7](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/AuthTokenContext.tsx#L7)
 
 ___
 
@@ -326,7 +327,7 @@ rendered as the child components of the `AuthTokenContext.Provider`.
 
 #### Defined in
 
-[contexts/AuthTokenContext.tsx:22](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/AuthTokenContext.tsx#L22)
+[contexts/AuthTokenContext.tsx:22](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/AuthTokenContext.tsx#L22)
 
 ___
 
@@ -338,7 +339,7 @@ Context for managing the loader state.
 
 #### Defined in
 
-[contexts/LoaderContext.tsx:8](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/LoaderContext.tsx#L8)
+[contexts/LoaderContext.tsx:8](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/LoaderContext.tsx#L8)
 
 ___
 
@@ -366,7 +367,7 @@ The LoaderProvider component.
 
 #### Defined in
 
-[contexts/LoaderContext.tsx:23](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/LoaderContext.tsx#L23)
+[contexts/LoaderContext.tsx:23](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/LoaderContext.tsx#L23)
 
 ___
 
@@ -386,7 +387,7 @@ export type RefreshTokenType = RefreshTokenState | string;
 
 #### Defined in
 
-[contexts/RefreshTokenContext.tsx:16](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/RefreshTokenContext.tsx#L16)
+[contexts/RefreshTokenContext.tsx:16](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/RefreshTokenContext.tsx#L16)
 
 ___
 
@@ -414,7 +415,7 @@ The RefreshTokenProvider component.
 
 #### Defined in
 
-[contexts/RefreshTokenContext.tsx:31](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/contexts/RefreshTokenContext.tsx#L31)
+[contexts/RefreshTokenContext.tsx:31](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/contexts/RefreshTokenContext.tsx#L31)
 
 ___
 
@@ -428,7 +429,7 @@ ___
 
 #### Defined in
 
-[popup.tsx:43](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/popup.tsx#L43)
+[popup.tsx:43](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/popup.tsx#L43)
 
 ___
 
@@ -438,7 +439,7 @@ ___
 
 #### Defined in
 
-[popup.tsx:134](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/popup.tsx#L134)
+[popup.tsx:134](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/popup.tsx#L134)
 
 ___
 
@@ -456,7 +457,7 @@ The `PropsWithChildren` type is used to define a component's props that include 
 
 #### Defined in
 
-[types/types.ts:10](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/types/types.ts#L10)
+[types/types.ts:10](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/types/types.ts#L10)
 
 ## chrome-services
 
@@ -485,7 +486,7 @@ A promise that resolves when the value is successfully set, or rejects with an e
 
 #### Defined in
 
-[chrome-services/storage.ts:12](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/storage.ts#L12)
+[chrome-services/storage.ts:12](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/storage.ts#L12)
 
 ___
 
@@ -513,7 +514,7 @@ A promise that resolves with the retrieved value as a string.
 
 #### Defined in
 
-[chrome-services/storage.ts:35](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/storage.ts#L35)
+[chrome-services/storage.ts:35](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/storage.ts#L35)
 
 ___
 
@@ -531,7 +532,7 @@ A promise that resolves with the refresh token string.
 
 #### Defined in
 
-[chrome-services/tokens.ts:45](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/tokens.ts#L45)
+[chrome-services/tokens.ts:45](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/tokens.ts#L45)
 
 ## util
 
@@ -557,4 +558,4 @@ A promise that resolves to the HTTP response object.
 
 #### Defined in
 
-[chrome-services/httpRequests.ts:62](https://github.com/shaineoneal/final_extension/blob/b8cbb88/src/chrome-services/httpRequests.ts#L62)
+[chrome-services/httpRequests.ts:62](https://github.com/shaineoneal/final_extension/blob/018e8b4/src/chrome-services/httpRequests.ts#L62)
