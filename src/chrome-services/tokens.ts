@@ -11,7 +11,7 @@ function getNewAccessToken(refreshToken: string): Promise<string> {
     if (!oauth2 || !client_secret) {
         throw new Error('Invalid oauth2 configuration');
     }
-
+//TODO: background.js
     return new Promise((resolve, reject) => {
         retrieveRefreshToken()
             .then(async (refreshToken) => {
@@ -88,3 +88,21 @@ export async function revokeToken(token: string): Promise<void> {
     });*/
 }
 
+/**
+ * Retrieves the refresh token from Chrome storage.
+ * 
+ * @category chrome-services
+ * @returns A promise that resolves with the refresh token string.
+ */
+export function retrieveAccessToken(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        chrome.storage.sync.get(['access_token'], (result) => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            }
+            else {
+                resolve(result.access_token);
+            }
+        });
+    });
+}

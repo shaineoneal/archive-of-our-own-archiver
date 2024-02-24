@@ -74,6 +74,7 @@ export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
         chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: true }, (async (responseUrl: string | undefined) => {
 
             if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
+                log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             }
             else {
@@ -103,7 +104,6 @@ export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
  */
 export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise<AuthRequestResponse> {
     return new Promise((resolve, reject) => {
-        log('client_secret: ', client_secret)
 
         if (!oauth2 || !oauth2.client_id || !oauth2.scopes || !client_secret) {
             log('oauth2: ', oauth2);
@@ -124,10 +124,10 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
             }
-        }).then((response: any) => {
-            response = JSON.parse(response.body);
-            log('requestAuthorization Response: ', response);
-            resolve(response);
+        }).then((response) => {
+            const parsedResponse = response.json();
+            log('requestAuthorization Response: ', parsedResponse);
+            resolve(parsedResponse);
             
         }).catch((error: any) => {
             reject(error);

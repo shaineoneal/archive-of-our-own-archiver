@@ -4,6 +4,7 @@ import { AuthFlowResponse, chromeLaunchWebAuthFlow, requestAuthorizaton } from "
 import log from "../../utils/logger";
 import { syncStorageSet } from "../../chrome-services/storage";
 import { NoRefreshToken } from "./NoRefreshToken";
+import { fetchSpreadsheetUrl } from "../../chrome-services/spreadsheet";
 
 /**
  * The LoginButton component is a button that triggers a login process and updates the loader state
@@ -38,6 +39,7 @@ export function LoginButton(): ReactElement {
         setLoader(true);
 
         chromeLaunchWebAuthFlow().then((authFlowResponse: AuthFlowResponse) => {
+            log('Auth flow response:', authFlowResponse);
             if (chrome.runtime.lastError ) {
 
                 if (chrome.runtime.lastError) {
@@ -45,15 +47,21 @@ export function LoginButton(): ReactElement {
                 }
                 
             } else if (authFlowResponse.url && authFlowResponse.code) {
+                log('Auth flow response:', authFlowResponse);
                 requestAuthorizaton(authFlowResponse).then((authRequestResponse) => {
                     syncStorageSet('access_token', authRequestResponse.access_token);
                     if (authRequestResponse.refresh_token) {
                         setRefreshToken(authRequestResponse.refresh_token);
                         syncStorageSet('refresh_token', authRequestResponse.refresh_token);
+
                     } else { 
                         setRefreshToken('error');
                         syncStorageSet('refresh_token', 'error');
                     }
+                }).then(() => {
+                    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                        syncStorageSet('spreadsheet_url', spreadsheetUrl);
+                    });
                 });
             }
     }).then(() => {setLoader(false)});
@@ -72,5 +80,4 @@ export function LoginButton(): ReactElement {
                 </button>
             </div>
         )
-    
-}
+    }

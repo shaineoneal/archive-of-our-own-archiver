@@ -1,9 +1,21 @@
+body {
+    --google-font-family: Roboto, system-ui, sans-serif;
+    --google-large-title-font-size: 1.375rem;
+    --google-large-title-letter-spacing: 0rem;
+    --google-large-title-line-height: 1.75rem;
+    -webkit-font-smoothing: antialiased;
+}
 h1 {
+    text-rendering: auto;
     text-align: center;
+    font-weight: 400;
+    font-family: Roboto, system-ui, sans-serif;
+    text-decoration: none;
 }
 
 main {
     padding: 8px;
+    border-radius: 6px;
 }
 
 button {
@@ -59,10 +71,12 @@ a.no-underline {
 }
 
 .title {
+
     flex: auto;
-    font-size: 1.25rem;
-    font-weight: 750;
     margin: auto;
+    font-size: var(--google-large-title-font-size);
+    letter-spacing: var(--google-large-title-letter-spacing);
+    line-height: var(--google-large-title-line-height);
 }
 
 .settings-icon {
@@ -142,4 +156,5 @@ a.no-underline {
 }
 #root {
     width: 350px;
+
 }

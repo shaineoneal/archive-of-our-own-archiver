@@ -33,8 +33,8 @@ export interface HttpRequest {
     accessToken?: string;
     url: string;
     method: HttpMethod;
-    headers: Record<string, string>;
-    body: string | Record<string, string>;
+    headers: any;
+    body: any;
 };
 
 /**
@@ -46,10 +46,7 @@ export interface HttpRequest {
  * body of an HTTP request. It is of type `string`, which means it can contain any textual data
  * returned by the server.
  */
-export type HttpResponse = {
-    status: number;
-    body: string;
-};
+export type HttpResponse = Response;
 
 /**
  * Makes an HTTP request.
@@ -60,16 +57,17 @@ export type HttpResponse = {
  * @returns A promise that resolves to the HTTP response object.
  */
 export async function makeRequest(request: HttpRequest): Promise<HttpResponse> {
-    log('makeRequest: ', request);
+    log('makeRequest: ', request, '\nbody: ', request.body);
 
-    const response = await fetch(request.url, {
+    const options = {
         method: request.method,
         headers: request.headers,
-        body: JSON.stringify(request.body) 
-    });
-    const body = await response.text();
-    return {
-        status: response.status,
-        body: body
+        body: JSON.stringify(request.body)
     };
+
+    log('makeRequest options: ', options);
+
+
+    const response = await fetch(request.url, options);
+    return response;
 }
