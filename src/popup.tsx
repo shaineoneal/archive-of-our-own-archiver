@@ -51,7 +51,6 @@ export function PopupBody(): ReactElement {
             const refreshToken = await doesUserHaveRefreshToken();
             if (refreshToken) {
                 setRefreshToken(refreshToken);
-                log('User has refresh token');
             } else {
                 setRefreshToken('');
                 log('User does not have refresh token');
@@ -109,13 +108,14 @@ export const Popup = (): ReactElement => {
 
 
     return (
+        <div id="app-container">
         <RefreshTokenProvider>
             <header>
                 <div className="flex-container popup">
                     <div className="logo">
                         <img src="icons/icon-32.png" alt="extension-icon" />
                     </div>
-                    <div className="title">AO3E: Rewritten</div>
+                    <h1 className="title">AO3E: Rewritten</h1>
                     <OptionsIcon />
                 </div>
             </header>
@@ -127,6 +127,7 @@ export const Popup = (): ReactElement => {
                 </LoaderProvider>
             </main>
         </RefreshTokenProvider>
+        </div>
     )
 
 };

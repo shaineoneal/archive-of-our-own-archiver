@@ -9,7 +9,7 @@ import log from "../utils/logger"
  * @returns A promise that resolves when the value is successfully set, or rejects with an error if there was an issue.
  * @see {@link https://developer.chrome.com/docs/extensions/reference/storage/ | Chrome Storage API}
  */
-export function syncStorageSet(key: string, value: string) {
+export async function syncStorageSet(key: string, value: string) {
     return new Promise<void>((resolve, reject) => {
         chrome.storage.sync.set({ [key]: value }, () => {
             log('syncStorageSet: ', key, value);

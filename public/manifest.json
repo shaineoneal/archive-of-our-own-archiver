@@ -11,7 +11,7 @@
 
     "oauth2": {
         "client_id": "972283065139-htoh4g22degpr245e6eupmbn2ij8ofde.apps.googleusercontent.com",
-        "scopes": [ "https://www.googleapis.com/auth/spreadsheets" ]
+        "scopes": [ "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive" ]
     },
 
     "key": "***REMOVED***",
@@ -33,7 +33,7 @@
     },
 
     "permissions": [
-        "storage", "scripting", "identity"
+        "storage", "scripting", "identity", "background", "webRequest"
     ],
 
     "host_permissions": [
@@ -47,6 +47,11 @@
         {
             "resources": ["js/content_script.js"],
             "matches": ["<all_urls>"]
+        },
+        {
+            "resources": ["fonts/*"],
+            "matches": ["<all_urls>"]
         }
     ]
 }
+

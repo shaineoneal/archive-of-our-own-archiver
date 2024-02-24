@@ -32,7 +32,7 @@ const Options = () => {
     });
 
     return (
-        <>
+        <div id="app-container">
             <header>
                 <div className="flex-container">
                     <IconContext.Provider value={{ className: 'back-icon' }}>
@@ -53,7 +53,7 @@ const Options = () => {
                     </LoaderContext.Provider>
                 </div>
             </main>
-        </>
+        </div>
     );
 };
 
