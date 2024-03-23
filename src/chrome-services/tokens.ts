@@ -55,7 +55,7 @@ export function retrieveRefreshToken(): Promise<string> {
     });
 }
 
-export async function revokeToken(token: string): Promise<void> {
+export async function revokeRefreshToken(token: string): Promise<void> {
     log('Revoking token: ', token);
 
     await makeRequest({
@@ -105,4 +105,9 @@ export function retrieveAccessToken(): Promise<string> {
             }
         });
     });
+}
+
+export async function removeAccessToken(): Promise<void> {
+    log('Removing access token');
+    await syncStorageRemove('access_token');
 }

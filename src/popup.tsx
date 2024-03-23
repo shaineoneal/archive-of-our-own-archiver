@@ -2,28 +2,27 @@ import { ReactElement, useContext, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { doesUserHaveRefreshToken } from ".";
 import { syncStorageGet } from "./chrome-services/storage";
-import { retrieveRefreshToken, revokeToken } from "./chrome-services/tokens";
+import { retrieveAccessToken, retrieveRefreshToken, revokeRefreshToken } from "./chrome-services/tokens";
 import { LoginButton, OptionsIcon } from "./components";
 import { NoRefreshToken } from "./components/popup/NoRefreshToken";
-import { AuthTokenContext, LoaderContext, LoaderProvider, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
+import { LoaderContext, LoaderProvider, AccessTokenContext, AccessTokenProvider, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
 import "./styles/popup.css";
 import log from "./utils/logger";
 
 const Loader = () => {
     return <div className="loader"></div>;
 }
-
-const RemoveToken = () => {
+const RemoveRefreshToken = () => {
     const { setLoader } = useContext(LoaderContext);
     const { setRefreshToken } = useContext(RefreshTokenContext);
 
-    const handleRemoveToken = () => {
+    const handleRemoveRefreshToken = () => {
         setLoader(true);
         log ('Remove token button clicked');
-        syncStorageGet('refresh_token').then((token) => {
+        syncStorageGet('Refresh_token').then((token) => {
             if (token) {
                 log ('token to remove: ' + token);
-                revokeToken(token).then(() => {
+                revokeRefreshToken(token).then(() => {
                        console.log('Token revoked');
                 }).then(() => {
                     setRefreshToken('');
@@ -34,7 +33,7 @@ const RemoveToken = () => {
     }
 
     return (
-        <button className="remove-token" onClick={handleRemoveToken}>
+        <button className="remove-token" onClick={handleRemoveRefreshToken}>
             Remove token
         </button>
     );
@@ -43,24 +42,25 @@ const RemoveToken = () => {
 export function PopupBody(): ReactElement {
     const { isLoading, setLoader } = useContext(LoaderContext);
     const { refreshToken, setRefreshToken } = useContext(RefreshTokenContext);
+    const { accessToken, setAccessToken } = useContext(AccessTokenContext);
 
-    log('PopupBody() called', 'refreshToken: ' + refreshToken);
+    log('PopupBody() called', 'accessToken: ' + refreshToken);
 
     useEffect(() => {
-        async function checkRefreshToken() {
-            const refreshToken = await doesUserHaveRefreshToken();
-            if (refreshToken) {
-                setRefreshToken(refreshToken);
+        async function checkAccessToken() {
+            const accessToken = await retrieveAccessToken();
+            if (accessToken) {
+                setAccessToken(accessToken);
+                log('User has access token');
+
             } else {
-                setRefreshToken('');
-                log('User does not have refresh token');
+                log('User does not have access token');
             }
         }
-
-        checkRefreshToken().then(() => {
+        checkAccessToken().then(() => {
             setLoader(false);
         });
-        //to ensure that refresh token reloads
+        //to ensure that access token reloads
     }, [refreshToken]);
 
     if (isLoading) {
@@ -68,7 +68,7 @@ export function PopupBody(): ReactElement {
             <Loader />
         );
     } else {
-        switch (refreshToken) {
+        switch (accessToken) {
             case 'error':
                 return (
                     <div className="not-logged-in">
@@ -84,7 +84,7 @@ export function PopupBody(): ReactElement {
             default:
                 return (
                     <div className="logged-in">
-                        <RemoveToken />
+                        <h1> You are logged in! </h1>
                     </div>
                 );
         }
@@ -98,7 +98,7 @@ export function PopupBody(): ReactElement {
  * 
  * @category Component
  * @group Popup
- * @returns {ReactElement} `<Popup />` component.
+ * @returns {ReactElement} `<Popup />` component.   
  */
 export const Popup = (): ReactElement => {
 
@@ -109,7 +109,7 @@ export const Popup = (): ReactElement => {
 
     return (
         <div id="app-container">
-        <RefreshTokenProvider>
+        <AccessTokenProvider>
             <header>
                 <div className="flex-container popup">
                     <div className="logo">
@@ -126,7 +126,7 @@ export const Popup = (): ReactElement => {
                     </div>
                 </LoaderProvider>
             </main>
-        </RefreshTokenProvider>
+        </AccessTokenProvider>
         </div>
     )
 
