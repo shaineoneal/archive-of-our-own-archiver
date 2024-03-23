@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { IconContext } from 'react-icons';
 import { BsFillGearFill } from 'react-icons/bs';
-import { RefreshTokenContext } from '../../contexts';
+import { AccessTokenContext } from '../../contexts';
 
 /**
  * Renders the options icon component.
@@ -10,16 +10,16 @@ import { RefreshTokenContext } from '../../contexts';
  */
 export const OptionsIcon = () => {
 
-    const { refreshToken } = useContext(RefreshTokenContext);
+    const { accessToken } = useContext(AccessTokenContext);
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
-    }, [refreshToken]);
+    }, [accessToken]);
 
     return (
         <IconContext.Provider value={{ className: 'settings-icon' }}>
             <a href="options.html">
-                { refreshToken ? <BsFillGearFill /> : null }
+                { accessToken ? <BsFillGearFill /> : null }
             </a>
         </IconContext.Provider>
     );

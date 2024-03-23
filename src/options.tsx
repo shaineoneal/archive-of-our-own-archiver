@@ -7,6 +7,7 @@ import './styles/popup.css';
 import log from './utils/logger';
 import { LoaderContext } from './contexts';
 import { root } from './popup'
+import { LogoutButton } from './components/popup/logout';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -45,10 +46,11 @@ const Options = () => {
             </header>
             <main>
                 <div className="options-container">
-                    <div>Google Spreadsheets URL</div>
-                    <input type="text" defaultValue={spreadsheetUrl} />
-
                     <LoaderContext.Provider value={{ isLoading, setLoader }}>
+                        <div>Google Spreadsheets URL</div>
+                        <input type="text" defaultValue={spreadsheetUrl} />
+
+                        <LogoutButton />
 
                     </LoaderContext.Provider>
                 </div>
