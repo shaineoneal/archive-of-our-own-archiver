@@ -1,0 +1,18 @@
+.popup.flex-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.popup.settings-icon {
+    color: rgb(118, 118, 118);
+    width: 24px;
+    height: 24px;
+}
+
+.popup.settings-icon:disabled{
+    color: lightgray;
+    cursor: not-allowed;
+}
