@@ -1,4 +1,4 @@
-import { retrieveAccessToken, makeRequest, HttpMethod } from '.';
+import { retrieveAccessToken, makeRequest, HttpMethod, syncStorageSet } from '.';
 import log from '../utils/logger';
 
 const headerRowData = [
@@ -77,7 +77,7 @@ const headerRowData = [
  *
  * @returns user's spreadsheet URL
  */
-export function fetchSpreadsheetUrl() {
+export async function fetchSpreadsheetUrl() {
     log('getting spreadsheet URL');
     return new Promise<string>((resolve, reject) => {
         // check for a stored spreadsheet URL
@@ -98,8 +98,9 @@ export function fetchSpreadsheetUrl() {
                     return Promise.reject('Error getting token');
                 } else {
                     //create spreadsheet
-                    return createSpreadsheet(token)
+                    createSpreadsheet(token)
                         .then((url) => {
+                            log('spreadsheet URL: ', url);
                             return Promise.resolve(url);
                         })
                         .catch((error) => {
@@ -251,7 +252,7 @@ export async function createSpreadsheet(token: string) {
     };
 
 
-    makeRequest({
+    const sheet = await makeRequest({
         url: 'https://sheets.googleapis.com/v4/spreadsheets',
         method: HttpMethod.POST,
         headers: {
@@ -264,17 +265,18 @@ export async function createSpreadsheet(token: string) {
             log('Response status:', response.status);
             return response.json();
         })
-        .then((data) => {
+        .then(async (data) => {
             if(data.error) {
                 log('Error creating spreadsheet:', data.error);
                 throw new Error(data.error.message);
             }
-            log('Success:', data);
-            chrome.storage.sync.set({ spreadsheetUrl: data.spreasheetUrl});
-            return data.body;
+            log('Successfully created:', data);
+            await syncStorageSet('spreadsheetUrl', data.spreadsheetUrl)
+            .then(() => { return data.body; });
         })
         .catch((error) => {
             log('Error creating spreadsheet:', error);
             throw error;
         });
+    return sheet;
 }

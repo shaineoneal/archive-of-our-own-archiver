@@ -1,14 +1,11 @@
 //import { google } from 'googleapis';
 
-function polling() {
-  // console.log("polling");
-  setTimeout(polling, 1000 * 30);
+import log from "./utils/logger"
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    for(const [key, { oldValue, newValue }] of Object.entries(changes)) {
+        log(`Storage key "${key}" in namespace "${namespace}" changed. Old value was "${oldValue}", new value is "${newValue}".`);
+    }
 }
-
-polling();
-
-
-chrome.action.onClicked.addListener(() => {
-  chrome.tabs.create({ url: chrome.runtime.getURL("popup.html") });
-});
+);
 

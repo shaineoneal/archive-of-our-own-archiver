@@ -61,7 +61,7 @@ export function PopupBody(): ReactElement {
             setLoader(false);
         });
         //to ensure that access token reloads
-    }, [refreshToken]);
+    }, [accessToken]);
 
     if (isLoading) {
         return (
