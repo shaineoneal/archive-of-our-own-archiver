@@ -7,12 +7,12 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
     log('searchList', searchList);
     log('response', response);
 
+
+    
     searchList.forEach((searchItem) => {
         response.forEach((responseItem) => {
-
-            if (searchItem === responseItem) {
+            if (searchItem === responseItem.c[0].f) {
                 boolArray[searchList.indexOf(searchItem)] = true;
-
                 response.splice(response.indexOf(responseItem), 1);
             };
             
