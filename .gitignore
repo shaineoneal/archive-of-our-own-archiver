@@ -1,5 +1,1 @@
-npm-debug.log
-node_modules/
-dist/
-tmp/
-.env
+node_modules

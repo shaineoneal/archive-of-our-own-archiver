@@ -1,1 +1,1 @@
-export * from '../content-scripts/blurbsPage';
+export * from './blurbsPage';
