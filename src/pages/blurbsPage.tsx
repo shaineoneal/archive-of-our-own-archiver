@@ -1,11 +1,11 @@
-import { addToggleToBox } from '../toggles/baseToggleBox';
-import { BlurbToggles } from '../toggles/blurbToggles';
-import { looksSeen } from '../toggles/looksSeen';
-import { TOGGLE, createToggle, toggleTypes } from '../toggles/toggleTypes';
+import { addBlurbToggle } from '../components/blurbToggles';
+import { looksRead } from '../components/looksRead';
 import { log, wrap } from '../utils';
+import { WorkBlurb } from '../works/WorkBlurb';
 
 
 export const standardBlurbsPage = (port: chrome.runtime.Port) => {
+
 
     const temp = document.querySelector('li.work, li.bookmark');
     log('port test: ', port);
@@ -20,21 +20,15 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
 
     var searchList = new Array();
     works.forEach((work) => {
-        var newEl = document.createElement('li');
+        var newEl = document.createElement('div');
         newEl.classList.add('blurb-with-toggles');
-        newEl.classList.add('blurb');
 
-        //newEl.style.cssText = document.defaultView!.getComputedStyle(work).cssText;
+
+        newEl.style.cssText = JSON.stringify(getComputedStyle(work));
 
         wrap(work, newEl);
 
-        //TODO: change per work type
-        
-        log('toggleTypes: ', toggleTypes);
-
-        addToggleToBox(BlurbToggles.addToggleBox(newEl), [createToggle(toggleTypes[0], work), createToggle(toggleTypes[1], work), createToggle(toggleTypes[2], work)]);
-        
-
+        addBlurbToggle(newEl);
         //if its a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
             searchList.push(work.classList[3].split('-')[1]);
@@ -47,7 +41,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
     log('searchList: ', searchList);
 
     //only needs to be called when button is pressed
-    //log('work: ', WorkBlurb.getWorkFromWorksPage(searchList[0]));
+    log('work: ', WorkBlurb.getWorkFromPage(searchList[0]));
     //port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
 
     port.postMessage({ message: 'querySheet', list: searchList });
@@ -60,7 +54,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
                 msg.response.forEach((workRef: boolean, index: number) => {
                     log('workRef: ', workRef)
                     if (workRef) {
-                        looksSeen(true, works[index]);
+                        looksRead(true, works[index]);
                     }
                 });
             }
