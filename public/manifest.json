@@ -8,7 +8,7 @@
 
   "oauth2": {
     "client_id": "972283065139-htoh4g22degpr245e6eupmbn2ij8ofde.apps.googleusercontent.com",
-    "scopes": ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/script.external_request"]
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets"]
   },
   "key": "***REMOVED***",
   "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab", "cookies", "notifications"],
@@ -31,8 +31,8 @@
   "content_scripts": [
       {
           "matches": ["*://*.archiveofourown.org/*"],
-          "run_at": "document_end",
-          "js": ["js/content_script.js"]
+          "js": ["js/content_script.js"],
+          "css": ["js/content_script.css"]
       }
   ],
   "web_accessible_resources": [{
