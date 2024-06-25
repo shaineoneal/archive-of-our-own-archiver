@@ -1,9 +1,13 @@
 import { WorkStatus } from '../data';
 
-interface IBaseWork {
+type BaseWorkType = {
+    workId: number;
+};
+
+export class BaseWork implements BaseWorkType {
     workId: number;
     title: string;
-    authors: string[];
+    author: string[];
     fandoms: string[];
     relationships: string[];
     tags: string[];
@@ -12,29 +16,13 @@ interface IBaseWork {
     totalChapters: number;
     status: WorkStatus;
     rating: number;
-    reads?: Date[];
-}
-
-
-export class BaseWork implements IBaseWork {
-    workId: number;
-    title: string;
-    authors: string[];
-    fandoms: string[];
-    relationships: string[];
-    tags: string[];
-    description: string;
-    wordCount: number;
-    totalChapters: number;
-    status: WorkStatus;
-    rating: number;
-    reads?: Date[];
+    rereadCount?: number;
 
 
     constructor(
         workId: number,
         title: string,
-        authors: string[],
+        author: string[],
         fandoms: string[],
         relationships: string[],
         tags: string[],
@@ -43,11 +31,11 @@ export class BaseWork implements IBaseWork {
         totalChapters: number,
         status: WorkStatus,
         rating: number,
-        reads?: Date[]
+        rereadCount?: number
     ) {
         this.workId = workId;
         this.title = title;
-        this.authors = authors;
+        this.author = author;
         this.fandoms = fandoms;
         this.relationships = relationships;
         this.tags = tags;
@@ -56,15 +44,11 @@ export class BaseWork implements IBaseWork {
         this.totalChapters = totalChapters;
         this.status = status;
         this.rating = rating;
-        this.reads = reads;
+        this.rereadCount = rereadCount;
     }
 
     public toString(): string {
         return JSON.stringify(this);
-    }
-
-    public markWorkAsSeen() {
-        this.status = 'read' as WorkStatus
     }
  
 }

@@ -9,7 +9,6 @@ import '../styles.css';
 const Popup = () => {
 
     const { authToken } = useContext(TokenContext);
-    //global.AUTH_TOKEN = authToken;
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
@@ -20,7 +19,7 @@ const Popup = () => {
         
         <TokenProvider>
             <header>
-                <div className="flex-container popup">
+                <div className="flex-container">
                     <div className="logo">
                         <img src="icons/icon-32.png" alt="extension-icon" />
                     </div>
