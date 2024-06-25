@@ -1,30 +1,8 @@
-import { removeMutedWarning } from './content-scripts/removeMutedUserWarning';
+import { get } from 'jquery';
 import { standardBlurbsPage } from './pages';
 import { log } from './utils';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
 
-
-console.log('log: content_script.tsx loaded');
-
-
-const body = document.querySelector('body');
-
-const app = document.createElement('link');
-
-
-//log('log: content_script.tsx loaded');
-app.id = 'root';
-app.setAttribute('rel', 'stylesheet');
-app.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
-
-if (body) {
-    body.prepend(app);
-}
-
-removeMutedWarning();
-
-
+log('log: content_script.tsx loaded');
 connectPort().then((port) => {
     getToken(port).then((token) => {
         log('token: ', token);
@@ -71,10 +49,9 @@ async function getToken(port: chrome.runtime.Port) {
 //TODO: check for work v. bookmark page first
 
 async function pageTypeDetect(port: chrome.runtime.Port) {
-    
-    if(document.querySelector('.group.work')) {    //AFIK, all blurbs pages have these classes
+    if(document.querySelector('.index.group.work')) {    //AFIK, all blurbs pages have these classes
         //standard 20 work page
-        standardBlurbsPage(port);    
+        standardBlurbsPage(port);
 
     } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
         log('Work Page');
@@ -82,8 +59,3 @@ async function pageTypeDetect(port: chrome.runtime.Port) {
         log('PANIK: Unknown page');
     }
 }
-
-
-//const star = document.createElement('i');
-//star.className = 'fa fa-regular fa-star';
-//toggle.append(star);

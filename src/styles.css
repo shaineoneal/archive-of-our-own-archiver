@@ -38,7 +38,7 @@ a.no-underline {
     text-decoration: none;
 }
 
-.popup.flex-container {
+.flex-container {
     display: flex;
     flex-direction: row;
     height: 35px;
@@ -85,7 +85,7 @@ a.no-underline {
     height: 2.25rem;
 
 }
-.popup.login {
+.login {
 	display: grid;
 	place-items: center;
 	transition: opacity 0.4s ease;
@@ -146,9 +146,13 @@ a.no-underline {
 	}
 }
 
-.toggle-box {
+.blurb-toggle {
+    border-left: 1px solid #555;
+    border-right: 1px solid #555;
+    border-top: 1px solid #555;
     padding:0.429em 0.75em;
     margin: 0;
+    cursor: pointer;
 }
 
 li.work {
@@ -157,27 +161,18 @@ li.work {
 }
 
 .blurb-with-toggles {
-    padding: 0 !important;
-}
-
-.blurb-with-toggles .work {
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    margin: none;
+    box-shadow: 1px 1px 3px #000;
 }
 
 .toggle {
     border-bottom: 1px dotted;
-    cursor: pointer;
-    margin-right: 0.75em;
 }
 
 #root {
     width: 350px;
 }
 
-.seen-work {
+.read-work {
     border-left-color: #FFFFFF !important;
     border-left-width: 10px !important;
 }

@@ -1,3 +1,0 @@
-const getCurrentChromeTimestamp = (): number => {
-    return Math.floor(Date.now() / 1000);
-};
