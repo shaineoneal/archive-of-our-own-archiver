@@ -8,20 +8,16 @@ import { getCookie } from '../chrome-services/utils/cookies';
 
 export const Login = () => {
     const { loader, setLoader } = useContext(LoaderContext);
-    const { authToken, setAuthToken } = useContext(TokenContext);
+    const { setAuthToken } = useContext(TokenContext);
 
     const handleLogin = async () => {
         setLoader(true);
 
-        const cookie = await launchWebAuthFlow(true);
-        log('cookie: ', await getCookie('login', 'https://archiveofourown.org'));
+        launchWebAuthFlow(true).then((cookie) => {
+            setAuthToken(cookie.value);
+        });
 
-        setAuthToken(cookie.value);
-        globalThis.AUTH_TOKEN = cookie.value;
-        log('global.AUTH_TOKEN: ', globalThis.AUTH_TOKEN);
-        
         const url = await fetchSpreadsheetUrl();
-
         if (url === null) {
             throw new Error('Error getting spreadsheet url');
         } else {
@@ -36,7 +32,7 @@ export const Login = () => {
     return (
         <>
             <h1>Please log in to begin</h1>
-            <div className="popup login">
+            <div className="login">
                 <button
                     id="login-button"
                     onClick={() => handleLogin()}

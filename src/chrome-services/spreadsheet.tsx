@@ -1,77 +1,5 @@
-import { getSavedToken, postRequest } from '.';
+import { getSavedToken } from '.';
 import { log } from '../utils';
-
-const headerRowData = [
-    {
-        startRow: 0,
-        startColumn: 0,
-        rowData:  [
-            {
-                values: [
-                    {
-                        userEnteredValue: { numberValue: 0 },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Work ID' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Title' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Authors' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Fandoms' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Relationships' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Tags' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Description' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Word Count' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Chapter Count' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: {  stringValue: 'Status' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                    {
-                        userEnteredValue: { stringValue: 'Rating' },
-                        userEnteredFormat: { textFormat: { bold: true } },
-                    },
-                ],
-            },
-        ],
-    },
-    { startColumn: 0, columnMetadata: { hiddenByUser: true } }, //row number
-    { startColumn: 1, columnMetadata: { pixelSize: 75 } }, //work ID
-    { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
-    { startColumn: 3, columnMetadata: { pixelSize: 150 } }, //authors
-    { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
-    { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
-    { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //tags
-    { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
-    { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
-    { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
-    { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
-    { startColumn: 11, columnMetadata: { pixelSize: 100 } }, //rating
-]
 
 /**
  *
@@ -95,15 +23,15 @@ export function fetchSpreadsheetUrl() {
                 //get authToken
                 const token = await getSavedToken();
                 if (token === null) {
-                    return Promise.reject('Error getting token');
+                    reject('Error getting token');
                 } else {
                     //create spreadsheet
-                    return createSpreadsheet(token)
+                    await createSpreadsheet(token)
                         .then((url) => {
-                            return Promise.resolve(url);
+                            resolve(url);
                         })
                         .catch((error) => {
-                            return Promise.reject(error);
+                            reject(error);
                         });
                 }
             }
@@ -114,7 +42,7 @@ export function fetchSpreadsheetUrl() {
 /**
  *
  * @param token user's auth token
- * @returns spreadsheet URL
+ * @returns
  */
 export async function createSpreadsheet(token: string) {
 
@@ -123,7 +51,7 @@ export async function createSpreadsheet(token: string) {
         namedRanges: [
             {
                 namedRangeId: '0',
-                name: 'rowNumber',
+                name: 'WorkID',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 0,
@@ -132,7 +60,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '1',
-                name: 'WorkId',
+                name: 'title',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 1,
@@ -141,7 +69,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '2',
-                name: 'title',
+                name: 'authors',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 2,
@@ -150,7 +78,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '3',
-                name: 'authors',
+                name: 'fandoms',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 3,
@@ -159,7 +87,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '4',
-                name: 'fandoms',
+                name: 'relationships',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 4,
@@ -168,7 +96,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '5',
-                name: 'relationships',
+                name: 'tags',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 5,
@@ -177,7 +105,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '6',
-                name: 'tags',
+                name: 'description',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 6,
@@ -186,7 +114,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '7',
-                name: 'description',
+                name: 'wordCount',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 7,
@@ -195,7 +123,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '8',
-                name: 'wordCount',
+                name: 'chapterCount',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 8,
@@ -204,7 +132,7 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '9',
-                name: 'chapterCount',
+                name: 'status',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 9,
@@ -213,88 +141,157 @@ export async function createSpreadsheet(token: string) {
             },
             {
                 namedRangeId: '10',
-                name: 'status',
+                name: 'rating',
                 range: {
                     sheetId: 0,
                     startColumnIndex: 10,
                     endColumnIndex: 11
                 }
-            },
-            {
-                namedRangeId: '11',
-                name: 'rating',
-                range: {
-                    sheetId: 0,
-                    startColumnIndex: 11,
-                    endColumnIndex: 12
-                }
             }
 
         ],
-        sheets: [
-            {
-                properties: {
-                    title: 'SavedWorks',
-                    sheetId: 0,
-                },
-                protectedRanges: [
-                    {
-                        protectedRangeId: 0,
-                        range: {},
-                        description: 'Protected',
-                        warningOnly: true,
-                    },
-                ],
-                data: headerRowData,
+        sheets: {
+            properties: {
+                title: 'Saved Works',
+                sheetId: 0,
+                /*gridProperties: {
+                    rowCount: 1,
+                    columnCount: 11,
+                    columnGroupControlAfter: true,
+                }*/
             },
-            {
-                properties: {
-                    
-                    title: 'Query',
-                    sheetId: 1,
-                    //gridProperties: {
-                    //    rowCount: 2,
-                    //    columnCount: 1,
-                    //},
-                    //hidden: true,
+            protectedRanges: [
+                {
+                    protectedRangeId: 0,
+                    range: {},
+                    description: 'Protected',
+                    warningOnly: true,
                 },
-                data: [
-                    {
-                        startRow: 0,
-                        startColumn: 0,
-                        rowData: [
-                            { 
-                                values: [
-                                    {
-    //query takes up A1:A2, make sure both are empty and only read back in A2
-                                        userEnteredValue: { formulaValue: '=QUERY(SavedWorks!A1:A, "select max(A)")' }
-                                    }
-                                ] 
-                            },
-                        ],
-                    },
-                    {
-                        startRow: 0,
-                        startColumn: 1,
-                        rowData: [
-                            { 
-                                values: [
-                                    { 
-                                        userEnteredValue: { stringValue: ''} 
-                                    }
-                                ] 
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],          
+            ],        
+            data: [
+                {
+                    startRow: 0,
+                    startColumn: 0,
+                    rowData:  [
+                        {
+                            values: [
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Work ID',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: { stringValue: 'Title' },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Authors',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Fandoms',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Relationships',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Tags',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Description',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Word Count',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Chapter Count',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: { 
+                                        stringValue: 'Status' 
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                                {
+                                    userEnteredValue: {
+                                        stringValue: 'Rating',
+                                    },
+                                    userEnteredFormat: {
+                                        textFormat: { bold: true },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+                { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
+                { startColumn: 1, columnMetadata: { pixelSize: 300 } }, //title
+                { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
+                { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
+                { startColumn: 4, columnMetadata: { pixelSize: 100 } }, //word count
+                { startColumn: 5, columnMetadata: { pixelSize: 100 } }, //chapter count
+                { startColumn: 6, columnMetadata: { pixelSize: 100 } }, //status
+            ],
+        },
     };
 
-    postRequest('https://sheets.googleapis.com/v4/spreadsheets', sheetLayout, token)
+    const url = 'https://sheets.googleapis.com/v4/spreadsheets';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + token,
+        },
+        body: JSON.stringify(sheetLayout),
+    };
+
+    log ('options: ', options);
+
+    return fetch(url, options)
         .then((response) => {
-            log('Response status:', response);
-            return response;
+            log('Response status:', response.status);
+            return response.json();
         })
         .then((data) => {
             log('Success:', data);

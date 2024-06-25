@@ -1,10 +1,6 @@
 import { log } from '../utils/logger';
 import { launchWebAuthFlow } from './utils/oauthSignIn';
 
-const scopes = [
-    'https://www.googleapis.com/auth/spreadsheets',
-]
-
 /** get token from identity API
  * 
  * @param interactive = true if you want to ask the user for permission to access their google account
@@ -75,9 +71,4 @@ export async function getSavedToken() {
             }
         });
     });
-}
-
-export function doesTokenExist(): Boolean {
-    if (globalThis.AUTH_TOKEN) return true;
-    else return false;
 }
