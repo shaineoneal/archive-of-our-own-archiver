@@ -1,4 +1,4 @@
-import { syncStorageRemove } from '.';
+import { doesUserHaveRefreshToken, syncStorageRemove } from '.';
 import log from '../utils/logger';
 import { HttpRequest, makeRequest, HttpMethod } from './httpRequests';
 //import { sendHttpRequest } from './httpRequests';
@@ -110,4 +110,21 @@ export function retrieveAccessToken(): Promise<string> {
 export async function removeAccessToken(): Promise<void> {
     log('Removing access token');
     await syncStorageRemove('access_token');
+}
+
+export async function verifyAccessToken(): Promise<void> {
+    log('Verifying access token');
+    doesUserHaveRefreshToken().then((token) => {
+        fetch('https://sheets.googleapis.com/v4/spreadsheets',{
+            method: HttpMethod.POST,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token,
+            },
+            body: ''
+        }).then((response) => {
+                log('Response status:', response.status);
+                return response.json();
+        })
+    });
 }

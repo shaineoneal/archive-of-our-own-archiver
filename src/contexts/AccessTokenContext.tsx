@@ -1,5 +1,6 @@
 import { createContext, useState } from 'react';
 import { PropsWithChildren } from '../types';
+import { syncStorageSet } from '..';
 
 /* The code `export const AccessTokenContext = createContext({ accessToken: '', setAccessToken: (accessToken:
 string) => {} });` is creating a context object called `AccessTokenContext` using the `createContext`
@@ -20,11 +21,16 @@ export const AccessTokenContext = createContext({
  * rendered as the child components of the `AccessTokenContext.Provider`.
  */
 export function AccessTokenProvider({ children }: PropsWithChildren) {
-    const [accessToken, setAccessToken] = useState<string>('');
+    const [ accessToken, setAccessTokenState ] = useState('');
+
+    const setAccessToken = (accessToken: string) => {
+        syncStorageSet('access_token', accessToken);
+        setAccessTokenState(accessToken);
+    };
 
     return (
         <AccessTokenContext.Provider value={{ accessToken, setAccessToken }}>
             {children}
         </AccessTokenContext.Provider>
     );
-}
+};

@@ -1,11 +1,10 @@
-import { ReactElement, useContext, useEffect, useState } from "react";
+import { ReactElement, useContext, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { doesUserHaveRefreshToken } from ".";
 import { syncStorageGet } from "./chrome-services/storage";
 import { retrieveAccessToken, retrieveRefreshToken, revokeRefreshToken } from "./chrome-services/tokens";
 import { LoginButton, OptionsIcon } from "./components";
 import { NoRefreshToken } from "./components/popup/NoRefreshToken";
-import { LoaderContext, LoaderProvider, AccessTokenContext, AccessTokenProvider, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
+import { AccessTokenContext, AccessTokenProvider, LoaderContext, LoaderProvider, RefreshTokenContext, RefreshTokenProvider } from "./contexts";
 import "./styles/popup.css";
 import log from "./utils/logger";
 
@@ -52,16 +51,30 @@ export function PopupBody(): ReactElement {
             if (accessToken) {
                 setAccessToken(accessToken);
                 log('User has access token');
+                
 
             } else {
                 log('User does not have access token');
             }
         }
+
+        async function checkRefreshToken() {
+            const token = await retrieveRefreshToken();
+            if (token !== 'error' && token !== '') {
+                setRefreshToken(token);
+                log('User has refresh token');
+            } else if (token === 'error') {
+                
+                log('User does not have refresh token');
+            }
+        }
         checkAccessToken().then(() => {
-            setLoader(false);
+            checkRefreshToken().then(() => {
+                setLoader(false);
+            });
         });
         //to ensure that access token reloads
-    }, [accessToken]);
+    }, [accessToken, refreshToken]);
 
     if (isLoading) {
         return (
@@ -69,12 +82,6 @@ export function PopupBody(): ReactElement {
         );
     } else {
         switch (accessToken) {
-            case 'error':
-                return (
-                    <div className="not-logged-in">
-                        <NoRefreshToken />
-                    </div>
-                );
             case '':
                 return (
                     <div className="not-logged-in">
@@ -102,14 +109,18 @@ export function PopupBody(): ReactElement {
  */
 export const Popup = (): ReactElement => {
 
+    const { accessToken, setAccessToken } = useContext(AccessTokenContext);
+    const { refreshToken, setRefreshToken } = useContext(RefreshTokenContext);
+
     useEffect(() => {
       //to ensure that the options icon reloads when the user logs in
-    }, []);
+    }, [accessToken]);
 
 
     return (
         <div id="app-container">
         <AccessTokenProvider>
+            <RefreshTokenProvider>
             <header>
                 <div className="flex-container popup">
                     <div className="logo">
@@ -126,6 +137,7 @@ export const Popup = (): ReactElement => {
                     </div>
                 </LoaderProvider>
             </main>
+            </RefreshTokenProvider>
         </AccessTokenProvider>
         </div>
     )
@@ -135,5 +147,5 @@ export const Popup = (): ReactElement => {
 export const root = createRoot(document.getElementById("root")!);
 
 root.render(
-        <Popup />
+    <Popup />
 );
