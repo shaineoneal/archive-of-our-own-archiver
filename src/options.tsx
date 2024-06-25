@@ -8,6 +8,7 @@ import log from './utils/logger';
 import { LoaderContext } from './contexts';
 import { root } from './popup'
 import { LogoutButton } from './components/popup/logout';
+import { fetchSpreadsheetUrl } from './chrome-services/spreadsheet';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -18,10 +19,10 @@ const Options = () => {
     const [ isLoading, setLoader ] = useState(false);
 
     useEffect(() => {
-        /*fetchSpreadsheetUrl().then((url) => {
+        fetchSpreadsheetUrl().then((url) => {
             log('url: ', url);
             setSpreadsheetUrl(url);
-        });*/
+        });
     }, [spreadsheetUrl]);
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

@@ -15,7 +15,7 @@ export type RefreshTokenType = RefreshTokenState | string;
  */
 export const RefreshTokenContext = createContext({
     refreshToken: '',
-    setRefreshToken: (refreshTokene) => {}
+    setRefreshToken: (refreshToken: string) => {}
 });
 
 /**
