@@ -1,10 +1,9 @@
-import { log } from '../../utils';
+import log from '../../utils/logger';
 
 // Get the sheetId from the spreadsheetUrl
 // TODO: save the sheetId in session storage
 export const getSheetId = async (spreadsheetUrl: string, authToken: string) => {
     log('getSheetId: ', spreadsheetUrl);
-    log('getSheetId', authToken);
     
     return fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetUrl.split('/')[5]}`,
