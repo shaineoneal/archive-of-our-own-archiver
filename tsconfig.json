@@ -14,7 +14,7 @@
         "allowSyntheticDefaultImports": true,
     },
     "typedocOptions": {
-        "entryPoints": [ "src/index.tsx" ],
+        "entryPoints": [ "src/index.ts" ],
         "out": "docs"
     },
     "types": [
