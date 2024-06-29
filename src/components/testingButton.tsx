@@ -1,8 +1,7 @@
-import { log } from '../utils';
-import { LoaderContext } from '../contexts';
 import { useContext } from 'react';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
-import { getCookie } from '../chrome-services/utils/cookies';
+import { LoaderContext } from '../contexts';
+import log from '../utils/logger';
 
 
 

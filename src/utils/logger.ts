@@ -7,4 +7,4 @@ const log = (function (environment) {
     };
 })(process.env.NODE_ENV);
 
-export { log };
+export default log;

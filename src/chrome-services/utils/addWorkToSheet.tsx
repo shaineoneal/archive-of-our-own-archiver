@@ -1,4 +1,4 @@
-import { log } from '../../utils';
+import log from '../../utils/logger';
 import { BaseWork } from '../../works/BaseWork';
 import { getSheetId } from './getSheetId';
 
