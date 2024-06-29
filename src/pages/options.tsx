@@ -5,7 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { NewSheet, Logout } from '../components';
 import '../styles.css';
-import { log } from '../utils/logger';
+import log from '../utils/logger';
 import { LoaderContext } from '../contexts';
 
 export function openOptionsPage() {

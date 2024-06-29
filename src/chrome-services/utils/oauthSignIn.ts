@@ -1,5 +1,4 @@
-import { createSpreadsheet } from "..";
-import { log } from "../../utils";
+import log from "../../utils/logger";
 import { createCookie } from "./cookies";
 
 const redirectURL = chrome.identity.getRedirectURL();

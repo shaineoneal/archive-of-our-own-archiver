@@ -1,4 +1,4 @@
-import { log } from '../utils/logger';
+import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
     function handleGoToSheet() {

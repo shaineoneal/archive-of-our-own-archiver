@@ -1,4 +1,4 @@
-import { log } from '../utils';
+import log from '../utils/logger';
 
 // query the spreadsheet for the works in the searchList
 export async function query(spreadsheetUrl: string, authToken: string, searchList: number[]) {

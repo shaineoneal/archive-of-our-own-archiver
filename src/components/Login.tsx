@@ -1,10 +1,7 @@
 import { useContext } from 'react';
-import { fetchToken } from '../chrome-services/authToken';
 import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
-import { LoaderContext, TokenContext } from '../contexts';
-import { log } from '../utils';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
-import { getCookie } from '../chrome-services/utils/cookies';
+import { LoaderContext, TokenContext } from '../contexts';
 
 export const Login = () => {
     const { loader, setLoader } = useContext(LoaderContext);

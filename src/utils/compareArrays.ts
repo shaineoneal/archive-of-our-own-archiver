@@ -1,4 +1,4 @@
-import { log } from './';
+import log from './logger';
 //returns bool for each item in searchList as an array
 export function compareArrays(searchList: any[], response: any[]): boolean[] {
 

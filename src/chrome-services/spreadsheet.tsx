@@ -1,5 +1,5 @@
-import { getSavedToken } from '.';
-import { log } from '../utils';
+import { getAccessToken } from '.';
+import log from '../utils/logger';
 
 /**
  *
@@ -21,7 +21,7 @@ export function fetchSpreadsheetUrl() {
             } else {
                 log("user doesn't have spreadsheet URL, creating spreadsheet");
                 //get authToken
-                const token = await getSavedToken();
+                const token = await getAccessToken();
                 if (token === null) {
                     reject('Error getting token');
                 } else {
@@ -152,7 +152,7 @@ export async function createSpreadsheet(token: string) {
         ],
         sheets: {
             properties: {
-                title: 'Saved Works',
+                title: 'Access Works',
                 sheetId: 0,
                 /*gridProperties: {
                     rowCount: 1,
