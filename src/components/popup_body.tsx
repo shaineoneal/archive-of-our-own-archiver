@@ -1,11 +1,8 @@
 import { GoToSheet, Login } from '../components';
 import { useContext, useEffect, useState } from 'react';
-import { log } from '../utils';
+import log from '../utils/logger';
 import { fetchSpreadsheetUrl, getAccessToken } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
-import { AuthLogin } from './testingButton';
-import { getCookie } from '../chrome-services/utils/cookies';
-import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 
 export const PopupBody = () => {
     //begin with loader on

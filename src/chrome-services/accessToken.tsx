@@ -1,12 +1,11 @@
-import { log } from '../utils/logger';
-import { launchWebAuthFlow } from './utils/oauthSignIn';
+import log from '../utils/logger';
 
 /** get token from identity API
  * 
  * @param interactive = true if you want to ask the user for permission to access their google account
  * @returns token or empty string
  */
-export function fetchToken(interactive?: boolean): Promise<string> {
+export function fetchNewAccessToken(interactive?: boolean): Promise<string> {
     return new Promise((resolve) => {
 
         if (interactive === true) {

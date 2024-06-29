@@ -1,6 +1,7 @@
 import { addBlurbToggle } from '../components/blurbToggles';
 import { looksRead } from '../components/looksRead';
-import { log, wrap } from '../utils';
+import { wrap } from '../utils';
+import log from '../utils/logger';
 import { WorkBlurb } from '../works/WorkBlurb';
 
 

@@ -1,5 +1,5 @@
 import '../styles.css';
-import { log } from '../utils/logger';
+import log from '../utils/logger';
 import { WorkBlurb } from '../works/WorkBlurb';
 
 /**
