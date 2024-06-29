@@ -2,13 +2,14 @@ import { useContext, useEffect } from 'react';
 import { IconContext } from 'react-icons';
 import { BsFillGearFill } from 'react-icons/bs';
 import { TokenContext } from '../contexts';
+import { log } from '../utils';
 
 export const OptionsIcon = () => {
 
     const { authToken } = useContext(TokenContext);
 
     useEffect(() => {
-        console.log('useEffect');
+       log('useEffect');
     }, [authToken]);
 
     return (
