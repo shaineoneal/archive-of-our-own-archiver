@@ -1,7 +1,7 @@
 import { GoToSheet, Login } from '../components';
 import { useContext, useEffect, useState } from 'react';
 import { log } from '../utils';
-import { fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
+import { fetchSpreadsheetUrl, getAccessToken } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
 import { AuthLogin } from './testingButton';
 import { getCookie } from '../chrome-services/utils/cookies';
@@ -24,7 +24,7 @@ export const PopupBody = () => {
 
             log('authToken: ', authToken);
             
-            getSavedToken().then((token: string) => {
+            getAccessToken().then((token: string) => {
                 if (token === '') log('user is not logged in'); //can be removed when fetchToken is fixed
                 //try to ask for a new token
                 else {
