@@ -40,7 +40,7 @@ export function fetchToken(interactive?: boolean): Promise<string> {
 
 //remove token from chrome storage and identity API
 export async function removeToken() {
-    const token = await getSavedToken();
+    const token = await getAccessToken();
 
     if (token === '') {
         throw new Error('Error getting token');
@@ -55,20 +55,31 @@ export async function removeToken() {
     });
 }
 
-
-// Get the user's saved token from chrome storage
-export async function getSavedToken() {
+/**
+ * Retrieves the access token from a cookie.
+ * @returns A promise that resolves to the access token string.
+ * @throws An error if the access token cannot be retrieved.
+ */
+export async function getAccessToken(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         chrome.cookies.get({
             name: 'authToken',
             url: 'https://archiveofourown.org',
         }, (cookie) => {
             if (cookie) {
-                log('cookie.value: ', cookie.value);
+                log('Access token cookie.value: ', cookie.value);
                 resolve(cookie.value);
             } else {
                 reject('Error getting token');
             }
         });
     });
+}
+
+export async function isAccessTokenValid(): Promise<boolean> {
+    const token = await getAccessToken();
+    if (token == '') {
+        return false;
+    }
+    return true;    
 }
