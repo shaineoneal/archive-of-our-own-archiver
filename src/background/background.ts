@@ -1,4 +1,3 @@
-import { get } from 'jquery';
 import { addWorkToSheet, fetchSpreadsheetUrl, getAccessToken } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
