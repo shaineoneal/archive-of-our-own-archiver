@@ -5,20 +5,12 @@
         "moduleResolution": "bundler",
         "module": "ES6",
         "esModuleInterop": true,
-        "sourceMap": false,
+        "sourceMap": true,
         "rootDir": "src",
         "outDir": "dist/js",
         "noEmitOnError": true,
+        "noImplicitAny": false,
         "jsx": "react-jsx",
-        "typeRoots": [ "node_modules/@types" ],
         "allowSyntheticDefaultImports": true,
-    },
-    "typedocOptions": {
-        "entryPoints": [ "src/index.ts" ],
-        "out": "docs"
-    },
-    "types": [
-        "chrome",
-        "jquery",
-    ]
+    }
 }
