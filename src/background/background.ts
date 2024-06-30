@@ -1,10 +1,8 @@
 import { addWorkToSheet, fetchSpreadsheetUrl, getAccessToken } from '../chrome-services';
 import { query } from '../chrome-services/querySheet';
-import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
+import { chromeLaunchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import log from '../utils/logger';
-
-//window.alert('background script loaded');
 
 chrome.runtime.onConnect.addListener(function (port) {
     log('checking access token')
@@ -24,7 +22,7 @@ chrome.runtime.onConnect.addListener(function (port) {
                     }
                 }).then((response) => {
                     log('im a genius', response);
-                    launchWebAuthFlow(true).then((cookie) => {
+                    chromeLaunchWebAuthFlow().then((cookie) => {
                         log('cookie', cookie);
                         chrome.runtime.reload();
                         chrome.scripting.executeScript({

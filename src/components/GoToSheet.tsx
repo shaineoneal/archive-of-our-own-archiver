@@ -1,4 +1,5 @@
 import { isAccessTokenValid } from '../chrome-services';
+import { getSyncedRefreshToken } from '../chrome-services/refreshToken';
 import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
@@ -14,7 +15,7 @@ export const GoToSheet = (props: any) => {
             </button>
             <button
                     id="test-button"
-                    onClick={() => isAccessTokenValid()}
+                    onClick={() => getSyncedRefreshToken()}
                 >
                     Test
                 </button>
