@@ -1,16 +1,17 @@
 {
-    "name": "Archive of Our Own Archiver",
-    "out": "./archive-of-our-own-archiver.wiki",
+    "cleanOutputDir": true,
+    "commentStyle": "block",
+    "darkHighlightTheme": "dark-plus",
+    "entryPoints": ["src/index.ts"],
     "exclude": [ "**/dist/**", "node_modules" ],
     "excludePrivate": true,
     "excludeProtected": true,
-    "cleanOutputDir": true,
-    "entryPoints": ["src/index.ts"],
-    "darkHighlightTheme": "dark-plus",
-    "sort": ["source-order"],
+    "name": "Archive of Our Own Archiver",
     "navigation": {
-        "includeGroups": true,
-        "includeCategories": false
+        "includeFolders": true
     },
-    "tsconfig": "tsconfig.json",
+    "out": "./archive-of-our-own-archiver.wiki",
+//    "plugin": [ "typedoc-plugin-markdown" ],
+    "sort": ["source-order"],
+    "tsconfig": "tsconfig.json"
 }

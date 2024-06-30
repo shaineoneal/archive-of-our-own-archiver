@@ -1,42 +1,44 @@
 import log from '../utils/logger';
+import { getSessionStore } from './store';
 import { HttpRequest, makeRequest, HttpMethod } from './utils/httpRequest';
+import { getSessionRefreshToken } from './refreshToken';
 
+const { oauth2 } = chrome.runtime.getManifest();
+const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 
-/** 
- * get token from identity API
- * @param interactive - true if you want to ask the user for permission to access their google account
- * @returns token or empty string
- * 
+/**
+ * Fetches a new access token using the refresh token.
+ * @returns A promise that resolves to a string representing the new access token.
  */
-export function fetchNewAccessToken(interactive?: boolean): Promise<string> {
-    return new Promise((resolve) => {
+export function fetchNewAccessToken(): Promise<string> {
 
-        if (interactive === true) {
-            //getting token interactively
-            log('getting token interactively');
-            chrome.identity.getAuthToken({interactive: true}, (token) => {
-                if (token) {
-                    resolve(token);
-                } else {
-                    chrome.identity.clearAllCachedAuthTokens(() => {
-                        log('Cleared all cached');
-                        resolve(''); // TODO: make an actual error
-                    });
-                }
-            });
-        } else {
-            // get token from identity API
-            chrome.identity.getAuthToken({ interactive: false }, (token) => {
-                if (token) {
-                    resolve(token);
-                } else {
-                    chrome.identity.clearAllCachedAuthTokens(() => {
-                        log('Cleared all cached');
-                        resolve(''); // TODO: make an actual error
-                    });
-                }
-            });
-        }
+    if (!oauth2 || !client_secret) {
+        throw new Error('Invalid oauth2 configuration');
+    }
+
+    return new Promise((resolve) => {
+        //get refresh token from session storage
+        getSessionRefreshToken().then(async (refreshToken) => {
+            if (refreshToken === '') {
+                throw new Error('Error getting refresh token');
+            }
+
+            const request: HttpRequest = {
+                method: HttpMethod.POST,
+                url: 'https://oauth2.googleapis.com/token',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: {
+                    client_id: oauth2.client_id,
+                    client_secret: client_secret,
+                    refresh_token: refreshToken,
+                    grant_type: 'refresh_token',
+                },
+            };
+
+            await makeRequest(request);
+        });
     });
 }
 
@@ -61,18 +63,15 @@ export async function removeToken() {
  * Retrieves the access token from a cookie.
  * @returns A promise that resolves to the access token string.
  * @throws An error if the access token cannot be retrieved.
+ * @group chrome-services
  */
 export async function getAccessToken(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        chrome.cookies.get({
-            name: 'authToken',
-            url: 'https://archiveofourown.org',
-        }, (cookie) => {
-            if (cookie) {
-                log('Access token cookie.value: ', cookie.value);
-                resolve(cookie.value);
+    return new Promise((resolve) => {
+        getSessionStore('authToken').then((data: any) => {
+            if (data.authToken) {
+                resolve(data.authToken);
             } else {
-                reject('Error getting token');
+                resolve('');
             }
         });
     });

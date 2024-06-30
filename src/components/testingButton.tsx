@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
+import { chromeLaunchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { LoaderContext } from '../contexts';
 import log from '../utils/logger';
 
@@ -12,7 +12,7 @@ export const AuthLogin = () => {    log('AuthLogin');
         log('handleOauthLogin');
         setLoader(true);
         
-        launchWebAuthFlow(true);
+        chromeLaunchWebAuthFlow();
         setLoader(false);
     };
 
