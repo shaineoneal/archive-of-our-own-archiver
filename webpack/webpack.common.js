@@ -4,6 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const srcDir = path.join(__dirname, "..", "src");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: {
@@ -72,6 +73,7 @@ module.exports = {
             $: require.resolve('jquery'),
             jQuery: require.resolve('jquery'),
         }),
-        new MiniCssExtractPlugin()
+        new MiniCssExtractPlugin(),
+        new Dotenv(),
     ],
 };
