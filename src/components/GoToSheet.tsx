@@ -1,3 +1,4 @@
+import { isAccessTokenValid } from '../chrome-services';
 import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
@@ -11,6 +12,12 @@ export const GoToSheet = (props: any) => {
             <button id="sheet-button" onClick={handleGoToSheet}>
                 View your sheet
             </button>
+            <button
+                    id="test-button"
+                    onClick={() => isAccessTokenValid()}
+                >
+                    Test
+                </button>
         </div>
     );
 };
