@@ -34,7 +34,7 @@ export interface HttpRequest {
     url: string;
     method: HttpMethod;
     headers: any;
-    body: any;
+    body?: any;
 };
 
 /**
