@@ -5,17 +5,37 @@ export interface Storage {
     newValue: any;
 }
 
+export const enum  StoreMethod {
+    SYNC = 'SYNC',
+    LOCAL = 'LOCAL',
+    SESSION = 'SESSION',
+}
+
 /**
  * Sets the session data in the Chrome storage.
  * @param data - The data to be stored in the session.
  * @returns A promise that resolves when the session data is set.
  * @group chrome-services
  */
-export async function setSessionStore(data: Storage) {
-    log('Session set: ', data);
-    chrome.storage.session.set({[data.key]: data.newValue}, () => {
-        log('Session set');
-    });
+export async function setStore(data: Storage, method: StoreMethod) {
+    log('Store set: ', data);
+    switch (method) {
+        case StoreMethod.SYNC:
+            chrome.storage.sync.set({[data.key]: data.newValue}, () => {
+                log('Sync set');
+            });
+            break;
+        case StoreMethod.LOCAL:
+            chrome.storage.local.set({[data.key]: data.newValue}, () => {
+                log('Local set');
+            });
+            break;
+        case StoreMethod.SESSION:
+            chrome.storage.session.set({[data.key]: data.newValue}, () => {
+                log('Session set');
+            });
+            break;
+    }
 }
 
 /**
@@ -24,22 +44,56 @@ export async function setSessionStore(data: Storage) {
  * @returns A promise that resolves with the retrieved value.
  * @group chrome-services
  */
-export async function getSessionStore(key: string) {
+export async function getStore(key: string, method: StoreMethod) {
     return new Promise((resolve, reject) => {
-        chrome.storage.session.get(key, (data) => {
-            log('Session retrieved: ', key, data);
-            resolve(data);
-        });
+        switch (method) {
+            case StoreMethod.SYNC:
+                chrome.storage.sync.get(key, (data) => {
+                    log('Sync retrieved: ', key, data);
+                    resolve(data);
+                });
+                break;
+            case StoreMethod.LOCAL:
+                chrome.storage.local.get(key, (data) => {
+                    log('Local retrieved: ', key, data);
+                    resolve(data);
+                });
+                break;
+            case StoreMethod.SESSION:
+                chrome.storage.session.get(key, (data) => {
+                    log('Session retrieved: ', key, data);
+                    resolve(data);
+                });
+                break;
+            default:
+                reject('Invalid method');
+        } 
     });
 }
 
+
 /**
- * Removes the value associated with the specified key from the session storage.
- * @param key - The key of the value to remove.
- * @group chrome-services
+ * Removes a session from the Chrome storage based on the specified key and method.
+ * @param key - The key of the session to be removed.
+ * @param method - The method of the storage (SYNC, LOCAL, or SESSION).
  */
-export async function removeSession(key: string) {
-    chrome.storage.session.remove(key, () => {
-        log('Session removed');
-    });
+export async function removeStore(key: string, method: StoreMethod) {
+
+    switch (method) {
+        case StoreMethod.SYNC:
+            chrome.storage.sync.remove(key, () => {
+                log('Sync removed');
+            });
+            break;
+        case StoreMethod.LOCAL:
+            chrome.storage.local.remove(key, () => {
+                log('Local removed');
+            });
+            break;
+        case StoreMethod.SESSION:
+            chrome.storage.session.remove(key, () => {
+                log('Session removed');
+            });
+            break;
+    }
 }

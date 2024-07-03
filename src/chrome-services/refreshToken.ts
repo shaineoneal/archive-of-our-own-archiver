@@ -1,5 +1,5 @@
 import log from "../utils/logger";
-import { getSessionStore } from "./store";
+import { getStore, StoreMethod } from "./store";
 
 /**
  * Retrieves the refresh token from Chrome storage.
@@ -23,12 +23,12 @@ export function getSyncedRefreshToken(): Promise<string> {
 }
 
 /**
- * Retrieves the session refresh token.
- * @returns A promise that resolves with the session refresh token.
+ * Retrieves the local refresh token.
+ * @returns A promise that resolves with the local refresh token.
  */
-export function getSessionRefreshToken(): Promise<string> {
+export function getLocalRefreshToken(): Promise<string> {
     return new Promise((resolve, reject) => {
-        getSessionStore('refresh_token').then((data: any) => {
+        getStore('refresh_token', StoreMethod.LOCAL).then((data: any) => {
             if (data.refresh_token) {
                 resolve(data.refresh_token);
             } else {

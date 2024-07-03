@@ -1,7 +1,7 @@
 import log from '../utils/logger';
-import { getSessionStore } from './store';
+import { getStore, StoreMethod } from './store';
 import { HttpRequest, makeRequest, HttpMethod } from './utils/httpRequest';
-import { getSessionRefreshToken } from './refreshToken';
+import { getLocalRefreshToken } from './refreshToken';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
@@ -18,7 +18,7 @@ export function fetchNewAccessToken(): Promise<string> {
 
     return new Promise((resolve) => {
         //get refresh token from session storage
-        getSessionRefreshToken().then(async (refreshToken) => {
+        getLocalRefreshToken().then(async (refreshToken) => {
             if (refreshToken === '') {
                 throw new Error('Error getting refresh token');
             }
@@ -68,7 +68,7 @@ export async function removeToken() {
 export async function getAccessToken(): Promise<string> {
     log('getAccessToken');
     return new Promise((resolve, reject) => {
-        getSessionStore('accessToken').then((data: any) => {
+        getStore('accessToken', StoreMethod.LOCAL).then((data: any) => {
             if (data.accessToken) {
                 log('getAccessToken', 'accessToken', data.accessToken);
                 resolve(data.accessToken);
@@ -105,7 +105,9 @@ export async function isAccessTokenValid(): Promise<string> {
                     reject();
                 }
             })
+        } else {
+            log('Token is invalid: ', token);
+            reject();
         }
-        reject();
     });
 }
