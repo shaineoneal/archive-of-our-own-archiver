@@ -32,16 +32,16 @@ export const Login = () => {
     const handleLogin = async () => {
         setLoader(true);
 
-        chromeLaunchWebAuthFlow().then((authFlowResponse: AuthFlowResponse) => {
-            log('authFlowResponse: ', authFlowResponse);
-            if (authFlowResponse.url && authFlowResponse.code) {
-                requestAuthorizaton(authFlowResponse).then((authRequestResponse) => {
-                    log('authRequestResponse: ', authRequestResponse);
-                    setStore({ key: 'accessToken', newValue: authRequestResponse.access_token }, StoreMethod.LOCAL);
-                    setAuthToken(authRequestResponse.access_token);
+        chromeLaunchWebAuthFlow().then((flowResp: AuthFlowResponse) => {
+            log('Auth Flow Response: ', flowResp);
+            if (flowResp.url && flowResp.code) {
+                requestAuthorizaton(flowResp).then((requestResp) => {
+                    log('requestResp: ', requestResp);
+                    setStore('accessToken', requestResp.access_token, StoreMethod.LOCAL);
+                    setAuthToken(requestResp.access_token);
 
-                    if (authRequestResponse.refresh_token) {
-                        chrome.storage.sync.set({ refresh_token: authRequestResponse.refresh_token });
+                    if (requestResp.refresh_token) {
+                        setStore('refresh_token', requestResp.refresh_token, StoreMethod.LOCAL);
                     }
                 });
             }
