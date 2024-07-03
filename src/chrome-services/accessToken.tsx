@@ -66,21 +66,46 @@ export async function removeToken() {
  * @group chrome-services
  */
 export async function getAccessToken(): Promise<string> {
-    return new Promise((resolve) => {
-        getSessionStore('authToken').then((data: any) => {
-            if (data.authToken) {
-                resolve(data.authToken);
+    log('getAccessToken');
+    return new Promise((resolve, reject) => {
+        getSessionStore('accessToken').then((data: any) => {
+            if (data.accessToken) {
+                log('getAccessToken', 'accessToken', data.accessToken);
+                resolve(data.accessToken);
             } else {
-                resolve('');
+                log('no accessToken found');
+                reject();
             }
         });
     });
 }
 
-export async function isAccessTokenValid(): Promise<boolean> {
-    const token = await getAccessToken();
-    if (token == '') {
-        return false;
-    }
-    return true;    
+/**
+ * Checks if the access token is valid by making a request to the Google OAuth2 tokeninfo endpoint.
+ * @returns A Promise that resolves to a boolean indicating whether the access token is valid.
+ */
+export async function isAccessTokenValid(): Promise<string> {
+    
+    return new Promise(async (resolve, reject) => {
+        const token = await getAccessToken();
+        if (token != '') {
+            makeRequest({
+                url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+                method: HttpMethod.GET,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            }).then((response) => {
+                if (response.status === 200) {
+                    log('Token is valid: ', response);
+                    resolve(token);
+                } else {
+                    log('Token is invalid: ', response);
+                    reject();
+                }
+            })
+        }
+        reject();
+    });
 }

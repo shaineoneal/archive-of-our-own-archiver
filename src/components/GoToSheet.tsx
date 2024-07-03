@@ -15,7 +15,7 @@ export const GoToSheet = (props: any) => {
             </button>
             <button
                     id="test-button"
-                    onClick={() => getSyncedRefreshToken()}
+                    onClick={() => isAccessTokenValid()}
                 >
                     Test
                 </button>
