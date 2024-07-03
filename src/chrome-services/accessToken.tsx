@@ -87,27 +87,32 @@ export async function getAccessToken(): Promise<string> {
 export async function isAccessTokenValid(): Promise<string> {
     
     return new Promise(async (resolve, reject) => {
-        const token = await getAccessToken();
-        if (token != '') {
-            makeRequest({
-                url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-                method: HttpMethod.GET,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                }
-            }).then((response) => {
-                if (response.status === 200) {
-                    log('Token is valid: ', response);
-                    resolve(token);
-                } else {
-                    log('Token is invalid: ', response);
-                    reject();
-                }
-            })
-        } else {
-            log('Token is invalid: ', token);
+        getAccessToken().then(async (token) => {
+            log('isAccessTokenValid', token);
+            if (token != '') {
+                makeRequest({
+                    url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+                    method: HttpMethod.GET,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    }
+                }).then((response) => {
+                    if (response.status === 200) {
+                        log('Token is valid: ', response);
+                        resolve(token);
+                    } else {
+                        log('Token is invalid: ', response);
+                        reject();
+                    }
+                })
+            } else {
+                log('Token is invalid: ', token);
+                reject();
+            }
+        }).catch((error) => {
+            log('Error getting token: ', error);
             reject();
-        }
+        });
     });
 }
