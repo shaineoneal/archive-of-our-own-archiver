@@ -1,7 +1,7 @@
 import log from '../utils/logger';
-import { getStore, StoreMethod } from './store';
-import { HttpRequest, makeRequest, HttpMethod } from './utils/httpRequest';
 import { getLocalRefreshToken } from './refreshToken';
+import { getStore, StoreMethod } from './store';
+import { HttpMethod, HttpRequest, makeRequest } from './utils/httpRequest';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
@@ -44,7 +44,7 @@ export function fetchNewAccessToken(): Promise<string> {
 
 //remove token from chrome storage and identity API
 export async function removeToken() {
-    const token = await getAccessToken();
+    const token = await getLocalAccessToken();
 
     if (token === '') {
         throw new Error('Error getting token');
@@ -65,12 +65,12 @@ export async function removeToken() {
  * @throws An error if the access token cannot be retrieved.
  * @group chrome-services
  */
-export async function getAccessToken(): Promise<string> {
-    log('getAccessToken');
+export async function getLocalAccessToken(): Promise<string> {
+    log('getLocalAccessToken');
     return new Promise((resolve, reject) => {
         getStore('accessToken', StoreMethod.LOCAL).then((data: any) => {
             if (data.accessToken) {
-                log('getAccessToken', 'accessToken', data.accessToken);
+                log('getLocalAccessToken', 'accessToken', data.accessToken);
                 resolve(data.accessToken);
             } else {
                 log('no accessToken found');
@@ -80,39 +80,35 @@ export async function getAccessToken(): Promise<string> {
     });
 }
 
+
 /**
  * Checks if the access token is valid by making a request to the Google OAuth2 tokeninfo endpoint.
- * @returns A Promise that resolves to a boolean indicating whether the access token is valid.
+ * @returns A Promise that resolves with the valid access token or rejects if the token is invalid.
  */
-export async function isAccessTokenValid(): Promise<string> {
+export async function isAccessTokenValid(token: string): Promise<string> {
     
     return new Promise(async (resolve, reject) => {
-        getAccessToken().then(async (token) => {
-            log('isAccessTokenValid', token);
-            if (token != '') {
-                makeRequest({
-                    url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-                    method: HttpMethod.GET,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    }
-                }).then((response) => {
-                    if (response.status === 200) {
-                        log('Token is valid: ', response);
-                        resolve(token);
-                    } else {
-                        log('Token is invalid: ', response);
-                        reject();
-                    }
-                })
-            } else {
-                log('Token is invalid: ', token);
-                reject();
-            }
-        }).catch((error) => {
-            log('Error getting token: ', error);
+        log('isAccessTokenValid', token);
+        if (token != '') {
+            makeRequest({
+                url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+                method: HttpMethod.GET,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                }
+            }).then((response) => {
+                if (response.status === 200) {
+                    log('Token is valid: ', response);
+                    resolve(token);
+                } else {
+                    log('Token is invalid: ', response);
+                    reject();
+                }
+            })
+        } else {
+            log('Token is invalid: ', token);
             reject();
-        });
+        }
     });
 }

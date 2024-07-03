@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { createSpreadsheet, getAccessToken } from '../chrome-services';
+import { createSpreadsheet, getLocalAccessToken } from '../chrome-services';
 import { LoaderContext } from '../contexts';
 
 export const NewSheet = () => {
@@ -7,7 +7,7 @@ export const NewSheet = () => {
 
     const handleNewSheet = async () => {
         setLoader(true);
-        createSpreadsheet(await getAccessToken())
+        createSpreadsheet(await getLocalAccessToken())
         .then((url) => {
             chrome.storage.sync.set({ spreadsheetUrl: url });
         })
