@@ -12,7 +12,8 @@ export interface Storage {
  * @group chrome-services
  */
 export async function setSessionStore(data: Storage) {
-    chrome.storage.session.set(data, () => {
+    log('Session set: ', data);
+    chrome.storage.session.set({[data.key]: data.newValue}, () => {
         log('Session set');
     });
 }
@@ -24,8 +25,9 @@ export async function setSessionStore(data: Storage) {
  * @group chrome-services
  */
 export async function getSessionStore(key: string) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         chrome.storage.session.get(key, (data) => {
+            log('Session retrieved: ', key, data);
             resolve(data);
         });
     });
