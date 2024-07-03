@@ -1,6 +1,7 @@
 import { isAccessTokenValid } from '../chrome-services';
 import { getSyncedRefreshToken } from '../chrome-services/refreshToken';
 import log from '../utils/logger';
+import { getLocalAccessToken } from '../chrome-services/accessToken';
 
 export const GoToSheet = (props: any) => {
     function handleGoToSheet() {
@@ -15,7 +16,7 @@ export const GoToSheet = (props: any) => {
             </button>
             <button
                     id="test-button"
-                    onClick={() => isAccessTokenValid()}
+                    onClick={() => getLocalAccessToken().then((token) => { isAccessTokenValid(token) }) }
                 >
                     Test
                 </button>

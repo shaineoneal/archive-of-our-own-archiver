@@ -1,4 +1,4 @@
-import { getAccessToken } from '.';
+import { getLocalAccessToken } from '.';
 import log from '../utils/logger';
 
 /**
@@ -21,7 +21,7 @@ export function fetchSpreadsheetUrl() {
             } else {
                 log("user doesn't have spreadsheet URL, creating spreadsheet");
                 //get authToken
-                const token = await getAccessToken();
+                const token = await getLocalAccessToken();
                 if (token === null) {
                     reject('Error getting token');
                 } else {
