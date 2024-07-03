@@ -1,7 +1,6 @@
 import { isAccessTokenValid } from '../chrome-services';
-import { getSyncedRefreshToken } from '../chrome-services/refreshToken';
-import log from '../utils/logger';
 import { getLocalAccessToken } from '../chrome-services/accessToken';
+import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
     function handleGoToSheet() {
