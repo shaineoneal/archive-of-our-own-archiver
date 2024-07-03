@@ -1,10 +1,5 @@
 import log from '../utils/logger';
 
-export interface Storage {
-    key: string;
-    newValue: any;
-}
-
 export const enum  StoreMethod {
     SYNC = 'SYNC',
     LOCAL = 'LOCAL',
@@ -17,21 +12,21 @@ export const enum  StoreMethod {
  * @returns A promise that resolves when the session data is set.
  * @group chrome-services
  */
-export async function setStore(data: Storage, method: StoreMethod) {
-    log('Store set: ', data);
+export async function setStore(key: string, value: any, method: StoreMethod) {
+    log('Store set: ', key, value);
     switch (method) {
         case StoreMethod.SYNC:
-            chrome.storage.sync.set({[data.key]: data.newValue}, () => {
+            chrome.storage.sync.set({[key]: value}, () => {
                 log('Sync set');
             });
             break;
         case StoreMethod.LOCAL:
-            chrome.storage.local.set({[data.key]: data.newValue}, () => {
+            chrome.storage.local.set({[key]: value}, () => {
                 log('Local set');
             });
             break;
         case StoreMethod.SESSION:
-            chrome.storage.session.set({[data.key]: data.newValue}, () => {
+            chrome.storage.session.set({[key]: value}, () => {
                 log('Session set');
             });
             break;
