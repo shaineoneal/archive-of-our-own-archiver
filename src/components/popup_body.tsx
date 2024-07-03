@@ -19,14 +19,13 @@ export const PopupBody = () => {
             if (!valid) {
                 setAuthToken('');
             }
+        }).catch(() => {
+            setAuthToken('');   
         });
 
         async function getUserInfo() {
-            //const token = refreshToken(token);
 
             log('authToken: ', authToken);
-            
-        
 
             fetchSpreadsheetUrl().then((url) => {
                 log('url: ', url);
