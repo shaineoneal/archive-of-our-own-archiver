@@ -1,7 +1,7 @@
 import { GoToSheet, Login } from '../components';
 import { useContext, useEffect, useState } from 'react';
 import log from '../utils/logger';
-import { fetchSpreadsheetUrl, getAccessToken } from '../chrome-services';
+import { fetchSpreadsheetUrl, getAccessToken, isAccessTokenValid } from '../chrome-services';
 import { TokenContext, LoaderContext } from '../contexts';
 
 export const PopupBody = () => {
@@ -14,21 +14,19 @@ export const PopupBody = () => {
     useEffect(() => {
         log('useEffect');
 
-        
+        isAccessTokenValid().then((valid) => {
+            log('valid: ', valid);
+            if (!valid) {
+                setAuthToken('');
+            }
+        });
 
         async function getUserInfo() {
             //const token = refreshToken(token);
 
             log('authToken: ', authToken);
             
-            getAccessToken().then((token: string) => {
-                if (token === '') log('user is not logged in'); //can be removed when fetchToken is fixed
-                //try to ask for a new token
-                else {
-                    setAuthToken(token);
-                    log('user is logged in');
-                }
-            });
+        
 
             fetchSpreadsheetUrl().then((url) => {
                 log('url: ', url);

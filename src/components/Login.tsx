@@ -3,7 +3,7 @@ import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { chromeLaunchWebAuthFlow, AuthFlowResponse, requestAuthorizaton } from '../chrome-services/utils/oauthSignIn';
 import { LoaderContext, TokenContext } from '../contexts';
 import log from '../utils/logger';
-import { setSessionStore } from '../chrome-services';
+import { setStore, StoreMethod } from '../chrome-services';
 
 /**
  * Component for the login functionality.
@@ -37,7 +37,7 @@ export const Login = () => {
             if (authFlowResponse.url && authFlowResponse.code) {
                 requestAuthorizaton(authFlowResponse).then((authRequestResponse) => {
                     log('authRequestResponse: ', authRequestResponse);
-                    setSessionStore({ key: 'accessToken', newValue: authRequestResponse.access_token });
+                    setStore({ key: 'accessToken', newValue: authRequestResponse.access_token }, StoreMethod.LOCAL);
                     setAuthToken(authRequestResponse.access_token);
 
                     if (authRequestResponse.refresh_token) {
