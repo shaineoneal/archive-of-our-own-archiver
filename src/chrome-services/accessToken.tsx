@@ -5,39 +5,62 @@ import { HttpMethod, HttpRequest, makeRequest } from './utils/httpRequest';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
+const redirectUri = chrome.identity.getRedirectURL();
 
 /**
- * Fetches a new access token using the refresh token.
- * @returns A promise that resolves to a string representing the new access token.
- */
+ * Fetches a new access token using the OAuth2 refresh token.
+ * 
+ * This function checks if the OAuth2 configuration is valid, retrieves the refresh token from session storage,
+ * and makes a POST request to the OAuth2 server to obtain a new access token.
+ * 
+ * @returns {Promise<string>} A promise that resolves with the new access token.
+ * @throws {Error} Throws an error if the OAuth2 configuration is invalid or if there is an error getting the refresh token.
+ * @group accessToken
+*/
 export function fetchNewAccessToken(): Promise<string> {
 
     if (!oauth2 || !client_secret) {
         throw new Error('Invalid oauth2 configuration');
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         //get refresh token from session storage
         getLocalRefreshToken().then(async (refreshToken) => {
             if (refreshToken === '') {
-                throw new Error('Error getting refresh token');
+                log('Error getting refresh token');
+                reject('Error getting refresh token');
             }
-
-            const request: HttpRequest = {
-                method: HttpMethod.POST,
-                url: 'https://oauth2.googleapis.com/token',
+            const options = {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: {
+                body: new URLSearchParams({
                     client_id: oauth2.client_id,
                     client_secret: client_secret,
                     refresh_token: refreshToken,
                     grant_type: 'refresh_token',
-                },
+                }),
             };
+            //const request: HttpRequest = {
+            //    url: 'https://oauth2.googleapis.com/token',
+            //    method: HttpMethod.POST,
+            //    headers: {
+            //        'Content-Type': 'application/x-www-form-urlencoded',
+            //    },
+            //    body: {
+            //        client_id: oauth2.client_id,
+            //        client_secret: client_secret,
+            //        refresh_token: refreshToken,
+            //        grant_type: 'refresh_token',
+            //    },
+            //};
 
-            await makeRequest(request);
+            fetch("https://oauth2.googleapis.com/token", options).then(async (response) => {
+                const parsedResponse = await response.json();
+                log('fetchNewAccessToken Response: ', parsedResponse);
+                resolve(parsedResponse.access_token);
+            });
         });
     });
 }
@@ -63,7 +86,8 @@ export async function removeToken() {
  * Retrieves the access token from a cookie.
  * @returns A promise that resolves to the access token string.
  * @throws An error if the access token cannot be retrieved.
- * @group chrome-services
+ * @group accessToken
+ * @see {@link https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=e077418731}
  */
 export async function getLocalAccessToken(): Promise<string> {
     log('getLocalAccessToken');
@@ -82,8 +106,11 @@ export async function getLocalAccessToken(): Promise<string> {
 
 
 /**
+ * ![accessTokenFlow](./accessTokenFlow.png)
  * Checks if the access token is valid by making a request to the Google OAuth2 tokeninfo endpoint.
  * @returns A Promise that resolves with the valid access token or rejects if the token is invalid.
+ * @async
+ * @group accessToken
  */
 export async function isAccessTokenValid(token: string): Promise<string> {
     

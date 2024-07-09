@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { fetchSpreadsheetUrl, getLocalAccessToken, isAccessTokenValid } from '../chrome-services';
+import { fetchNewAccessToken, fetchSpreadsheetUrl, getLocalAccessToken, isAccessTokenValid } from '../chrome-services';
 import { GoToSheet, Login } from '../components';
 import { LoaderContext, TokenContext } from '../contexts';
 import log from '../utils/logger';
@@ -19,10 +19,14 @@ export const PopupBody = () => {
                 log('valid: ', valid);
                 if (!valid) {
                     setAuthToken('');
+                } else {
+                    setAuthToken(valid);
                 }
             });
         }).catch(() => {
-            setAuthToken('');   
+            fetchNewAccessToken().then((newToken) => {
+                if (authToken !== newToken) setAuthToken(newToken);
+            });   
         });
 
         async function getUserInfo() {
@@ -46,11 +50,9 @@ export const PopupBody = () => {
     } else {
         return (
             <>
-                
                 <div>
                     {!authToken ? (<Login />) : (<GoToSheet spreadsheetUrl={spreadsheetUrl} />)}
                 </div>
-                
             </>
         );
     }

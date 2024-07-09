@@ -32,7 +32,7 @@ export const Login = () => {
     const handleLogin = async () => {
         setLoader(true);
 
-        chromeLaunchWebAuthFlow().then((flowResp: AuthFlowResponse) => {
+        chromeLaunchWebAuthFlow(true).then((flowResp: AuthFlowResponse) => {
             log('Auth Flow Response: ', flowResp);
             if (flowResp.url && flowResp.code) {
                 requestAuthorizaton(flowResp).then((requestResp) => {

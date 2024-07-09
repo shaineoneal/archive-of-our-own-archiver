@@ -11,6 +11,7 @@ export const enum  StoreMethod {
  * @param data - The data to be stored in the session.
  * @returns A promise that resolves when the session data is set.
  * @group chrome-services
+ * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=2cf546af5a
  */
 export async function setStore(key: string, value: any, method: StoreMethod) {
     log('Store set: ', key, value);
@@ -38,6 +39,7 @@ export async function setStore(key: string, value: any, method: StoreMethod) {
  * @param key - The key of the value to retrieve.
  * @returns A promise that resolves with the retrieved value.
  * @group chrome-services
+ * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=cfac41bd78
  */
 export async function getStore(key: string, method: StoreMethod) {
     return new Promise((resolve, reject) => {
@@ -71,6 +73,7 @@ export async function getStore(key: string, method: StoreMethod) {
  * Removes a session from the Chrome storage based on the specified key and method.
  * @param key - The key of the session to be removed.
  * @param method - The method of the storage (SYNC, LOCAL, or SESSION).
+ * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=03ff4aa7d3
  */
 export async function removeStore(key: string, method: StoreMethod) {
 
