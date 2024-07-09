@@ -65,13 +65,13 @@ export interface AuthRequestResponse {
  * )
  * ```
  * @see {@link  https://developer.chrome.com/docs/extensions/reference/identity/#method-chromeLaunchWebAuthFlow | Chrome Developer API Reference - chromeLaunchWebAuthFlow }
- * @returns The function `chromechromeLaunchWebAuthFlow` is returning a Promise that resolves to an
+ * @returns The function `chromeLaunchWebAuthFlow` is returning a Promise that resolves to an
  * {@link AuthFlowResponse} object.
  * 
  */
-export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
+export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
     return new Promise((resolve, reject) => {
-        chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: true }, (async (responseUrl: string | undefined) => {
+        chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: interactive }, (async (responseUrl: string | undefined) => {
 
             if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
                 log('chromechromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
@@ -82,7 +82,7 @@ export function  chromeLaunchWebAuthFlow(): Promise<AuthFlowResponse> {
 
                 var params = Object.fromEntries((url.searchParams).entries());
 
-                log('chromechromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
+                log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
                 const response: AuthFlowResponse = {
                     url: responseUrl,
@@ -117,13 +117,13 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ',
             },
-            body: {
+            body: new URLSearchParams({
                 code: authFlowResponse.code,
                 client_id: oauth2.client_id,
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
-            }
+            }),
         }).then((response) => {
             const parsedResponse = response.json();
             log('requestAuthorization Response: ', parsedResponse);
