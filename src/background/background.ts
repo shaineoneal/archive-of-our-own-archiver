@@ -22,7 +22,7 @@ chrome.runtime.onConnect.addListener(function (port) {
                     }
                 }).then((response) => {
                     log('im a genius', response);
-                    chromeLaunchWebAuthFlow().then((cookie) => {
+                    chromeLaunchWebAuthFlow(false).then((cookie) => {
                         log('cookie', cookie);
                         chrome.runtime.reload();
                         chrome.scripting.executeScript({
