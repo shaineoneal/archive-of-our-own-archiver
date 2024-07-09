@@ -8,10 +8,18 @@
     "excludeProtected": true,
     "name": "Archive of Our Own Archiver",
     "navigation": {
-        "includeFolders": true
+        "includeFolders": true,
+        "includeCategories": true
     },
     "out": "./archive-of-our-own-archiver.wiki",
-//    "plugin": [ "typedoc-plugin-markdown" ],
+    "plugin": [ "@droppedcode/typedoc-plugin-copy-assets" ],
     "sort": ["source-order"],
-    "tsconfig": "tsconfig.json"
+    "tsconfig": "tsconfig.json",
+    "copyAssets": {
+        "onlyImages": false,
+        "exclude": [],
+        "includePath": [".(png|md)$"],
+        "excludePath": [".*?exclude/.*?$"],
+        "copyHtmlImgTag": false
+    }
 }

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { PopupBody, OptionsIcon } from '../components';
 import { LoaderProvider, TokenContext, TokenProvider } from '../contexts';
 import '../styles.css';
+import { createRoot } from 'react-dom/client';
 
 
 
@@ -38,10 +39,8 @@ const Popup = () => {
     );
 };
 
-ReactDOM.render(
-    <React.StrictMode>
-        <Popup />
-    </React.StrictMode>,
+export const root = createRoot(document.getElementById("root")!);
 
-    document.getElementById('root')
+root.render(
+    <Popup />
 );
