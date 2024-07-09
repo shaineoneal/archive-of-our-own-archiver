@@ -1,5 +1,6 @@
 import { isAccessTokenValid } from '../chrome-services';
-import { getLocalAccessToken } from '../chrome-services/accessToken';
+import { fetchNewAccessToken, getLocalAccessToken } from '../chrome-services/accessToken';
+import { chromeLaunchWebAuthFlow, requestAuthorizaton, AuthFlowResponse, AuthRequestResponse } from '../chrome-services/utils/oauthSignIn';
 import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
@@ -15,7 +16,7 @@ export const GoToSheet = (props: any) => {
             </button>
             <button
                     id="test-button"
-                    onClick={() => getLocalAccessToken().then((token) => { isAccessTokenValid(token) }) }
+                    onClick={() => fetchNewAccessToken().then((token) => isAccessTokenValid(token) ) }
                 >
                     Test
                 </button>
