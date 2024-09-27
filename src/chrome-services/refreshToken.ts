@@ -7,28 +7,9 @@ import { getStore, StoreMethod } from "./store";
  * @category chrome-services
  * @returns A promise that resolves with the refresh token string.
  */
-export function getSyncedRefreshToken(): Promise<string> {
+export function getRefreshToken(): Promise<string> {
     return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(['refresh_token'], (result) => {
-            if (chrome.runtime.lastError) {
-                log('Error getting refresh token: ', chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-            }
-            else {
-                log('refresh token: ', result.refresh_token);
-                resolve(result.refresh_token);
-            }
-        });
-    });
-}
-
-/**
- * Retrieves the local refresh token.
- * @returns A promise that resolves with the local refresh token.
- */
-export function getLocalRefreshToken(): Promise<string> {
-    return new Promise((resolve, reject) => {
-        getStore('refresh_token', StoreMethod.LOCAL).then((data: any) => {
+        getStore('refresh_token', StoreMethod.SYNC).then((data: any) => {
             if (data.refresh_token) {
                 resolve(data.refresh_token);
             } else {
@@ -36,4 +17,20 @@ export function getLocalRefreshToken(): Promise<string> {
             }
         });
     });
+}
+
+/**
+ * Retrieves and validates the refresh token. Rejects if refresh token is undefined.
+ * @returns A promise that resolves with the validated refresh token.
+ */
+export async function getValidRefreshToken(): Promise<string> {
+    log('getValidRefreshToken')
+
+    const refreshToken = await getRefreshToken() 
+
+    if (!refreshToken) {
+        throw new Error('Refresh token is undefined');
+    }
+
+    return refreshToken;
 }

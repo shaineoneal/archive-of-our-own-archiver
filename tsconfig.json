@@ -2,15 +2,15 @@
     "compilerOptions": {
         "strict": true,
         "target": "es6",
-        "moduleResolution": "bundler",
+        "moduleResolution": "node",
         "module": "ES6",
         "esModuleInterop": true,
         "sourceMap": true,
         "rootDir": "src",
         "outDir": "dist/js",
-        "noEmitOnError": true,
         "noImplicitAny": false,
         "jsx": "react-jsx",
         "allowSyntheticDefaultImports": true,
+        "noEmit": false
     }
 }
