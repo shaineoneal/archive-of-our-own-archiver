@@ -36,14 +36,14 @@
     "rimraf": "^5.0.7",
     "source-map-loader": "^5.0.0",
     "ts-loader": "^9.5.1",
-    "typedoc": "^0.26.3",
+    "typedoc": "^0.26.7",
     "typedoc-theme-hierarchy": "^5.0.0",
     "typescript": "^5.5.2",
     "webpack-cli": "^5.1.4",
     "zustand": "^4.5.4"
   },
   "dependencies": {
-    "@droppedcode/typedoc-plugin-copy-assets": "^1.0.11",
-    "@types/react-icons": "^3.0.0"
+    "@types/react-icons": "^3.0.0",
+    "webpack": "^5.95.0"
   }
 }
