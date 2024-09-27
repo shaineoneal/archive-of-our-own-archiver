@@ -6,6 +6,13 @@ const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 const { oauth2 } = chrome.runtime.getManifest();
 const redirectUri = chrome.identity.getRedirectURL();
 
+/**
+ * Creates the URL for the OAuth authorization flow.
+ * 
+ * @returns The authorization URL.
+ * @throws An error if the OAuth2 configuration is invalid.
+ * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#authorization-code-flow | Google Identity API - Authorization code flow}
+ */
 const createAuthUrl = (): string => {
 
     if (!oauth2 || !oauth2.client_id || !oauth2.scopes) {
@@ -117,15 +124,15 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ',
             },
-            body: new URLSearchParams({
+            body: {
                 code: authFlowResponse.code,
                 client_id: oauth2.client_id,
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
-            }),
-        }).then((response) => {
-            const parsedResponse = response.json();
+            },
+        }).then(async (response) => {
+            const parsedResponse = await response.json();
             log('requestAuthorization Response: ', parsedResponse);
             resolve(parsedResponse);
             
