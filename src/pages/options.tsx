@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUser } from '../utils/zustand';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { NewSheet, Logout } from '../components';
-import { LoaderContext } from '../contexts';
 import { createRoot } from 'react-dom/client';
 import '../styles.css';
 export function openOptionsPage() {
@@ -17,15 +16,6 @@ export function openOptionsPage() {
 const Options = () => {
     const spreadsheetId = useUser().spreadsheetId;
 
-    /**
-     * State for the loader
-     * @type {boolean}
-     */
-    const [ loader, setLoader ] = useState(false);
-
-    /**
-     * Side effect to run when the component mounts
-     */
     useEffect(() => {
     }, []);
 
@@ -55,9 +45,7 @@ const Options = () => {
                     <div>Google Spreadsheets URL</div>
                     <input type="text" defaultValue={`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`} />
                     <Logout />
-                    <LoaderContext.Provider value={{ loader, setLoader }}>
-                        <NewSheet />
-                    </LoaderContext.Provider>
+                    <NewSheet />
                 </div>
             </main>
         </>
