@@ -1,29 +1,23 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { IconContext } from 'react-icons';
 import { BsFillGearFill } from 'react-icons/bs';
 import { TokenContext } from '../contexts';
 import log from '../utils/logger';
+import { useUser } from '../utils/zustand/userStore';
 
 export const OptionsIcon = () => {
 
-    const { authToken } = useContext(TokenContext);
+    const accessT = useUser().accessToken;
 
     useEffect(() => {
        log('optionsIcon useEffect');
-    }, [authToken]);
+    }, [accessT]);
 
     return (
         <IconContext.Provider value={{ className: 'settings-icon' }}>
             <a href="options.html">
-                {authToken ? <BsFillGearFill /> : null}
+                {accessT ? <BsFillGearFill /> : null}
             </a>
         </IconContext.Provider>
     );
 }
-
-
-
-
-
-
-

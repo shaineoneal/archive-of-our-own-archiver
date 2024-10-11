@@ -36,21 +36,21 @@ chrome.runtime.onConnect.addListener(function (port) {
             });
         } else if (msg.message === 'fetchSpreadsheetUrl') {
             log('fetchSpreadsheetUrl message recieved');
-            fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                log('port spreadsheetUrl', spreadsheetUrl);
-                port.postMessage({ spreadsheetUrl: spreadsheetUrl });
-            });
+            //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+            //    log('port spreadsheetUrl', spreadsheetUrl);
+            //    port.postMessage({ spreadsheetUrl: spreadsheetUrl });
+            //});
         } else if (msg.message === 'querySheet') {
             log('querySheet message recieved');
             getLocalAccessToken().then((token) => {
                 log('token', token);
-                fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                    query(spreadsheetUrl, token, msg.list).then((response) => {
-                        log('response', response);
-                        const responseArray = compareArrays(msg.list, response.table.rows);
-                        port.postMessage({ reason: 'querySheet', response: responseArray });
-                    });
-                });
+                //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                //    query(spreadsheetUrl, token, msg.list).then((response) => {
+                //        log('response', response);
+                //        const responseArray = compareArrays(msg.list, response.table.rows);
+                //        port.postMessage({ reason: 'querySheet', response: responseArray });
+                //    });
+                //});
             }).catch((error) => {
                 log('error', error);
                 port.postMessage({ reason: 'querySheet', response: error });
@@ -70,12 +70,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
         log('addWorkToSheet message recieved');
         getLocalAccessToken().then((token) => {
             log('token', token);
-            fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
-                    log('response', response);
-                    sendResponse({ response: response });
-                });
-            });
+            //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+            //    addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+            //        log('response', response);
+            //        sendResponse({ response: response });
+            //    });
+            //});
         });
     }
 });
