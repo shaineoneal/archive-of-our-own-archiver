@@ -5,8 +5,9 @@ import log from '../utils/logger';
 
 export const GoToSheet = (props: any) => {
     function handleGoToSheet() {
-        log('going to url: ', props.spreadsheetUrl);
-        chrome.tabs.create({ url: props.spreadsheetUrl });
+        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0`;
+        log('going to url: ', props.spreadsheetId);
+        chrome.tabs.create({ url: spreadsheetUrl });
     }
 
     return (

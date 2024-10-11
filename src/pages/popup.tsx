@@ -1,24 +1,22 @@
-import React, { useContext, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect } from 'react';
 import { PopupBody, OptionsIcon } from '../components';
-import { LoaderProvider, TokenContext, TokenProvider } from '../contexts';
 import '../styles.css';
 import { createRoot } from 'react-dom/client';
+import { useUser } from '../utils/zustand';
 
 
 
 const Popup = () => {
 
-    const { authToken } = useContext(TokenContext);
+    const user = useUser();
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
-    }, [authToken]);
+    }, [user]);
 
 
     return (
-        
-        <TokenProvider>
+        <>
             <header>
                 <div className="flex-container">
                     <div className="logo">
@@ -29,13 +27,11 @@ const Popup = () => {
                 </div>
             </header>
             <main>
-                <LoaderProvider>
-                    <div className="body">
-                        <PopupBody />
-                    </div>
-                </LoaderProvider>
+                <div className="body">
+                    <PopupBody />
+                </div>
             </main>
-        </TokenProvider>
+        </>
     );
 };
 
