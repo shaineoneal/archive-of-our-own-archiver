@@ -1,8 +1,9 @@
 import { useContext } from 'react';
-import { createSpreadsheet, fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
+import { createSpreadsheet } from '../chrome-services/spreadsheet';
 import { chromeLaunchWebAuthFlow, AuthFlowResponse, requestAuthorizaton } from '../chrome-services/utils/oauthSignIn';
 import { useLoaderStore } from '../utils/zustand/loaderStore';
-import { useActions } from '../utils/zustand/userStore';
+import { useActions, useUser } from '../utils/zustand/userStore';
+import { create } from 'zustand';
 
 
 /**
@@ -16,6 +17,7 @@ import { useActions } from '../utils/zustand/userStore';
 export const Login = () => {
     const { loader, setLoader } = useLoaderStore();
     const { setAccessToken, setRefreshToken, setSpreadsheetId } = useActions();
+    const spreadsheetId = useUser().spreadsheetId;
 
     // TODO: set up full userstore on login
 
@@ -39,7 +41,9 @@ export const Login = () => {
                     if (refresh_token) {
                         setRefreshToken(refresh_token);
                     }
-                    setSpreadsheetId(await fetchSpreadsheetUrl(access_token));
+                    if (spreadsheetId === undefined){
+                        setSpreadsheetId(await createSpreadsheet(access_token));
+                    }
                 }
             );
         }
