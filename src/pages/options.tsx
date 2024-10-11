@@ -1,35 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect, useState } from 'react';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { NewSheet, Logout } from '../components';
 import '../styles.css';
-import log from '../utils/logger';
 import { LoaderContext } from '../contexts';
+import { createRoot } from 'react-dom/client';
+import { useUser } from '../utils/zustand';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
 
 const Options = () => {
-    const [spreadsheetUrl, setSpreadsheetUrl] = useState('');
+    const spreadsheetId = useUser().spreadsheetId;
+
     const [ loader, setLoader ] = useState(false);
 
     useEffect(() => {
-        fetchSpreadsheetUrl().then((url) => {
-            log('url: ', url);
-            setSpreadsheetUrl(url);
-        });
-    }, [spreadsheetUrl]);
+    }, []);
 
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        log('heard message: ', message);
-        if (message.message === 'spreadsheetUrlChanged') {
-            setSpreadsheetUrl(message.newUrl);
-            setLoader(false);
-        }
-    });
+    //TODO: evalate if this is needed
+    //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    //    log('heard message: ', message);
+    //    if (message.message === 'spreadsheetUrlChanged') {
+    //        setSpreadsheetUrl(message.newUrl);
+    //        setLoader(false);
+    //    }
+    //});
 
     return (
         <>
@@ -46,7 +43,7 @@ const Options = () => {
             <main>
                 <div className="options-container">
                     <div>Google Spreadsheets URL</div>
-                    <input type="text" defaultValue={spreadsheetUrl} />
+                    <input type="text" defaultValue={`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`} />
                     <Logout />
                     <LoaderContext.Provider value={{ loader, setLoader }}>
                         <NewSheet />
@@ -57,10 +54,8 @@ const Options = () => {
     );
 };
 
-ReactDOM.render(
-    <React.StrictMode>
-        <Options />
-    </React.StrictMode>,
+export const root = createRoot(document.getElementById("root")!);
 
-    document.getElementById('root')
+root.render(
+    <Options />
 );

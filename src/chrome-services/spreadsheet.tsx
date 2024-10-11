@@ -1,42 +1,32 @@
+import { identity } from 'remeda';
 import { getLocalAccessToken } from '.';
 import log from '../utils/logger';
+import { getActions, useUser } from '../utils/zustand';
 
 /**
  *
  * @returns user's spreadsheet URL
  */
-export function fetchSpreadsheetUrl() {
+export async function fetchSpreadsheetUrl(accessT: string) {
+    
     log('getting spreadsheet URL');
-    return new Promise<string>((resolve, reject) => {
-        // check for a stored spreadsheet URL
-        chrome.storage.sync.get(['spreadsheetUrl'], async (result) => {
-            log('fetchSpreadSheetUrl result: ', result);
-            const spreadsheetUrl = result.spreadsheetUrl;
-            log('spreadsheetUrl type: ', typeof spreadsheetUrl);
-            // does the user have a spreadsheet URL already?
-            if (spreadsheetUrl !== undefined && Object.keys(spreadsheetUrl).length !== 0) {
-                log('user has spreadsheet URL: ', spreadsheetUrl);
-                log('spreadsheetID: ', String(spreadsheetUrl).split('/')[5]);
-                resolve(spreadsheetUrl);
-            } else {
-                log("user doesn't have spreadsheet URL, creating spreadsheet");
-                //get authToken
-                const token = await getLocalAccessToken();
-                if (token === null) {
-                    reject('Error getting token');
-                } else {
-                    //create spreadsheet
-                    await createSpreadsheet(token)
-                        .then((url) => {
-                            resolve(url);
-                        })
-                        .catch((error) => {
-                            reject(error);
-                        });
-                }
+    const spreadsheetId = useUser().spreadsheetId;
+    const { setSpreadsheetId } = getActions();
+    log('spreadsheetId: ', spreadsheetId);
+
+    if(spreadsheetId === undefined) {
+        log('spreadsheetId is undefined');
+        try{
+            const id = await createSpreadsheet(accessT);
+
+            if(id !== undefined) {
+                setSpreadsheetId(id);
             }
-        });
-    });
+        } catch (e) {
+            log('error getting spreadsheet id: ', e);
+        }
+    }
+    return spreadsheetId;
 }
 
 /**
@@ -295,8 +285,7 @@ export async function createSpreadsheet(token: string) {
         })
         .then((data) => {
             log('Success:', data);
-            chrome.storage.sync.set({ spreadsheetUrl: data.spreadsheetUrl });
-            return data.spreadsheetUrl;
+            return data.spreadsheetId;
         })
         .catch((error) => {
             log('Error creating spreadsheet:', error);

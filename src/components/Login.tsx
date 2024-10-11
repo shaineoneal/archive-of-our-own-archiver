@@ -1,9 +1,8 @@
 import { useContext } from 'react';
-import { fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
+import { createSpreadsheet, fetchSpreadsheetUrl } from '../chrome-services/spreadsheet';
 import { chromeLaunchWebAuthFlow, AuthFlowResponse, requestAuthorizaton } from '../chrome-services/utils/oauthSignIn';
-import { LoaderContext, TokenContext } from '../contexts';
-import log from '../utils/logger';
-import { setStore, StoreMethod } from '../chrome-services';
+import { useLoaderStore } from '../utils/zustand/loaderStore';
+import { useActions } from '../utils/zustand/userStore';
 
 
 /**
@@ -15,8 +14,8 @@ import { setStore, StoreMethod } from '../chrome-services';
  * @returns the LoginButton component 
  */
 export const Login = () => {
-    const { loader, setLoader } = useContext(LoaderContext);
-    const { setAuthToken } = useContext(TokenContext);
+    const { loader, setLoader } = useLoaderStore();
+    const { setAccessToken, setRefreshToken, setSpreadsheetId } = useActions();
 
     // TODO: set up full userstore on login
 
@@ -27,39 +26,25 @@ export const Login = () => {
      * Set the spreadsheet URL in the sync storage.
      */
     const handleLogin = async () => {
-
         setLoader(true);    //show loader
 
         // Launch the web authentication flow with interactive set to true
-        chromeLaunchWebAuthFlow(true).then((flowResp: AuthFlowResponse) => {
-            log('Auth Flow Response: ', flowResp);
+        const flowResp = await chromeLaunchWebAuthFlow(true);
 
-            // If the response has a URL and a code, request authorization
-            if (flowResp.url && flowResp.code) {
-                requestAuthorizaton(flowResp).then((requestResp) => {
-                    log('requestResp: ', requestResp);
-
-                    // Set the access token in the local storage
-                    setStore('accessToken', requestResp.access_token, StoreMethod.LOCAL);
-
-                    // Set the access token in the user store
-                    setAuthToken(requestResp.access_token);
-
-                    // If the response has a refresh token, set it in the local storage
-                    if (requestResp.refresh_token) {
-                        setStore('refresh_token', requestResp.refresh_token, StoreMethod.SYNC);
+        // If the response has a URL and a code, request authorization
+        if (flowResp.url && flowResp.code) {
+            await requestAuthorizaton(flowResp).then(
+                async ({ access_token, refresh_token }) => {
+                    setAccessToken(access_token);
+                    if (refresh_token) {
+                        setRefreshToken(refresh_token);
                     }
-                });
-            }
-        }).then(() => {
-            // Fetch the spreadsheet URL
-            fetchSpreadsheetUrl().then((url) => {
-                chrome.storage.sync.set({ spreadsheetUrl: url });
-                
-            });
-        }).then(() => { 
-            setLoader(false);       //hide loader
-        });
+                    setSpreadsheetId(await fetchSpreadsheetUrl(access_token));
+                }
+            );
+        }
+
+        setLoader(false);
     };
 
     return (
@@ -68,8 +53,8 @@ export const Login = () => {
             <div className="login">
                 <button
                     id="login-button"
-                    onClick={() => handleLogin()}
-                    disabled={loader}
+                    onClick={ handleLogin }
+                    disabled={ loader }
                 >
                     Login to Google
                 </button>
