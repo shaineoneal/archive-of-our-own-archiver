@@ -1,61 +1,58 @@
-import { useContext, useEffect, useState } from 'react';
-import { exchangeRefreshForAccessToken, fetchSpreadsheetUrl, getLocalAccessToken, getValidAccessToken, isAccessTokenValid, setStore, StoreMethod } from '../chrome-services';
+import { useEffect } from 'react';
+import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../chrome-services';
 import { GoToSheet, Login } from '../components';
-import { LoaderContext, TokenContext } from '../contexts';
-import log from '../utils/logger';
-import { getRefreshToken, getValidRefreshToken } from '../chrome-services/refreshToken';
+import { getActions, useUser, useLoaderStore } from '../utils/zustand/';
 
+
+/**
+ * The popup body component.
+ * This component will display either a login or the GoToSheet component based on the user's login status.
+ * If the user is not logged in, it will display a login button.
+ * If the user is logged in, it will display the GoToSheet component.
+ * If the user's access token is invalid, it will exchange the refresh token for an access token.
+ * If the user does not have a refresh token, it will log the user out.
+ * @category Component
+ * @group Popup
+ * @returns the PopupBody component
+ */
 export const PopupBody = () => {
-    //begin with loader on
-    const { loader, setLoader } = useContext(LoaderContext);
-    const [ spreadsheetUrl, setSpreadsheetUrl ] = useState<string>('');
-    
-    const { authToken, setAuthToken } = useContext(TokenContext);
-
+    const { loader, setLoader } = useLoaderStore();
+    const user = useUser();
+    const { setAccessToken } = getActions();
 
     useEffect(() => {
-        const fetchTokens = async () => {
-            // if both access and refresh token exist, use them
-            try {
-                const accessT = await getValidAccessToken();
-                const refreshT = await getValidRefreshToken();
-
-                if (accessT && refreshT) {
-                    setAuthToken(accessT);
-                }
-            } catch (error) {
-                // if only refresh token exists, exchange it for an access token
-                try {
-                    const refreshT = await getValidRefreshToken();
-                    log("refreshT: ", refreshT);
-                    const response = await exchangeRefreshForAccessToken(refreshT);
-                    log("exchangeRefreshTokenForAccessToken response: ", response);
-                    if (authToken !== response) {
-                        setAuthToken(response);
-                        await setStore('accessToken', response, StoreMethod.LOCAL);
-                    }
-                } catch (error) {
-                    log("No refresh token found.", error)
-                }
-            } finally {
+        (async () => {
+            if (user.accessToken === undefined) {
+                // If the user is not logged in, set the loader to false and return
                 setLoader(false);
+                return;
             }
-        };
 
-        fetchTokens();
-    }, []);
+            try {
+                // Check if the access token is valid
+                await isAccessTokenValid(user.accessToken);
+            } catch (error) {
+                // If there is an error, exchange the refresh token for an access token
+                if (user.refreshToken) {
+                    const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                    if (newAccessToken !== user.accessToken) {
+                        // If the new access token is different from the current one, update the access token
+                        setAccessToken(newAccessToken);
+                    }
+                } else {
+                    // If the user does not have a refresh token, log them out
+                    setAccessToken(undefined);
+                }
+            }
+            // Set the loader to false
+            setLoader(false);
+        })();
+    }, [user]);
 
-    if (loader) {
-        return <div className="loader"></div>;
-    } else {
-        return (
-            <>
-                <div>
-                    {!authToken ? (<Login />) : (<GoToSheet spreadsheetUrl={spreadsheetUrl} />)}
-                </div>
-            </>
-        );
-    }
+    return loader ? <div className="loader" /> 
+        : user.accessToken === undefined ? <Login /> 
+            : <GoToSheet spreadsheetId={user.spreadsheetId} />;
 };
+
 
 export default PopupBody;
