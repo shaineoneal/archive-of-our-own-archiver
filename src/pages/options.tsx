@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react';
+import { useUser } from '../utils/zustand';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { NewSheet, Logout } from '../components';
-import '../styles.css';
 import { LoaderContext } from '../contexts';
 import { createRoot } from 'react-dom/client';
-import { useUser } from '../utils/zustand';
-
+import '../styles.css';
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
 
+/**
+ * The main component for the options page.
+ * @returns the Options component
+ */
 const Options = () => {
     const spreadsheetId = useUser().spreadsheetId;
 
+    /**
+     * State for the loader
+     * @type {boolean}
+     */
     const [ loader, setLoader ] = useState(false);
 
+    /**
+     * Side effect to run when the component mounts
+     */
     useEffect(() => {
     }, []);
 

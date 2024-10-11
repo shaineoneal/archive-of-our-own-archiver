@@ -22,7 +22,7 @@ export const PopupBody = () => {
 
     useEffect(() => {
         (async () => {
-            if (user.accessToken === undefined) {
+            if (user.accessToken === undefined || user.spreadsheetId === undefined) {
                 // If the user is not logged in, set the loader to false and return
                 setLoader(false);
                 return;
@@ -51,8 +51,7 @@ export const PopupBody = () => {
 
     return loader ? <div className="loader" /> 
         : user.accessToken === undefined ? <Login /> 
-            : <GoToSheet spreadsheetId={user.spreadsheetId} />;
+            : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
 };
-
 
 export default PopupBody;
