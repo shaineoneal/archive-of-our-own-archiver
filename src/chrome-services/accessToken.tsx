@@ -98,31 +98,26 @@ export async function getLocalAccessToken(): Promise<string> {
  * @group accessToken
  */
 export async function isAccessTokenValid(token: string): Promise<string> {
-    
-    return new Promise(async (resolve, reject) => {
-        if (token != '') {
-            makeRequest({
-                url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-                method: HttpMethod.GET,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                }
-            }).then((response) => {
-                if (response.status === 200) {
-                    log('Token is valid: ', response);
-                    resolve(token);
-                } else {
-                    log('Token is invalid: ', response);
-                    reject();
-                }
-            })
-        } else {
-            log('Token is invalid: ', token);
-            reject();
+    if (token === '') {
+        throw new Error('Token is invalid');
+    }
+
+    const response = await makeRequest({
+        url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+        method: HttpMethod.GET,
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
         }
     });
+
+    if (response.ok) {
+        return token;
+    } else {
+        throw new Error('Token is invalid');
+    }
 }
+
 
 
 /**
