@@ -41,7 +41,7 @@ export async function setStore(key: string, value: any, method: StoreMethod) {
  * @group chrome-services
  * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=cfac41bd78
  */
-export async function getStore(key: string, method: StoreMethod) {
+export async function getStore(key: string, method: StoreMethod): Promise<{ [key: string]: string }>  {
     return new Promise((resolve, reject) => {
         switch (method) {
             case StoreMethod.SYNC:
