@@ -17,7 +17,7 @@ const Options = () => {
     const spreadsheetId = useUser().spreadsheetId;
 
     useEffect(() => {
-    }, []);
+    }, [spreadsheetId]);
 
     //TODO: evalate if this is needed
     //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
