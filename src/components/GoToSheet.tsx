@@ -1,26 +1,20 @@
-import { isAccessTokenValid } from '../chrome-services';
-import { exchangeRefreshForAccessToken, getLocalAccessToken } from '../chrome-services/accessToken';
-import { chromeLaunchWebAuthFlow, requestAuthorizaton, AuthFlowResponse, AuthRequestResponse } from '../chrome-services/utils/oauthSignIn';
 import log from '../utils/logger';
 
-export const GoToSheet = (props: any) => {
-    function handleGoToSheet() {
-        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0`;
-        log('going to url: ', props.spreadsheetId);
-        chrome.tabs.create({ url: spreadsheetUrl });
-    }
+/**
+ * Component that displays a button to go to the user's sheet.
+ * @param props.spreadsheetId The id of the spreadsheet to go to.
+ * @returns A button that when clicked will go to the user's sheet.
+ */
+export const GoToSheet = (props: { spreadsheetId: string }) => {
+    const handleGoToSheet = () => {
+        chrome.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0` });
+    };
 
     return (
         <div className="loggedIn">
             <button id="sheet-button" onClick={handleGoToSheet}>
                 View your sheet
             </button>
-            <button
-                    id="test-button"
-                    //onClick={() => exchangeRefreshForAccessToken().then((token) => isAccessTokenValid(token.access_token) ) }
-                >
-                    Test
-                </button>
         </div>
     );
 };
