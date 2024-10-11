@@ -1,34 +1,4 @@
-import { identity } from 'remeda';
-import { getLocalAccessToken } from '.';
 import log from '../utils/logger';
-import { getActions, useUser } from '../utils/zustand';
-
-/**
- *
- * @returns user's spreadsheet URL
- */
-export async function fetchSpreadsheetUrl(accessT: string) {
-    
-    log('getting spreadsheet URL');
-    const spreadsheetId = useUser().spreadsheetId;
-    const { setSpreadsheetId } = getActions();
-    log('spreadsheetId: ', spreadsheetId);
-
-    if(spreadsheetId === undefined) {
-        log('spreadsheetId is undefined');
-        try{
-            const id = await createSpreadsheet(accessT);
-
-            if(id !== undefined) {
-                setSpreadsheetId(id);
-            }
-        } catch (e) {
-            log('error getting spreadsheet id: ', e);
-        }
-    }
-    return spreadsheetId;
-}
-
 /**
  *
  * @param token user's auth token
