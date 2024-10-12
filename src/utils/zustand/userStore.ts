@@ -7,12 +7,14 @@ import log from "../logger";
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
 const DEFAULT_USER: UserDataType = {
+    isLoggedIn: false,
     accessToken: undefined,
     refreshToken: undefined,
     spreadsheetId: undefined,
 }
 
 type UserDataType = {
+    isLoggedIn: boolean;
     accessToken: string | undefined;
     refreshToken: string | undefined;
     spreadsheetId: string | undefined;
@@ -25,7 +27,7 @@ type UserStoreType = {
         setAccessToken: (accessT: string | undefined) => void;
         setRefreshToken: (refreshT: string | undefined) => void;
         setSpreadsheetId: (spreadsheetId: string | undefined) => void;
-        login: (user: UserDataType) => Promise<void>;
+        userStoreLogin: (accessToken: string | undefined, refreshToken: string | undefined) => Promise<void>;
         logout: () => void;
     };
 }
@@ -46,11 +48,11 @@ export const userStore = create<UserStoreType>()(
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
 
-                login: async ({ accessToken, refreshToken, spreadsheetId }) => {
-                    const { setAccessToken, setRefreshToken, setSpreadsheetId } = get().actions;
+                userStoreLogin: async ( accessToken, refreshToken ) => {
+                    const { setAccessToken, setRefreshToken } = get().actions;
+                    set({ user: { ...get().user, isLoggedIn: true } });
                     setAccessToken(accessToken);
                     setRefreshToken(refreshToken);
-                    setSpreadsheetId(spreadsheetId);
                 },
                 logout: () => {
                     set({ user: DEFAULT_USER });
