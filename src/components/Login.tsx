@@ -1,3 +1,4 @@
+import { revokeRefreshToken } from '../chrome-services/refreshToken';
 import { createSpreadsheet } from '../chrome-services/spreadsheet';
 import { chromeLaunchWebAuthFlow, requestAuthorizaton } from '../chrome-services/utils/oauthSignIn';
 import { useLoaderStore, useActions, useUser } from '../utils/zustand';
@@ -7,13 +8,13 @@ import { useLoaderStore, useActions, useUser } from '../utils/zustand';
  * Component for the login functionality.
  * Allows users to log in to Google and obtain an access token.
  * The component displays a login button and a loader while the authentication flow is in progress.
- * @category Component
+ * @component
  * @group Popup
  * @returns the LoginButton component 
  */
 export const Login = () => {
     const { loader, setLoader } = useLoaderStore();
-    const { setAccessToken, setRefreshToken, setSpreadsheetId } = useActions();
+    const { userStoreLogin, setSpreadsheetId } = useActions();
     const spreadsheetId = useUser().spreadsheetId;
 
     // TODO: set up full userstore on login
@@ -34,9 +35,11 @@ export const Login = () => {
         if (flowResp.url && flowResp.code) {
             await requestAuthorizaton(flowResp).then(
                 async ({ access_token, refresh_token }) => {
-                    setAccessToken(access_token);
+                    //TODO: if no refresh token, fix it
                     if (refresh_token) {
-                        setRefreshToken(refresh_token);
+                        userStoreLogin( access_token, refresh_token );
+                    } else {
+                        revokeRefreshToken(access_token);
                     }
                     if (spreadsheetId === undefined){
                         setSpreadsheetId(await createSpreadsheet(access_token));
