@@ -1,6 +1,6 @@
+archive-of-our-own-archiver.wiki/**
 node_modules/**
 dist/**
 .env
 .vscode
 .vs
-
