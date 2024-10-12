@@ -19,9 +19,15 @@ export function getRefreshToken(): Promise<string> {
     });
 }
 
+
 /**
- * Retrieves and validates the refresh token. Rejects if refresh token is undefined.
- * @returns A promise that resolves with the validated refresh token.
+ * Retrieves a valid refresh token from Chrome storage.
+ * 
+ * If the refresh token does not exist in storage, it will throw an error.
+ * 
+ * @category chrome-services
+ * @returns A promise that resolves with a valid refresh token string.
+ * @throws An error if the refresh token does not exist in storage.
  */
 export async function getValidRefreshToken(): Promise<string> {
     log('getValidRefreshToken')
@@ -33,4 +39,28 @@ export async function getValidRefreshToken(): Promise<string> {
     }
 
     return refreshToken;
+}
+
+/**
+ * Revokes the given access token.
+ * 
+ * @category chrome-services
+ * @param accessToken The access token to revoke.
+ * @returns A promise that resolves with no value.
+ * @throws {Error} If the request to revoke the token fails.
+ */
+export async function revokeRefreshToken(accessToken: string): Promise<void> {
+    log('revokeRefreshToken')
+
+    const response = await fetch('https://oauth2.googleapis.com/revoke', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `token=${accessToken}`,
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to revoke refresh token');
+    }
 }
