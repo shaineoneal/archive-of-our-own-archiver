@@ -1,7 +1,7 @@
+import { omit } from "remeda";
 import { create, useStore } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
-import { getStore, removeStore, setStore, StoreMethod } from "../../chrome-services";
-import { omit } from "remeda";
+import { getStore, removeStore, setStore, StoreMethod } from "../chrome-services";
 import log from "../logger";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */

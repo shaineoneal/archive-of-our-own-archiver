@@ -1,1 +1,2 @@
-export * from './blurbsPage';
+export * from './content-scripts';
+export * from './popup';
