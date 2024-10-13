@@ -9,7 +9,7 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     entry: {
       popup: path.join(srcDir, 'pages/popup/popup.tsx'),
-      options: path.join(srcDir, 'pages/popup/options.tsx'),
+      options: path.join(srcDir, 'pages/popup/options/options.tsx'),
       background: path.join(srcDir, 'pages/background/background.ts'),
       content_script: path.join(srcDir, 'pages/content-scripts/content_script.tsx'),
     },

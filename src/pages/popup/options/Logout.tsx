@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { removeToken } from '../../utils/chrome-services';
+import { removeToken } from '../../../utils/chrome-services';
 
 export const Logout = () => {
     const [style, setStyle] = useState("");
@@ -17,5 +17,3 @@ export const Logout = () => {
         </div>
     );
 };
-
-export default Logout;

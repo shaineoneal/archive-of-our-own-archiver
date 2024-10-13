@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
-import { useUser } from '../../utils/zustand';
+import { useUser } from '../../../utils/zustand';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import { NewSheet, Logout } from '../popup';
+import { NewSheet, Logout } from './';
 import { createRoot } from 'react-dom/client';
-import '../../styles.css';
+import '../../../styles.css';
+
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../../utils/chrome-services';
-import { GoToSheet, Login } from '../popup';
-import { getActions, useUser, useLoaderStore } from '../../utils/zustand/';
+import { GoToSheet, Login } from '..';
+import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../../../utils/chrome-services';
+import { getActions, useLoaderStore, useUser } from '../../../utils/zustand';
 
 
 /**

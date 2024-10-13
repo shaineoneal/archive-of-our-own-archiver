@@ -1,4 +1,3 @@
-import log from '../../utils/logger';
 
 /**
  * Component that displays a button to go to the user's sheet.

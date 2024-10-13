@@ -1,5 +1,5 @@
-import { createSpreadsheet, getLocalAccessToken } from '../../utils/chrome-services';
-import { useLoaderStore } from '../../utils/zustand';
+import { createSpreadsheet, getLocalAccessToken } from '../../../utils/chrome-services';
+import { useLoaderStore } from '../../../utils/zustand';
 
 export const NewSheet = () => {
     const { loader, setLoader } = useLoaderStore();
