@@ -10,30 +10,30 @@ chrome.runtime.onConnect.addListener(function (port) {
         log('port message', msg);
         if (msg.message === 'getAuthToken') {
             log('getAuthToken message recieved');
-            getLocalAccessToken().then((token) => {
-                log('port token', token);
-                port.postMessage({ token: token });
-            }).catch(() => {
-                log('port token', 'none');
-                chrome.scripting.executeScript({
-                    target: { tabId: port.sender?.tab?.id || 0 },
-                    func: () => {
-                        window.confirm('You need an auth token! Log back in?');
-                    }
-                }).then((response) => {
-                    log('im a genius', response);
-                    chromeLaunchWebAuthFlow(false).then((cookie) => {
-                        log('cookie', cookie);
-                        chrome.runtime.reload();
-                        chrome.scripting.executeScript({
-                            target: { tabId: port.sender?.tab?.id || 0 },
-                            func: () => {
-                               window.location.reload();
-                            }
-                        });
-                    });
-                });
-            });
+            //getLocalAccessToken().then((token) => {
+            //    log('port token', token);
+            //    port.postMessage({ token: token });
+            //}).catch(() => {
+            //    log('port token', 'none');
+            //    chrome.scripting.executeScript({
+            //        target: { tabId: port.sender?.tab?.id || 0 },
+            //        func: () => {
+            //            window.confirm('You need an auth token! Log back in?');
+            //        }
+            //    }).then((response) => {
+            //        log('im a genius', response);
+            //        chromeLaunchWebAuthFlow(false).then((cookie) => {
+            //            log('cookie', cookie);
+            //            chrome.runtime.reload();
+            //            chrome.scripting.executeScript({
+            //                target: { tabId: port.sender?.tab?.id || 0 },
+            //                func: () => {
+            //                   window.location.reload();
+            //                }
+            //            });
+            //        });
+            //    });
+            //});
         } else if (msg.message === 'fetchSpreadsheetUrl') {
             log('fetchSpreadsheetUrl message recieved');
             //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
@@ -42,19 +42,19 @@ chrome.runtime.onConnect.addListener(function (port) {
             //});
         } else if (msg.message === 'querySheet') {
             log('querySheet message recieved');
-            getLocalAccessToken().then((token) => {
-                log('token', token);
-                //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                //    query(spreadsheetUrl, token, msg.list).then((response) => {
-                //        log('response', response);
-                //        const responseArray = compareArrays(msg.list, response.table.rows);
-                //        port.postMessage({ reason: 'querySheet', response: responseArray });
-                //    });
-                //});
-            }).catch((error) => {
-                log('error', error);
-                port.postMessage({ reason: 'querySheet', response: error });
-            });
+            //getLocalAccessToken().then((token) => {
+            //    log('token', token);
+            //    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+            //        query(spreadsheetUrl, token, msg.list).then((response) => {
+            //            log('response', response);
+            //            const responseArray = compareArrays(msg.list, response.table.rows);
+            //            port.postMessage({ reason: 'querySheet', response: responseArray });
+            //        });
+            //    });
+            //}).catch((error) => {
+            //    log('error', error);
+            //    port.postMessage({ reason: 'querySheet', response: error });
+            //});
         } else if (msg.message === 'sendLoginNotification') {
             log('sendLoginNotification message recieved');
             
@@ -68,15 +68,15 @@ chrome.runtime.onConnect.addListener(function (port) {
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     if (msg.message === 'addWorkToSheet') {
         log('addWorkToSheet message recieved');
-        getLocalAccessToken().then((token) => {
-            log('token', token);
-            //fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-            //    addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
-            //        log('response', response);
-            //        sendResponse({ response: response });
-            //    });
-            //});
-        });
+        //getLocalAccessToken().then((token) => {
+        //    log('token', token);
+        //    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+        //        addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+        //            log('response', response);
+        //            sendResponse({ response: response });
+        //        });
+        //    });
+        //});
     }
 });
 
