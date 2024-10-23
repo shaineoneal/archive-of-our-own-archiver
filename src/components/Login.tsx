@@ -1,6 +1,7 @@
-import { revokeRefreshToken } from '../chrome-services/refreshToken';
+import { revokeTokens } from '../chrome-services/refreshToken';
 import { createSpreadsheet } from '../chrome-services/spreadsheet';
 import { chromeLaunchWebAuthFlow, requestAuthorizaton } from '../chrome-services/utils/oauthSignIn';
+import log from '../utils/logger';
 import { useLoaderStore, useActions, useUser } from '../utils/zustand';
 
 
@@ -39,7 +40,9 @@ export const Login = () => {
                     if (refresh_token) {
                         userStoreLogin( access_token, refresh_token );
                     } else {
-                        revokeRefreshToken(access_token);
+                        userStoreLogin( access_token, undefined );
+                        log("No refresh token found, revoking tokens");
+                        revokeTokens(access_token);
                     }
                     if (spreadsheetId === undefined){
                         setSpreadsheetId(await createSpreadsheet(access_token));
