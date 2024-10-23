@@ -113,8 +113,10 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
     return new Promise((resolve, reject) => {
 
         if (!oauth2 || !oauth2.client_id || !oauth2.scopes || !client_secret) {
-            log('oauth2: ', oauth2);
-            throw new Error('Invalid oauth2 configuration');
+            log('requestAuth oauth2: ', oauth2);
+            if (!client_secret) {
+                log('requestAuth client_secret: ', client_secret);
+            }
         }
 
         makeRequest({
@@ -126,7 +128,7 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
             },
             body: {
                 code: authFlowResponse.code,
-                client_id: oauth2.client_id,
+                client_id: oauth2!.client_id,       // TODO: later problem
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
@@ -141,4 +143,4 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
         });
         
     });
-}
+} 

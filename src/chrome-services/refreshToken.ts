@@ -1,5 +1,6 @@
 import log from "../utils/logger";
 import { getStore, StoreMethod } from "./store";
+import { HttpMethod, makeRequest } from "./utils/httpRequest";
 
 /**
  * Retrieves the refresh token from Chrome storage.
@@ -49,18 +50,20 @@ export async function getValidRefreshToken(): Promise<string> {
  * @returns A promise that resolves with no value.
  * @throws {Error} If the request to revoke the token fails.
  */
-export async function revokeRefreshToken(accessToken: string): Promise<void> {
-    log('revokeRefreshToken')
+export async function revokeTokens(accessToken: string): Promise<void> {
+    log('revokeTokens')
 
-    const response = await fetch('https://oauth2.googleapis.com/revoke', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `token=${accessToken}`,
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to revoke refresh token');
-    }
+    //const response = await makeRequest({
+    //    url: `https://oauth2.googleapis.com/revoke?token=${accessToken}`,
+    //    method: HttpMethod.POST,
+    //    headers: {
+    //        'Content-Type': 'application/x-www-form-urlencoded',
+    //    }
+    //});
+//
+    //log('response', response);
+//
+    //if (!response.ok) {
+    //    throw new Error('Failed to revoke refresh token');
+    //}
 }

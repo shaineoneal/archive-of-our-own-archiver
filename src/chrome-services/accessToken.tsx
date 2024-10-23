@@ -18,7 +18,7 @@ const redirectUri = chrome.identity.getRedirectURL();
  * @group accessToken
  * @see {@link https://www.xiegerts.com/post/chrome-extension-google-oauth-refresh-token/ | Handling Google OAuth Refresh Tokens in a Chrome Extension}
 */
-export async function exchangeRefreshForAccessToken(refreshT: string): Promise<string> {
+export async function exchangeRefreshForAccessToken(refreshT: string): Promise<string | undefined> {
     if (!oauth2 || !client_secret) {
         throw new Error('Invalid oauth2 configuration');
     }
@@ -28,7 +28,7 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
     }
 
     const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com/token',
+        url: 'https://oauth2.googleapis.com',
         method: HttpMethod.POST,
         headers: {
             'Content-Type': 'application/json',
@@ -41,12 +41,12 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         },
     });
 
+    log('exchangeRefreshForAccessToken Response: ', response);
     if (!response.ok) {
-        throw new Error(response.statusText);
+        return undefined;
     }
 
     const parsedResponse = await response.json();
-    log('fetchNewAccessToken Response: ', parsedResponse);
     return parsedResponse.access_token;
 }
 

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../chrome-services';
 import { GoToSheet, Login } from '../components';
 import { getActions, useUser, useLoaderStore } from '../utils/zustand/';
+import log from '../utils/logger';
 
 
 /**
@@ -18,11 +19,11 @@ import { getActions, useUser, useLoaderStore } from '../utils/zustand/';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     const user = useUser();
-    const { setAccessToken } = getActions();
+    const { setAccessToken, setIsLoggedIn } = getActions();
 
     useEffect(() => {
         (async () => {
-            if (user.accessToken === undefined || user.spreadsheetId === undefined) {
+            if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
                 // If the user is not logged in, set the loader to false and return
                 setLoader(false);
                 return;
@@ -35,11 +36,17 @@ export const PopupBody = () => {
                 // If there is an error, exchange the refresh token for an access token
                 if (user.refreshToken) {
                     const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                    if (newAccessToken === undefined) {
+                        // If the new access token is undefined, log them out
+                        setAccessToken(undefined);
+                        setIsLoggedIn(false);
+                    }
                     if (newAccessToken !== user.accessToken) {
                         // If the new access token is different from the current one, update the access token
                         setAccessToken(newAccessToken);
                     }
                 } else {
+                    log('User does not have a refresh token');
                     // If the user does not have a refresh token, log them out
                     setAccessToken(undefined);
                 }
@@ -50,7 +57,7 @@ export const PopupBody = () => {
     }, [user]);
 
     return loader ? <div className="loader" /> 
-        : user.accessToken === undefined ? <Login /> 
+        : ( user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined ) ? <Login /> 
             : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
 };
 
