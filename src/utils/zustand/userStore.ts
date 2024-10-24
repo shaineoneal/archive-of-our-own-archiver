@@ -1,6 +1,6 @@
 import { create, useStore } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
-import { getStore, removeStore, setStore, StoreMethod } from "../../chrome-services";
+import { getStore, removeStore, setStore, StoreMethod } from "../chrome-services";
 import { omit } from "remeda";
 import log from "../logger";
 
