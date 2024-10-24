@@ -1,7 +1,3 @@
-import { addWorkToSheet, getLocalAccessToken } from '../chrome-services';
-import { query } from '../chrome-services/querySheet';
-import { chromeLaunchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
-import { compareArrays } from '../utils/compareArrays';
 import log from '../utils/logger';
 
 chrome.runtime.onConnect.addListener(function (port) {
