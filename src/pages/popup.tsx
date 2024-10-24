@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { OptionsIcon, PopupBody } from '../components';
+import { PopupBody } from './popup/main/popup_body';
 import { useUser } from '../utils/zustand';
+import { OptionsIcon } from '../pages/popup/main/optionsIcon';
 import '../styles.css';
 
 
