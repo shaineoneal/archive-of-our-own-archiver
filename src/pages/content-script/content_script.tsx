@@ -1,5 +1,5 @@
-import { standardBlurbsPage } from './pages';
-import log from './utils/logger';
+import { standardBlurbsPage } from '..';
+import log from '../../utils/logger';
 
 log('log: content_script.tsx loaded');
 connectPort().then((port) => {
