@@ -1,4 +1,4 @@
-import log from '../utils/logger';
+import log from '../../utils/logger';
 
 chrome.runtime.onConnect.addListener(function (port) {
     log('checking access token')
