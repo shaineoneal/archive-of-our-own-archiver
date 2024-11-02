@@ -33,17 +33,21 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
+    "remeda": "^2.15.0",
     "rimraf": "^5.0.7",
+    "sass": "^1.80.2",
+    "sass-loader": "^16.0.2",
     "source-map-loader": "^5.0.0",
+    "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
-    "typedoc": "^0.26.7",
-    "typedoc-theme-hierarchy": "^5.0.0",
+    "typedoc": "^0.26.9",
+    "typedoc-theme-hierarchy": "^5.0.3",
     "typescript": "^5.5.2",
+    "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "zustand": "^4.5.4"
   },
   "dependencies": {
-    "@types/react-icons": "^3.0.0",
-    "webpack": "^5.95.0"
+    "typedoc-github-theme": "^0.1.2"
   }
 }

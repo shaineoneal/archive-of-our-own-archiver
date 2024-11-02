@@ -1,24 +1,34 @@
-import React, { useContext, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { PopupBody, OptionsIcon } from '../components';
-import { LoaderProvider, TokenContext, TokenProvider } from '../contexts';
-import '../styles.css';
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { PopupBody } from './popup/main/popup_body';
+import { useUser } from '../utils/zustand';
+import { OptionsIcon } from '../pages/popup/main/optionsIcon';
+import '../styles.css';
 
 
 
+/**
+ * The popup component.
+ * This component will display either a login or the GoToSheet component based on the user's login status.
+ * If the user is not logged in, it will display a login button.
+ * If the user is logged in, it will display the GoToSheet component.
+ * If the user's access token is invalid, it will exchange the refresh token for an access token.
+ * If the user does not have a refresh token, it will log the user out.
+ * @category Component
+ * @group Popup
+ * @returns the Popup component
+ */
 const Popup = () => {
 
-    const { authToken } = useContext(TokenContext);
+    const user = useUser();
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
-    }, [authToken]);
+    }, [user]);
 
 
     return (
-        
-        <TokenProvider>
+        <>
             <header>
                 <div className="flex-container">
                     <div className="logo">
@@ -29,13 +39,11 @@ const Popup = () => {
                 </div>
             </header>
             <main>
-                <LoaderProvider>
-                    <div className="body">
-                        <PopupBody />
-                    </div>
-                </LoaderProvider>
+                <div className="body">
+                    <PopupBody />
+                </div>
             </main>
-        </TokenProvider>
+        </>
     );
 };
 
