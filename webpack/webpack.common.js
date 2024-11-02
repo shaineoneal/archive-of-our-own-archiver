@@ -9,9 +9,9 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
     entry: {
       popup: path.join(srcDir, 'pages/popup.tsx'),
-      options: path.join(srcDir, 'pages/options.tsx'),
-      background: path.join(srcDir, 'background/background.ts'),
-      content_script: path.join(srcDir, 'content_script.tsx'),
+      options: path.join(srcDir, 'pages/popup/options/options.tsx'),
+      background: path.join(srcDir, 'pages/background/background.ts'),
+      content_script: path.join(srcDir, 'pages/content-script/content_script.tsx'),
     },
     output: {
         path: path.join(__dirname, "../dist/js"),
@@ -27,6 +27,14 @@ module.exports = {
     },
     module: {
         rules: [
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    "css-loader",
+                    "sass-loader",
+                ],
+            },
             {
                 test: /\.tsx?$/,
                 use: "ts-loader",

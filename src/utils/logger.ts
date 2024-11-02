@@ -1,6 +1,6 @@
 const log = (function (environment) {
     if (environment === 'production') {
-        return () => {};
+        //return () => {};
     }
     return (...args: any) => {
         console.log(...args);

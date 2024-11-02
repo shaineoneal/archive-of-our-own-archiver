@@ -12,14 +12,6 @@
         "includeCategories": true
     },
     "out": "./archive-of-our-own-archiver.wiki",
-    "plugin": [ "@droppedcode/typedoc-plugin-copy-assets" ],
-    "sort": ["source-order"],
     "tsconfig": "tsconfig.json",
-    "copyAssets": {
-        "onlyImages": false,
-        "exclude": [],
-        "includePath": [".(png|md)$"],
-        "excludePath": [".*?exclude/.*?$"],
-        "copyHtmlImgTag": false
-    }
+    "plugin": ["typedoc-github-theme"],
 }
