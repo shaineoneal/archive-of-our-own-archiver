@@ -1,97 +1,69 @@
 import log from '../logger';
 
-export const enum  StoreMethod {
+/**
+ * Enum representing the storage methods.
+ */
+export const enum StoreMethod {
     SYNC = 'SYNC',
     LOCAL = 'LOCAL',
     SESSION = 'SESSION',
 }
 
 /**
- * Sets the session data in the Chrome storage.
- * @param data - The data to be stored in the session.
- * @returns A promise that resolves when the session data is set.
- * @group chrome-services
- * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=2cf546af5a
+ * Handles storage operations.
+ *
+ * @param method - The storage method to use.
+ * @param action - The action to perform ('set', 'get', 'remove').
+ * @param key - The key for the storage item.
+ * @param value - The value to set (only for 'set' action).
+ * @returns The result of the storage operation.
  */
-export async function setStore(key: string, value: any, method: StoreMethod) {
-    log('Store set: ', key, value);
-    switch (method) {
-        case StoreMethod.SYNC:
-            chrome.storage.sync.set({[key]: value}, () => {
-                log('Sync set');
-            });
-            break;
-        case StoreMethod.LOCAL:
-            chrome.storage.local.set({[key]: value}, () => {
-                log('Local set');
-            });
-            break;
-        case StoreMethod.SESSION:
-            chrome.storage.session.set({[key]: value}, () => {
-                log('Session set');
-            });
-            break;
+function handleStore(method: StoreMethod, action: 'set' | 'get' | 'remove', key: string, value?: any): any {
+    const storage = chrome.storage[method.toLowerCase()];
+    const callback = (data?: any) => {
+        log(`${method} ${action}: `, key, data || value);
+        return data;
+    };
+
+    if (method === StoreMethod.SYNC) {
+        return new Promise((resolve, reject) => {
+            if (action === 'set') storage.set({ [key]: value }, (data) => resolve(callback(data)));
+            else if (action === 'get') storage.get(key, (data) => resolve(callback(data)));
+            else if (action === 'remove') storage.remove(key, (data) => resolve(callback(data)));
+            else reject('Invalid action');
+        });
+    } else {
+        if (action === 'set') return callback(storage.set({ [key]: value }));
+        else if (action === 'get') return callback(storage.get(key));
+        else if (action === 'remove') return callback(storage.remove(key));
+        else throw new Error('Invalid action');
     }
 }
 
 /**
- * Retrieves the value associated with the specified key from the session storage.
- * @param key - The key of the value to retrieve.
+ * Sets a value in the specified storage method.
+ *
+ * @param key - The key for the storage item.
+ * @param value - The value to set.
+ * @param method - The storage method to use.
+ * @returns A promise that resolves when the value is set.
+ */
+export const setStore = (key: string, value: any, method: StoreMethod) => handleStore(method, 'set', key, value);
+
+/**
+ * Gets a value from the specified storage method.
+ *
+ * @param key - The key for the storage item.
+ * @param method - The storage method to use.
  * @returns A promise that resolves with the retrieved value.
- * @group chrome-services
- * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=cfac41bd78
  */
-export async function getStore(key: string, method: StoreMethod): Promise<{ [key: string]: string }>  {
-    return new Promise((resolve, reject) => {
-        switch (method) {
-            case StoreMethod.SYNC:
-                chrome.storage.sync.get(key, (data) => {
-                    log('Sync retrieved: ', key, data);
-                    resolve(data);
-                });
-                break;
-            case StoreMethod.LOCAL:
-                chrome.storage.local.get(key, (data) => {
-                    log('Local retrieved: ', key, data);
-                    resolve(data);
-                });
-                break;
-            case StoreMethod.SESSION:
-                chrome.storage.session.get(key, (data) => {
-                    log('Session retrieved: ', key, data);
-                    resolve(data);
-                });
-                break;
-            default:
-                reject('Invalid method');
-        } 
-    });
-}
-
+export const getStore = (key: string, method: StoreMethod) => handleStore(method, 'get', key);
 
 /**
- * Removes a session from the Chrome storage based on the specified key and method.
- * @param key - The key of the session to be removed.
- * @param method - The method of the storage (SYNC, LOCAL, or SESSION).
- * @see https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=03ff4aa7d3
+ * Removes a value from the specified storage method.
+ *
+ * @param key - The key for the storage item.
+ * @param method - The storage method to use.
+ * @returns A promise that resolves when the value is removed.
  */
-export async function removeStore(key: string, method: StoreMethod) {
-
-    switch (method) {
-        case StoreMethod.SYNC:
-            chrome.storage.sync.remove(key, () => {
-                log('Sync removed');
-            });
-            break;
-        case StoreMethod.LOCAL:
-            chrome.storage.local.remove(key, () => {
-                log('Local removed');
-            });
-            break;
-        case StoreMethod.SESSION:
-            chrome.storage.session.remove(key, () => {
-                log('Session removed');
-            });
-            break;
-    }
-}
+export const removeStore = (key: string, method: StoreMethod) => handleStore(method, 'remove', key);

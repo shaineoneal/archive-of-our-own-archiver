@@ -1,6 +1,7 @@
 import '../../styles.css';
 import log from '../../utils/logger';
 import { WorkBlurb } from './WorkBlurb';
+import { MessageName, sendMessage } from '../../utils/chrome-services';
 
 /**
  * 
@@ -17,14 +18,21 @@ export function addBlurbToggle(workWrap: Element) {
     innerToggle.textContent = 'Add Work';           //TODO: change for all buttons
     innerToggle.className = 'toggle';
 
-    innerToggle.addEventListener('click', (e) => {
+    innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
         log('blurbToggle clicked!: ', work);
 
-        chrome.runtime.sendMessage({message: 'addWorkToSheet', work: WorkBlurb.createWork(work)});
-        work.classList.add('read-work');
+        const workBlurb = WorkBlurb.createWork(work);
+        log('workBlurb: ', workBlurb);
+        chrome.runtime.sendMessage({message: 'addWorkToSheet', work: workBlurb}, (response) => {
+            log('content script response: ', response);
+            if (response) {
+                log('response: ', response.response);
+                work.classList.add('read-work');
+            }
+        });
     });
 
     log('blurbToggles: ', work);
