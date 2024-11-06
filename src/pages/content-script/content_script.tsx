@@ -1,23 +1,33 @@
 import { standardBlurbsPage } from '..';
 import log from '../../utils/logger';
 
+
 log('log: content_script.tsx loaded');
+pageTypeDetect();
+
+/*
 connectPort().then((port) => {
-    getToken(port).then((token) => {
-        log('token: ', token);
-        pageTypeDetect(port);
-    });
-}
-);
+    log('connected to port');
+
+    //getToken(port).then((token) => {
+    //    log('token: ', token);
+    //    pageTypeDetect();
+    //});
+});
+
+
+
+
 //open up connection to background script
 async function connectPort(): Promise<chrome.runtime.Port> {
-    const port = await chrome.runtime.connect({ name: 'content_script' });
+    const port = chrome.runtime.connect({ name: 'content_script' });
     log('port: ', port);
     return port;
 }
 
 //confirm port connection and get auth token
 async function getToken(port: chrome.runtime.Port) {
+
     const token = new Promise<string>((resolve) => {
         port.postMessage({ message: 'getAuthToken' });
         port.onMessage.addListener((msg) => {
@@ -43,14 +53,14 @@ async function getToken(port: chrome.runtime.Port) {
         return '';
     });
 }
-
+*/
 
 //TODO: check for work v. bookmark page first
 
-async function pageTypeDetect(port: chrome.runtime.Port) {
-    if(document.querySelector('.index.group.work')) {    //AFIK, all blurbs pages have these classes
+async function pageTypeDetect() {
+    if(document.querySelector('.index.group.work')) {    //AFAIK, all blurbs pages have these classes
         //standard 20 work page
-        standardBlurbsPage(port);
+        standardBlurbsPage();
 
     } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
         log('Work Page');

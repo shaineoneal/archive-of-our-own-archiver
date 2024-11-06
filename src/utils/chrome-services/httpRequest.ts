@@ -35,7 +35,7 @@ export interface HttpRequest {
     method: HttpMethod;
     headers: any;
     body?: any;
-};
+}
 
 /**
  * The above type represents an HTTP response with a status code and a body.

@@ -13,11 +13,11 @@ export function openOptionsPage() {
  * The main component for the options page.
  * @returns the Options component
  */
-const Options = () => {
-    const spreadsheetId = useUser().spreadsheetId;
+const Options =  () => {
+
 
     useEffect(() => {
-    }, [spreadsheetId]);
+    }, []);
 
     //TODO: evalate if this is needed
     //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -32,9 +32,9 @@ const Options = () => {
         <>
             <header>
                 <div className="flex-container">
-                    <IconContext.Provider value={{ className: 'back-icon' }}>
+                    <IconContext.Provider value={{className: 'back-icon'}}>
                         <a href="popup.html">
-                            <BiArrowBack />
+                            <BiArrowBack/>
                         </a>
                     </IconContext.Provider>
                     <div className="title">AO3E Rewritten&apos;s Options</div>
@@ -43,9 +43,8 @@ const Options = () => {
             <main>
                 <div className="options-container">
                     <div>Google Spreadsheets URL</div>
-                    <input type="text" defaultValue={`https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`} />
-                    <Logout />
-                    <NewSheet />
+                    <Logout/>
+                    <NewSheet/>
                 </div>
             </main>
         </>
