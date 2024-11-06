@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import log from '../../../utils/logger';
 import { useActions, useUser } from '../../../utils/zustand';
+import { revokeTokens } from "../../../utils/chrome-services";
 
 export const Logout = () => {
     const [style, setStyle] = useState("");
@@ -13,8 +14,10 @@ export const Logout = () => {
         if (accessToken !== undefined) {
             log("revokeTokens");
             //TODO: FIX THIS
-            //revokeTokens(accessToken); // this line breaks the entire content script
-            //bc its trying to access chrome sync storage??
+            const response = await revokeTokens(accessToken);
+            if (response) {
+                logout();
+            }
 
         }
         // TODO: needs to still logout if the user does not have a refresh token
