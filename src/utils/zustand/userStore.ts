@@ -3,6 +3,7 @@ import { persist, StorageValue } from "zustand/middleware";
 import { getStore, removeStore, setStore, StoreMethod } from "../chrome-services";
 import { omit } from "remeda";
 import log from "../logger";
+import {useStoreWithEqualityFn} from "zustand/traditional";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
@@ -14,43 +15,46 @@ const DEFAULT_USER: UserDataType = {
 
 type UserDataType = {
     isLoggedIn: boolean;
-    accessToken: string | undefined;
-    refreshToken: string | undefined;
-    spreadsheetId?: string | undefined;
+    accessToken?: string;
+    refreshToken?: string;
+    spreadsheetId?: string;
+}
+
+type UserActionsType = {
+    setIsLoggedIn: (isLoggedIn: boolean) => void;
+    setAccessToken: (accessT?: string) => void;
+    setRefreshToken: (refreshT?: string) => void;
+    setSpreadsheetId: (spreadsheetId?: string) => void;
+    userStoreLogin: (accessToken?: string, refreshToken?: string) => void;
+    logout: () => void;
 }
 
 type UserStoreType = {
     user: UserDataType;
-
-    actions: {
-        setIsLoggedIn: (isLoggedIn: boolean) => void;
-        setAccessToken: (accessT: string | undefined) => void;
-        setRefreshToken: (refreshT: string | undefined) => void;
-        setSpreadsheetId: (spreadsheetId: string | undefined) => void;
-        userStoreLogin: (accessToken: string | undefined, refreshToken: string | undefined) => Promise<void>;
-        logout: () => void;
-    };
+    actions: UserActionsType;
 }
 
-export const userStore = create<UserStoreType>()(
+/**
+ * Zustand store for user data with persistence.
+ */
+export const UserStore = create<UserStoreType>()(
     persist(
-        (set, get) => ({
+        (set, get): UserStoreType => ({
             user: DEFAULT_USER,
 
             actions: {
                 setIsLoggedIn: (isLoggedIn: boolean) => {
                     set({ user: { ...get().user, isLoggedIn: isLoggedIn } });
                 },
-                setAccessToken: (accessT: string | undefined) => {
+                setAccessToken: (accessT?: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
                 },
-                setRefreshToken: (refreshT: string | undefined) => {
+                setRefreshToken: (refreshT?: string) => {
                     set({ user: { ...get().user, refreshToken: refreshT } });
                 },
-                setSpreadsheetId: (spreadsheetId: string | undefined) => {
+                setSpreadsheetId: (spreadsheetId?: string) => {
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
-
                 userStoreLogin: async ( accessToken, refreshToken ) => {
                     const { setAccessToken, setRefreshToken } = get().actions;
                     set({ user: { ...get().user, isLoggedIn: true } });
@@ -66,10 +70,10 @@ export const userStore = create<UserStoreType>()(
             name: 'user-store',
             storage: {
                 async getItem(name: string): Promise<StorageValue<any>> {
-                    
+
                     const data = await getStore(name, StoreMethod.SYNC);
                     log('getItem: ', name, 'data: ', data);
-                    return { 
+                    return {
                         state: data[name]
                     };
                 },
@@ -95,25 +99,21 @@ export type ExtractState<S> = S extends {
     }
     ? T
     : never;
-    type Params<U> = Parameters<typeof useStore<typeof userStore, U>>;
+    type Params<U> = Parameters<typeof useStore<typeof UserStore, U>>;
 
-const userSelector = (state: ExtractState<typeof userStore>) => state.user;
-const isLoggedInSelector = (state: ExtractState<typeof userStore>) => state.user.isLoggedIn;
-const accessTokenSelector = (state: ExtractState<typeof userStore>) => state.user.accessToken;
-const refreshTokenSelector = (state: ExtractState<typeof userStore>) => state.user.refreshToken;
-const spreadsheetIdSelector = (state: ExtractState<typeof userStore>) => state.user.spreadsheetId;
-const actionsSelector = (state: ExtractState<typeof userStore>) => state.actions;
+const userSelector = (state: ExtractState<typeof UserStore>) => state.user;
+const actionsSelector = (state: ExtractState<typeof UserStore>) => state.actions;
 
-export const getUser = () => userSelector(userStore.getState());
-export const getIsLoggedIn = () => isLoggedInSelector(userStore.getState());
-export const getAccessToken = () => accessTokenSelector(userStore.getState());
-export const getRefreshToken = () => refreshTokenSelector(userStore.getState());
-export const getSpreadsheetId = () => spreadsheetIdSelector(userStore.getState())
-export const getActions = () => actionsSelector(userStore.getState())
-
-function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStore(userStore, selector, equalityFn);
+export function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
+    return useStoreWithEqualityFn(UserStore, selector, equalityFn);
 }
 
+/**
+ * Custom hook to use the user data from synced storage.
+ */
 export const useUser = () => useUserStore(userSelector);
+
+/**
+ * Custom hook to use the actions from synced storage.
+ */
 export const useActions = () => useUserStore(actionsSelector);

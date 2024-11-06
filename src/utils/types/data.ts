@@ -1,10 +1,9 @@
 export const WORK_STATUSES = [
     'reading',
     'toRead',
-    'onHold',
+    'skipped',
     'dropped',
     'read',
-    'reread',
     '' /* default */,
 ] as const;
 
