@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../../../utils/chrome-services';
 import { GoToSheet, Login } from './';
 import log from '../../../utils/logger';
-import { getActions, useLoaderStore, useUser } from '../../../utils/zustand';
+import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
 
 
 /**
@@ -19,7 +19,7 @@ import { getActions, useLoaderStore, useUser } from '../../../utils/zustand';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     const user = useUser();
-    const { setAccessToken, setIsLoggedIn } = getActions();
+    const { setAccessToken, setIsLoggedIn } = useActions();
 
     useEffect(() => {
         (async () => {

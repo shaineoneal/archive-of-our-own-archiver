@@ -27,7 +27,7 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
     }
 
     const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com',
+        url: 'https://oauth2.googleapis.com/token',
         method: HttpMethod.POST,
         headers: {
             'Content-Type': 'application/json',
@@ -66,13 +66,6 @@ export async function removeToken() {
     });
 }
 
-/**
- * Retrieves the access token from a cookie.
- * @returns A promise that resolves to the access token string.
- * @throws An error if the access token cannot be retrieved.
- * @group accessToken
- * @see {@link https://afc70caa-77d6-47b2-b99f-def7d423e3de.pieces.cloud/?p=e077418731}
- */
 export async function getLocalAccessToken(): Promise<string> {
     log('getLocalAccessToken');
     return new Promise((resolve, reject) => {
