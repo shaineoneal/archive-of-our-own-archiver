@@ -1,5 +1,5 @@
 import log from "../logger";
-import { HttpMethod, makeRequest } from '../chrome-services/httpRequest';
+import { HttpMethod, makeRequest } from './httpRequest';
 
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
 
@@ -19,7 +19,7 @@ const createAuthUrl = (): string => {
         throw new Error('Invalid oauth2 configuration');
     }
 
-    var authParams = new URLSearchParams({
+    const authParams = new URLSearchParams({
         access_type: 'offline',
         client_id: oauth2.client_id,
         redirect_uri: redirectUri,
@@ -49,7 +49,7 @@ export interface AuthFlowResponse {
  * 
  * @property {string} access_token - Short lived token used to access Google APIs.
  * @property {number} expires_in - The number of seconds the access token is valid for.
- * @property {string} refresh_token - (optional) A long lived token used to obtain new access tokens.
+ * @property {string} refresh_token - (optional) A long-lived token used to obtain new access tokens.
  * @property {string} scope - The scope of the access token.
  * @property {string} token_type - The type of token.
  */
@@ -59,10 +59,10 @@ export interface AuthRequestResponse {
     refresh_token?: string;
     scope: string;
     token_type: string;
-};
+}
 
 /**
- * The function `chromechromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
+ * The function `chromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
  * API and returns a promise that resolves with the response URL and authorization code.
  * 
  * ```
@@ -81,13 +81,13 @@ export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlow
         chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: interactive }, (async (responseUrl: string | undefined) => {
 
             if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
-                log('chromechromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
+                log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             }
             else {
                 const url = new URL(responseUrl);
 
-                var params = Object.fromEntries((url.searchParams).entries());
+                const params = Object.fromEntries((url.searchParams).entries());
 
                 log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
@@ -109,7 +109,7 @@ export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlow
  * @returns A promise that resolves to the token request response.
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#exchange-authorization-code | Google Identity API - Exchange authorization code for refresh and access tokens}
  */
-export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise<AuthRequestResponse> {
+export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promise<AuthRequestResponse> {
     return new Promise((resolve, reject) => {
 
         if (!oauth2 || !oauth2.client_id || !oauth2.scopes || !client_secret) {
@@ -128,7 +128,7 @@ export function requestAuthorizaton(authFlowResponse: AuthFlowResponse): Promise
             },
             body: {
                 code: authFlowResponse.code,
-                client_id: oauth2!.client_id,       // TODO: later problem
+                client_id: oauth2!.client_id,       // TODO: fix assertation
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'

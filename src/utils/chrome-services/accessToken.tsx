@@ -1,6 +1,5 @@
 import log from '../logger';
 import { HttpMethod, makeRequest } from './httpRequest';
-import { getStore, StoreMethod } from './store';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
@@ -49,45 +48,13 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
     return parsedResponse.access_token;
 }
 
-//remove token from chrome storage and identity API
-export async function removeToken() {
-    const token = await getLocalAccessToken();
-
-    if (token === '') {
-        throw new Error('Error getting token');
-    }
-    chrome.storage.sync.remove(['authToken']);
-    // remove all identity tokens
-    chrome.cookies.remove({
-        name: 'authToken',
-        url: 'https://archiveofourown.org',
-    }, () => {
-        log('Removed cookie');
-    });
-}
-
-export async function getLocalAccessToken(): Promise<string> {
-    log('getLocalAccessToken');
-    return new Promise((resolve, reject) => {
-        getStore('accessToken', StoreMethod.LOCAL).then((data: any) => {
-            if (data.accessToken) {
-                log('getLocalAccessToken', 'accessToken', data.accessToken);
-                resolve(data.accessToken);
-            } else {
-                log('no accessToken found');
-                reject();
-            }
-        });
-    });
-}
-
-
 /**
- * ![accessTokenFlow](./accessTokenFlow.png)
- * Checks if the access token is valid by making a request to the Google OAuth2 tokeninfo endpoint.
- * @returns A Promise that resolves with the valid access token or rejects if the token is invalid.
+ * Validates the given access token by making a request to the OAuth2 token info endpoint.
+ *
  * @async
- * @group accessToken
+ * @param {string} token - The access token to validate.
+ * @returns {Promise<string>} A promise that resolves with the token if it is valid.
+ * @throws {Error} Throws an error if the token is invalid.
  */
 export async function isAccessTokenValid(token: string): Promise<string> {
     if (token === '') {
@@ -109,35 +76,3 @@ export async function isAccessTokenValid(token: string): Promise<string> {
         throw new Error('Token is invalid');
     }
 }
-
-
-
-/**
- * Checks if the access token is valid by first checking local storage and then sync storage for the token.
- *
- * @returns {Promise<string>} A Promise that resolves with the valid access token or rejects if the token is invalid.
- * @throws {Error} Throws an error if no token is found.
- * @async
- * @group accessToken
- */
-export async function getValidAccessToken(): Promise<string> {
-    try {
-        log('getValidAccessToken');
-        // Get the access token from local storage
-        let token = await getLocalAccessToken();
-        // If the token is not undefined, check if it is valid
-        if (token !== undefined) {
-            await isAccessTokenValid(token);
-            // If the token is valid, return it
-            return token;
-        } else {
-            // If no token is found, throw an error
-            throw new Error('No token found');
-        }
-    } catch (error) {
-        // If there is an error, log it and rethrow the error
-        log('Token is invalid: ', error);
-        throw error;
-    }
-}
-
