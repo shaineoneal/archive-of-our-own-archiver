@@ -20,7 +20,7 @@ type LoaderStateType = {
  * @returns An object containing the loader state and a function to update it.
  */
 export const useLoaderStore = create<LoaderStateType>()(
-    (set) => ({
+    (set): LoaderStateType => ({
         loader: true,
         setLoader: (loader: boolean) => set({ loader })
     })

@@ -1,7 +1,6 @@
-import {BaseWork} from '../../pages/content-script';
+import { BaseWork } from '../../pages/content-script';
 import log from '../logger';
-import {HttpMethod, makeRequest} from "./httpRequest";
-import {getFirstSheetId} from "./spreadsheet";
+import { HttpMethod, makeRequest } from "./httpRequest";
 
 
 /**
@@ -40,31 +39,21 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                         rows: [
                             {
                                 values: [
-                                    {userEnteredValue: {numberValue: work.workId}},                     //0
-                                    {userEnteredValue: {stringValue: work.title}},                      //1
-                                    {
-                                        userEnteredValue: {stringValue: work.author.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'}
-                                    },                      //2
-                                    {
-                                        userEnteredValue: {stringValue: work.fandoms.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'}
-                                    },                      //3
-                                    {
-                                        userEnteredValue: {stringValue: work.relationships.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'}
-                                    },                      //4
-                                    {
-                                        userEnteredValue: {stringValue: work.tags.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'}
-                                    },                      //5
-                                    {
-                                        userEnteredValue: {stringValue: work.description},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'}
-                                    },                      //6
-                                    {userEnteredValue: {numberValue: work.wordCount}},                  //7
-                                    {userEnteredValue: {numberValue: work.totalChapters}},              //8
-                                    {userEnteredValue: {stringValue: work.status}},                     //9
+                                    { userEnteredValue: {numberValue: work.workId}},                     //0
+                                    { userEnteredValue: {stringValue: work.title}},                      //1
+                                    { userEnteredValue: {stringValue: work.author.toString()},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //2
+                                    { userEnteredValue: {stringValue: work.fandoms.toString()},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //3
+                                    { userEnteredValue: {stringValue: work.relationships.toString()},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //4
+                                    { userEnteredValue: {stringValue: work.tags.toString()},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //5
+                                    { userEnteredValue: {stringValue: work.description},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //6
+                                    {userEnteredValue: {numberValue: work.wordCount}},                   //7
+                                    {userEnteredValue: {numberValue: work.totalChapters}},               //8
+                                    {userEnteredValue: {stringValue: work.status}},                      //9
                                     {userEnteredValue: {numberValue: work.rating}},                     //10
                                 ]
                             },
