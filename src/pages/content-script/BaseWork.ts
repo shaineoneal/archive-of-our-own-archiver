@@ -18,7 +18,6 @@ export class BaseWork implements BaseWorkType {
     rating: number;
     rereadCount?: number;
 
-
     constructor(
         workId: number,
         title: string,
@@ -50,6 +49,5 @@ export class BaseWork implements BaseWorkType {
     public toString(): string {
         return JSON.stringify(this);
     }
- 
 }
 
