@@ -1,11 +1,6 @@
 import log from '../logger';
 import {HttpMethod, makeRequest} from "./httpRequest";
 
-/**
- *
- * @param token user's auth token
- * @returns
- */
 export async function createSpreadsheet(token: string) {
 
     const url = 'https://sheets.googleapis.com/v4/spreadsheets';
@@ -20,7 +15,7 @@ export async function createSpreadsheet(token: string) {
 
     log ('options: ', options);
 
-    return fetch(url, options)
+    return fetch(url, options)      //TODO: change to makeRequest
         .then((response) => {
             log('Response status:', response.status);
             return response.json();
@@ -33,22 +28,6 @@ export async function createSpreadsheet(token: string) {
             log('Error creating spreadsheet:', error);
             throw error;
         });
-}
-
-export async function getFirstSheetId(token: string, spreadsheetId: string) {
-
-    const response = await makeRequest({
-        url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
-        method: HttpMethod.GET,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-        }
-    });
-
-    const parsedResponse = await response.json();
-    log('getFirstSheetId', 'parsedResponse:', parsedResponse);
-    return parsedResponse.sheets[0].properties.sheetId;
 }
 
 const sheetLayout = {

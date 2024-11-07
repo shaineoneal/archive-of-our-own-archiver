@@ -65,6 +65,5 @@ export async function makeRequest(request: HttpRequest): Promise<HttpResponse> {
 
     log('makeRequest options: ', options);
 
-    const response = await fetch(request.url, options);
-    return response;
+    return await fetch(request.url, options);
 }

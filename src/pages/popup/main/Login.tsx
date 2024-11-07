@@ -1,5 +1,4 @@
-import { chromeLaunchWebAuthFlow, requestAuthorizaton } from '../../../utils/chrome-services';
-import { revokeTokens, createSpreadsheet } from '../../../utils/chrome-services';
+import { chromeLaunchWebAuthFlow, requestAuthorization, revokeTokens, createSpreadsheet } from '../../../utils/chrome-services';
 import log from '../../../utils/logger';
 import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
 
@@ -17,7 +16,7 @@ export const Login = () => {
     const { userStoreLogin, setSpreadsheetId } = useActions();
     const spreadsheetId = useUser().spreadsheetId;
 
-    // TODO: set up full userstore on login
+    // TODO: set up full user store on login
 
     /**
      * Handles the login functionality.
@@ -33,7 +32,7 @@ export const Login = () => {
 
         // If the response has a URL and a code, request authorization
         if (flowResp.url && flowResp.code) {
-            await requestAuthorizaton(flowResp).then(
+            await requestAuthorization(flowResp).then(
                 async ({ access_token, refresh_token }) => {
                     //TODO: if no refresh token, fix it
                     if (refresh_token) {
@@ -41,7 +40,7 @@ export const Login = () => {
                     } else {
                         userStoreLogin( access_token, undefined );
                         log("No refresh token found, revoking tokens");
-                        revokeTokens(access_token);
+                        await revokeTokens(access_token);
                     }
                     if (spreadsheetId === undefined){
                         setSpreadsheetId(await createSpreadsheet(access_token));
