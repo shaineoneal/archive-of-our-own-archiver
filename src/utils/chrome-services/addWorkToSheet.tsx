@@ -41,7 +41,7 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                                 values: [
                                     { userEnteredValue: {numberValue: work.workId}},                     //0
                                     { userEnteredValue: {stringValue: work.title}},                      //1
-                                    { userEnteredValue: {stringValue: work.author.toString()},
+                                    { userEnteredValue: {stringValue: work.authors.toString()},
                                         userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //2
                                     { userEnteredValue: {stringValue: work.fandoms.toString()},
                                         userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //3
