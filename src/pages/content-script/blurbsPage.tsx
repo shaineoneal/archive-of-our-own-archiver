@@ -3,7 +3,7 @@ import { MessageName, sendMessage } from '../../utils/chrome-services';
 import log from '../../utils/logger';
 import { WorkBlurb } from './WorkBlurb';
 import { addBlurbToggle } from './blurbToggles';
-import { looksRead } from './looksRead';
+import { changeBlurbStyle } from './changeBlurbStyle';
 
 
 export const standardBlurbsPage = () => {
@@ -70,8 +70,7 @@ function injectWorkStatuses(worksOnPage: HTMLElement[], response: any): void {
     response.response.forEach((workRef: boolean, index: number) => {
         log('workRef: ', workRef)
         if (workRef) {
-            looksRead(true, worksOnPage[index]);
+            changeBlurbStyle('read', worksOnPage[index]);
         }
     });
 }
-
