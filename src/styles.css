@@ -156,7 +156,7 @@ a.no-underline {
 }
 
 li.work {
-    margin-top: 0px !important;
+    margin-top: 0 !important;
     box-shadow: none !important;
 }
 
@@ -172,7 +172,7 @@ li.work {
     width: 350px;
 }
 
-.read-work {
+.status-read {
     border-left-color: #FFFFFF !important;
     border-left-width: 10px !important;
 }
