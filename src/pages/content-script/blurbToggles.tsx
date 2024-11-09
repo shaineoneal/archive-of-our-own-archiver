@@ -3,11 +3,6 @@ import log from '../../utils/logger';
 import { WorkBlurb } from './WorkBlurb';
 import { MessageName, sendMessage } from '../../utils/chrome-services';
 
-/**
- * 
- * @param workWrap 
- * @returns 
- */
 
 export function addBlurbToggle(workWrap: Element) {
 
@@ -28,9 +23,9 @@ export function addBlurbToggle(workWrap: Element) {
         log('workBlurb: ', workBlurb);
         chrome.runtime.sendMessage({message: 'addWorkToSheet', work: workBlurb}, (response) => {
             log('content script response: ', response);
-            if (response) {
+            if (response.response === true) {
                 log('response: ', response.response);
-                work.classList.add('read-work');
+                work.classList.add('status-read');
             }
         });
     });
