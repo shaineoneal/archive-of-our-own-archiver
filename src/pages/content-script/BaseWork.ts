@@ -7,7 +7,7 @@ type BaseWorkType = {
 export class BaseWork implements BaseWorkType {
     workId: number;
     title: string;
-    author: string[];
+    authors: string[];
     fandoms: string[];
     relationships: string[];
     tags: string[];
@@ -21,7 +21,7 @@ export class BaseWork implements BaseWorkType {
     constructor(
         workId: number,
         title: string,
-        author: string[],
+        authors: string[],
         fandoms: string[],
         relationships: string[],
         tags: string[],
@@ -34,7 +34,7 @@ export class BaseWork implements BaseWorkType {
     ) {
         this.workId = workId;
         this.title = title;
-        this.author = author;
+        this.authors = authors;
         this.fandoms = fandoms;
         this.relationships = relationships;
         this.tags = tags;
@@ -50,4 +50,3 @@ export class BaseWork implements BaseWorkType {
         return JSON.stringify(this);
     }
 }
-
