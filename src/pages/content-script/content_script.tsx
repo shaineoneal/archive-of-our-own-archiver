@@ -15,9 +15,6 @@ connectPort().then((port) => {
     //});
 });
 
-
-
-
 //open up connection to background script
 async function connectPort(): Promise<chrome.runtime.Port> {
     const port = chrome.runtime.connect({ name: 'content_script' });
