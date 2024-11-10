@@ -1,6 +1,6 @@
 import '../../styles.css';
 import log from '../../utils/logger';
-import { WorkBlurb } from './WorkBlurb';
+import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { MessageName, sendMessage } from '../../utils/chrome-services';
 
 
@@ -19,7 +19,7 @@ export function addBlurbToggle(workWrap: Element) {
 
         log('blurbToggle clicked!: ', work);
 
-        const workBlurb = WorkBlurb.createWork(work);
+        const workBlurb = Ao3_BaseWork.createWork(work);
         log('workBlurb: ', workBlurb);
         chrome.runtime.sendMessage({message: 'addWorkToSheet', work: workBlurb}, (response) => {
             log('content script response: ', response);

@@ -1,7 +1,7 @@
 import { wrap } from '../../utils';
 import { MessageName, sendMessage } from '../../utils/chrome-services';
 import log from '../../utils/logger';
-import { WorkBlurb } from './WorkBlurb';
+import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { addBlurbToggle } from './blurbToggles';
 import { changeBlurbStyle } from './changeBlurbStyle';
 
@@ -42,7 +42,7 @@ export const standardBlurbsPage = () => {
     log('searchList: ', searchList);
 
     //only needs to be called when button is pressed
-    log('work: ', WorkBlurb.getWorkFromPage(searchList[0]));
+    log('work: ', Ao3_BaseWork.getWorkFromPage(searchList[0]));
     //port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
 
     //TODO: sendMessage is completely broken and I don't know why
