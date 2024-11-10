@@ -135,9 +135,12 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
             return;
         }
         log('querySheet message received');
+        log('syncUser', syncUser);
         querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
             log('querySheet response', response);
-            if(response.error) {
+
+            if(response.status && response.status === "error") {
+                log('querySheet error', response.error);
                 sendResponse({ response: response.error });
                 return;
             }
