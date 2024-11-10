@@ -110,6 +110,12 @@ log('background script running');
 //});
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     let syncUser = UserStore.getState().user;
+    log('msg from sender: ', sender)
+    if (msg.message === 'checkLogin') {
+        log('checkLogin message received');
+        log('syncUser', syncUser);
+        sendResponse({ loggedIn: syncUser.isLoggedIn });
+    }
 //TODO: change to outer check for user and handle accordingly
     if (msg.message === 'addWorkToSheet') {
         if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
@@ -152,16 +158,30 @@ chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
     }
     return true;
 })
-//chrome.storage.onChanged.addListener((changes) => {
-//    if( changes.user ) {
-//        log('user changed', changes.user);
-//        //chrome.runtime.sendMessage({ message: "userChanged", newUser: changes.user.newValue });
-//    }
-//    //if(changes.spreadsheetUrl) {
-//    //    log('spreadsheetUrl changed', changes.spreadsheetUrl);
-//    //    chrome.runtime.sendMessage({ message: "spreadsheetUrlChanged", newUrl: changes.spreadsheetUrl.newValue });
-//    //}
-//});
+chrome.storage.onChanged.addListener((changes) => {
+    log('storage changed', changes);
+    log('user-store', changes['user-store']);
+    if( changes['user-store'] ) {
+        log('user changed', changes['user-store']);
+        chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {
+            tabs.forEach((tab) => {
+                log('sending message to tab', tab);
+                chrome.tabs.sendMessage(tab.id!, {message: "userChanged", newUser: changes['user-store'].newValue})
+                    .then((response) => {
+                        chrome.runtime.reload();
+                        chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
+                        log('response from content script', response)
+                    });
+
+            });
+        });
+        //chrome.runtime.sendMessage({ message: "userChanged", newUser: changes.user.newValue });
+    }
+    //if(changes.spreadsheetUrl) {
+    //    log('spreadsheetUrl changed', changes.spreadsheetUrl);
+    //    chrome.runtime.sendMessage({ message: "spreadsheetUrlChanged", newUrl: changes.spreadsheetUrl.newValue });
+    //}
+});
 //
 /*chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (
