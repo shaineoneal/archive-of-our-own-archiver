@@ -1,6 +1,6 @@
 import { BaseWork } from "./BaseWork";
 
-export class WorkBlurb extends BaseWork {
+export class Ao3_BaseWork extends BaseWork {
     static getWorkFromPage(workId: number): BaseWork {
         const workNode = document.querySelector(`#work_${workId}`);
 
@@ -27,7 +27,7 @@ export class WorkBlurb extends BaseWork {
 
         const wordCount = workNode.querySelector('dd.words')!.textContent;
 
-        var chapterCount =
+        let chapterCount =
             workNode.querySelector('dd.chapters > a')?.textContent;
         if (!chapterCount) {
             //one-shot
@@ -83,7 +83,7 @@ export class WorkBlurb extends BaseWork {
 
         const wordCount = workNode.querySelector('dd.words')!.textContent;
 
-        var chapterCount =
+        let chapterCount =
             workNode.querySelector('dd.chapters > a')?.textContent;
         if (!chapterCount) {
             //one-shot
