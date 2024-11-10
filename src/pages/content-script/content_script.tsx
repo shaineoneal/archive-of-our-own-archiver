@@ -3,7 +3,28 @@ import log from '../../utils/logger';
 
 
 log('log: content_script.tsx loaded');
-pageTypeDetect();
+
+chrome.runtime.sendMessage({message: 'checkLogin'}, (response) => {
+    log('response: ', response);
+    if(response.loggedIn) {
+        log('user is logged in');
+        pageTypeDetect();
+    } else {
+        log('user is not logged in');
+    }
+});
+
+
+
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    log('content_script', 'heard message: ', message);
+    if (message.message === 'userChanged') {
+        log('userChanged');
+        sendResponse({ response: 'userChanged heard' });
+    }
+});
 
 /*
 connectPort().then((port) => {

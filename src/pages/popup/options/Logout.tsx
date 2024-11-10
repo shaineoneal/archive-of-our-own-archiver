@@ -14,14 +14,11 @@ export const Logout = () => {
         if (accessToken !== undefined) {
             log("revokeTokens");
             //TODO: FIX THIS
-            const response = await revokeTokens(accessToken);
-            if (response) {
-                logout();
-            }
-
+            logout();
+            await revokeTokens(accessToken);
         }
         // TODO: needs to still logout if the user does not have a refresh token
-        // AKA if it expires
+        //  AKA if it expires
         //logout();
     };
 
