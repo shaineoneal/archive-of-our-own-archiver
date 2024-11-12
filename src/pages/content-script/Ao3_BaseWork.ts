@@ -1,7 +1,28 @@
 import { BaseWork } from "./BaseWork";
 
 export class Ao3_BaseWork extends BaseWork {
-    static getWorkFromPage(workId: number): BaseWork {
+    title: string;
+    authors: string[];
+    fandoms: string[];
+    relationships: string[];
+    tags: string[];
+    description: string;
+    wordCount: number;
+    chapterCount: number;
+
+    constructor(workId: number, title: string, authors: string[], fandoms: string[], relationships: string[], tags: string[], description: string, wordCount: number, chapterCount: number) {
+        super(workId);
+        this.title = title;
+        this.authors = authors;
+        this.fandoms = fandoms;
+        this.relationships = relationships;
+        this.tags = tags;
+        this.description = description;
+        this.wordCount = wordCount;
+        this.chapterCount = chapterCount;
+    }
+
+    getWork(workId: number): Ao3_BaseWork {
         const workNode = document.querySelector(`#work_${workId}`);
 
         if (!workNode) {
@@ -34,7 +55,7 @@ export class Ao3_BaseWork extends BaseWork {
             chapterCount = '1';
         }
 
-        return new this(
+        return new Ao3_BaseWork(
             workId,
             title!,
             authors as string[],
@@ -43,10 +64,7 @@ export class Ao3_BaseWork extends BaseWork {
             tags,
             description,
             parseInt(wordCount!.replace(/,/g, '')),
-            parseInt(chapterCount!.replace(/,/g, '')),
-            "",
-            0,
-            0
+            parseInt(chapterCount!.replace(/,/g, ''))
         );
     }
 
@@ -99,10 +117,7 @@ export class Ao3_BaseWork extends BaseWork {
             tags as string[],
             description!,
             parseInt(wordCount!.replace(/,/g, '')),
-            parseInt(chapterCount!.replace(/,/g, '')),
-            "",
-            0,
-            0
+            parseInt(chapterCount!.replace(/,/g, ''))
         );
     }
 
