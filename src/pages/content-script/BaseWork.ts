@@ -1,52 +1,13 @@
-import { WorkStatus } from '../../utils/types/data';
+import { Ao3_BaseWork } from "./Ao3_BaseWork";
+import { User_BaseWork } from "./User_BaseWork";
+import { WorkStatus } from "../../utils/types/data";
 
-type BaseWorkType = {
+export abstract class BaseWork {
     workId: number;
-};
 
-export class BaseWork implements BaseWorkType {
-    workId: number;
-    title: string;
-    authors: string[];
-    fandoms: string[];
-    relationships: string[];
-    tags: string[];
-    description: string;
-    wordCount: number;
-    totalChapters: number;
-    status: WorkStatus;
-    rating: number;
-    rereadCount?: number;
-
-    constructor(
-        workId: number,
-        title: string,
-        authors: string[],
-        fandoms: string[],
-        relationships: string[],
-        tags: string[],
-        description: string,
-        wordCount: number,
-        totalChapters: number,
-        status: WorkStatus,
-        rating: number,
-        rereadCount?: number
-    ) {
+    protected constructor(workId: number) {
         this.workId = workId;
-        this.title = title;
-        this.authors = authors;
-        this.fandoms = fandoms;
-        this.relationships = relationships;
-        this.tags = tags;
-        this.description = description;
-        this.wordCount = wordCount;
-        this.totalChapters = totalChapters;
-        this.status = status;
-        this.rating = rating;
-        this.rereadCount = rereadCount;
     }
 
-    public toString(): string {
-        return JSON.stringify(this);
-    }
+    abstract getWork(workId: number): Ao3_BaseWork | User_BaseWork;
 }
