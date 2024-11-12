@@ -4,10 +4,10 @@ import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { MessageName, sendMessage } from '../../utils/chrome-services';
 
 
-export function addBlurbToggle(workWrap: Element) {
+export function addBlurbControls(workWrap: Element) {
 
     const work = workWrap.firstChild! as HTMLElement;
-    var on_list = false; //TODO: check if work is on list
+    let on_list = false; //TODO: check if work is on list
 
     const innerToggle = document.createElement('a');
     innerToggle.textContent = 'Add Work';           //TODO: change for all buttons
