@@ -2,8 +2,9 @@ import { wrap } from '../../utils';
 import { MessageName, sendMessage } from '../../utils/chrome-services';
 import log from '../../utils/logger';
 import { Ao3_BaseWork } from './Ao3_BaseWork';
-import { addBlurbToggle } from './blurbToggles';
+import { addBlurbControls } from './blurbControls';
 import { changeBlurbStyle } from './changeBlurbStyle';
+import { BaseWork } from "./BaseWork";
 
 
 export const standardBlurbsPage = () => {
@@ -19,7 +20,7 @@ export const standardBlurbsPage = () => {
         ) as unknown as HTMLCollectionOf<HTMLElement>
     );
 
-    let searchList: any[] = [];
+    let searchList: number[] = [];
     worksOnPage.forEach((work) => {
         let newEl = document.createElement('div');
         newEl.classList.add('blurb-with-toggles');
@@ -29,20 +30,19 @@ export const standardBlurbsPage = () => {
 
         wrap(work, newEl);
 
-        addBlurbToggle(newEl);
+        addBlurbControls(newEl);
         //if it's a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
-            searchList.push(work.classList[3].split('-')[1]);
+            searchList.push(Number(work.classList[3].split('-')[1]));
         } else {
             //else it's a work, use the id to get the work id
-            searchList.push(work.id.split('_')[1]);
+            searchList.push(Number(work.id.split('_')[1]));
         }
     });
 
     log('searchList: ', searchList);
 
     //only needs to be called when button is pressed
-    log('work: ', Ao3_BaseWork.getWorkFromPage(searchList[0]));
     //port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
 
     //TODO: sendMessage is completely broken and I don't know why
@@ -67,6 +67,10 @@ export const standardBlurbsPage = () => {
  */
 function injectWorkStatuses(worksOnPage: HTMLElement[], response: any): void {
     log('injectWorkStatuses: ', response);
+    log('first response: ', response.response[0]);
+    chrome.storage.session.get('57079471', (result) => {
+        log('sess result: ', result);
+    });
     response.response.forEach((workRef: boolean, index: number) => {
         log('workRef: ', workRef)
         if (workRef) {
