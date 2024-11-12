@@ -1,4 +1,4 @@
-import { BaseWork } from '../../pages/content-script';
+import { Ao3_BaseWork, BaseWork } from '../../pages/content-script';
 import log from '../logger';
 import { HttpMethod, makeRequest } from "./httpRequest";
 
@@ -12,7 +12,7 @@ import { HttpMethod, makeRequest } from "./httpRequest";
  * @returns {Promise<boolean>} - A promise that resolves to true if the work entry was successfully added, otherwise throws an error.
  */
 //TODO: currently hard coded for the first sheet, need to make it dynamic
-export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: BaseWork): Promise<boolean> => {
+export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<boolean> => {
     log('addWorkToSheet', work);
     log('authToken', authToken);
     log('spreadsheetId', spreadsheetId);
@@ -52,9 +52,7 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                                     { userEnteredValue: {stringValue: work.description},
                                         userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //6
                                     {userEnteredValue: {numberValue: work.wordCount}},                   //7
-                                    {userEnteredValue: {numberValue: work.totalChapters}},               //8
-                                    {userEnteredValue: {stringValue: work.status}},                      //9
-                                    {userEnteredValue: {numberValue: work.rating}},                     //10
+                                    {userEnteredValue: {numberValue: work.chapterCount}}
                                 ]
                             },
                         ],
