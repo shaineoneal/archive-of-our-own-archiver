@@ -1,6 +1,6 @@
 import { get } from 'jquery';
 import { addWorkToSheet, fetchSpreadsheetUrl, getSavedToken } from '../chrome-services';
-import { query } from '../chrome-services/querySheet';
+import { listQuery, workQuery } from '../chrome-services/querySheet';
 import { launchWebAuthFlow } from '../chrome-services/utils/oauthSignIn';
 import { compareArrays } from '../utils/compareArrays';
 import { log } from '../utils/logger';
@@ -43,20 +43,39 @@ chrome.runtime.onConnect.addListener(function (port) {
                 port.postMessage({ spreadsheetUrl: spreadsheetUrl });
             });
         } else if (msg.message === 'querySheet') {
-            log('querySheet message recieved');
-            getSavedToken().then((token) => {
-                log('token', token);
-                fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-                    query(spreadsheetUrl, token, msg.list).then((response) => {
-                        log('response', response);
-                        const responseArray = compareArrays(msg.list, response.table.rows);
-                        port.postMessage({ reason: 'querySheet', response: responseArray });
+            log('querySheet message received, payload: ', msg);
+            if(msg.list) {
+
+                getSavedToken().then((token) => {
+                    log('token', token);
+                    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                        listQuery(spreadsheetUrl, token, msg.list).then((response) => {
+                            log('response', response);
+                            const responseArray = compareArrays(msg.list, response.table.rows);
+                            port.postMessage({reason: 'listQuerySheet', response: responseArray});
+                        });
                     });
+                }).catch((error) => {
+                    log('error', error);
+                    port.postMessage({reason: 'listQuerySheet', response: error});
                 });
-            }).catch((error) => {
-                log('error', error);
-                port.postMessage({ reason: 'querySheet', response: error });
-            });
+            } else if (msg.work) {
+                log('single work querySheet message received');
+                getSavedToken().then((token) => {
+                    log('token', token);
+                    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+                        workQuery(spreadsheetUrl, token, msg.work).then((response) => {
+                            log('response', response);
+                            port.postMessage({reason: 'workQuerySheet', response: response});
+                        });
+                    });
+                }).catch((error) => {
+                    log('error', error);
+                    port.postMessage({reason: 'workQuerySheet', response: error});
+                });
+            }
+
+
         } else if (msg.message === 'sendLoginNotification') {
             log('sendLoginNotification message recieved');
             
@@ -132,7 +151,7 @@ chrome.tabs.onUpdated.addListener((tab) => {
 
 
 async function getURL() {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true, url: "*://*.archiveofourown.org/*" });
+    const tabs = await chrome.tabs.listQuery({ active: true, currentWindow: true, url: "*://*.archiveofourown.org/*" });
     const activeTab = tabs[0];
     if (!activeTab) {
         return;

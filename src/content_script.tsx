@@ -1,6 +1,7 @@
 import { get } from 'jquery';
 import { standardBlurbsPage } from './pages';
 import { log } from './utils';
+import { insideWork } from "./pages/insideWork";
 
 log('log: content_script.tsx loaded');
 connectPort().then((port) => {
@@ -54,7 +55,7 @@ async function pageTypeDetect(port: chrome.runtime.Port) {
         standardBlurbsPage(port);
 
     } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
-        log('Work Page');
+        insideWork(port);
     } else {
         log('PANIK: Unknown page');
     }
