@@ -1,7 +1,7 @@
 import '../../styles.css';
 import log from '../../utils/logger';
 import { Ao3_BaseWork } from './Ao3_BaseWork';
-import { MessageName, sendMessage } from '../../utils/chrome-services';
+import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 
 
 export function addBlurbControls(workWrap: Element) {
@@ -15,19 +15,31 @@ export function addBlurbControls(workWrap: Element) {
 
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
-        e.stopPropagation();
 
         log('blurbToggle clicked!: ', work);
 
         const workBlurb = Ao3_BaseWork.createWork(work);
         log('workBlurb: ', workBlurb);
-        chrome.runtime.sendMessage({message: 'addWorkToSheet', work: workBlurb}, (response) => {
-            log('content script response: ', response);
-            if (response.response === true) {
-                log('response: ', response.response);
-                work.classList.add('status-read');
+
+        sendMessage(
+            MessageName.AddWorkToSheet,
+            { work: workBlurb },
+            (response) => {
+                log('content script response: ', response);
+                if (response === true) {
+                    log('response: ', response);
+                    work.classList.add('status-read');
+                }   //else popup login
             }
-        });
+        )
+
+        //chrome.runtime.sendMessage({message: 'addWorkToSheet', work: workBlurb}, (response) => {
+        //    log('content script response: ', response);
+        //    if (response === true) {
+        //        log('response: ', response);
+        //        work.classList.add('status-read');
+        //    }   //else popup login
+        //});
     });
 
     log('blurbToggles: ', work);
