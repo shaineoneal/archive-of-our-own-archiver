@@ -49,7 +49,7 @@ export const standardBlurbsPage = (port: chrome.runtime.Port) => {
     port.onMessage.addListener((msg) => {
         log('content_script', 'port.onMessage: ', msg);
 
-        if (msg.reason === 'querySheet') {
+        if (msg.reason === 'listQuerySheet') {
             if (msg.response) {
                 msg.response.forEach((workRef: boolean, index: number) => {
                     log('workRef: ', workRef)
