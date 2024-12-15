@@ -2,7 +2,9 @@ import log from '../logger';
 import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest";
 
 export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]) {
-    
+
+    log('querySpreadsheet', 'spreadsheetId', spreadsheetId);
+
     let query = createEncodedQuery(searchList);
 
     const response = await makeRequest({
@@ -18,7 +20,7 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
 }
 
 function createEncodedQuery(searchList: number[]): string {
-    let query = `select A where A matches`;
+    let query = `select A, J, K, L, M, N, O where A matches`;
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;
@@ -29,7 +31,7 @@ function createEncodedQuery(searchList: number[]): string {
     return encodeURIComponent(query);
 }
 
-async function parseResponse(response: HttpResponse) {
+async function parseResponse(response: HttpResponse): Promise<any> {
     log('parseResponse', 'response', response);
     let data = await response.text();
     return JSON.parse(data.substring(47, data.length - 2));

@@ -1,13 +1,13 @@
 import { wrap } from '../../utils';
-import { MessageName, sendMessage } from '../../utils/chrome-services';
 import log from '../../utils/logger';
 import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { addBlurbControls } from './blurbControls';
 import { changeBlurbStyle } from './changeBlurbStyle';
 import { BaseWork } from "./BaseWork";
+import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 
 
-export const standardBlurbsPage = () => {
+export function standardBlurbsPage() {
 
     const temp = document.querySelector('li.work, li.bookmark');
 
@@ -42,21 +42,16 @@ export const standardBlurbsPage = () => {
 
     log('searchList: ', searchList);
 
-    //only needs to be called when button is pressed
-    //port.postMessage({ message: 'batchUpdate', work: (Work.getWorkFromPage(searchList[0])) });
-
-    //TODO: sendMessage is completely broken and I don't know why
-    //sendMessage(
-    //    MessageName.QuerySpreadsheet,
-    //    { list: searchList },
-    //    (response: boolean[]) => injectWorkStatuses(worksOnPage, response)
-    //)
-
-    //TODO: this is a placeholder
-    chrome.runtime.sendMessage({ message: 'querySpreadsheet', list: searchList }, (response) => {
-        log('querySheet response: ', response);
-        injectWorkStatuses(worksOnPage, response);
-    });
+    sendMessage(
+        MessageName.QuerySpreadsheet,
+        { list: searchList },
+        (response) => {
+            log('QuerySpreadsheet response: ', response)
+            injectWorkStatuses(worksOnPage, response).then(() => {
+                log('injected work statuses');
+            });
+        }
+    )
 
 }
 
@@ -65,13 +60,13 @@ export const standardBlurbsPage = () => {
  * @param { HTMLElement[] } worksOnPage - the works on the page
  * @param { boolean[] } response - the list of works from sheet
  */
-function injectWorkStatuses(worksOnPage: HTMLElement[], response: any): void {
+async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
     log('injectWorkStatuses: ', response);
-    log('first response: ', response.response[0]);
+    log('injectWorkStatuses type: ', typeof response[0]);
     chrome.storage.session.get('57079471', (result) => {
         log('sess result: ', result);
     });
-    response.response.forEach((workRef: boolean, index: number) => {
+    response.forEach((workRef: boolean, index: number) => {
         log('workRef: ', workRef)
         if (workRef) {
             changeBlurbStyle('read', worksOnPage[index]);

@@ -37,7 +37,7 @@ type UserStoreType = {
 /**
  * Zustand store for user data with persistence.
  */
-export const UserStore = create<UserStoreType>()(
+export const SyncUserStore = create<UserStoreType>()(
     persist(
         (set, get): UserStoreType => ({
             user: DEFAULT_USER,
@@ -94,18 +94,47 @@ export const UserStore = create<UserStoreType>()(
     )
 );
 
+export const SessionUserStore = create<UserStoreType>() (
+    (set, get): UserStoreType => ({
+        user: DEFAULT_USER,
+        actions: {
+            setIsLoggedIn: (isLoggedIn: boolean) => {
+                set({ user: { ...get().user, isLoggedIn: isLoggedIn } });
+            },
+            setAccessToken: (accessT?: string) => {
+                set({ user: { ...get().user, accessToken: accessT } });
+            },
+            setRefreshToken: (refreshT?: string) => {
+                set({ user: { ...get().user, refreshToken: refreshT } });
+            },
+            setSpreadsheetId: (spreadsheetId?: string) => {
+                set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
+            },
+            userStoreLogin: async ( accessToken, refreshToken ) => {
+                const { setAccessToken, setRefreshToken } = get().actions;
+                set({ user: { ...get().user, isLoggedIn: true } });
+                setAccessToken(accessToken);
+                setRefreshToken(refreshToken);
+            },
+            logout: () => {
+                set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined, isLoggedIn: false } });
+            }
+        }
+    })
+);
+
 export type ExtractState<S> = S extends {
         getState: () => infer T;
     }
     ? T
     : never;
-    type Params<U> = Parameters<typeof useStore<typeof UserStore, U>>;
+    type Params<U> = Parameters<typeof useStore<typeof SyncUserStore, U>>;
 
-const userSelector = (state: ExtractState<typeof UserStore>) => state.user;
-const actionsSelector = (state: ExtractState<typeof UserStore>) => state.actions;
+const userSelector = (state: ExtractState<typeof SyncUserStore>) => state.user;
+const actionsSelector = (state: ExtractState<typeof SyncUserStore>) => state.actions;
 
 export function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStoreWithEqualityFn(UserStore, selector, equalityFn);
+    return useStoreWithEqualityFn(SyncUserStore, selector, equalityFn);
 }
 
 /**

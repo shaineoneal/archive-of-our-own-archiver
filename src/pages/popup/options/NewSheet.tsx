@@ -1,5 +1,7 @@
 import { createSpreadsheet } from '../../../utils/chrome-services';
-import { useLoaderStore, useUser } from '../../../utils/zustand';
+import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
+import { useEffect } from "react";
+import log from "../../../utils/logger";
 
 /**
  * Component for creating a new Google Sheet.
@@ -11,10 +13,11 @@ import { useLoaderStore, useUser } from '../../../utils/zustand';
  */
 export const NewSheet = () => {
     const { loader, setLoader } = useLoaderStore();
-    const accessToken = useUser().accessToken;
+    const { accessToken, spreadsheetId } = useUser();
+    const setSpreadsheetId = useActions().setSpreadsheetId;
 
     if (accessToken === undefined) {
-        throw new Error('User is not logged in');
+        return null;
     }
 
     /**
@@ -24,22 +27,21 @@ export const NewSheet = () => {
      */
     const handleNewSheet = async () => {
         setLoader(true);
-        createSpreadsheet(accessToken)
-        .then((url) => {
-            chrome.storage.sync.set({ spreadsheetUrl: url });
-        })
-        .finally(() => {
-            setLoader(false);
-        });
+        const id = await createSpreadsheet(accessToken)
+        if (id) {
+            setSpreadsheetId(id);
+        }
+        setLoader(false);
     };
-
-    if (loader) {
-        return <div className="small loader"></div>;
-    }
 
     return (
         <div>
-            <button onClick={handleNewSheet}>New Sheet</button>
+            <button
+                id="new-sheet-button"
+                onClick={ handleNewSheet }
+            >
+                New Sheet
+            </button>
         </div>
     );
 };
