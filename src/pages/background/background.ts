@@ -1,13 +1,250 @@
 import log from '../../utils/logger';
-import { UserStore } from "../../utils/zustand";
-import { addWorkToSheet, MessageName, querySpreadsheet, receiveMessage } from "../../utils/chrome-services";
+import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
+import {
+    addWorkToSheet,
+    createMessageHandlers,
+    exchangeRefreshForAccessToken,
+    MessageName,
+    querySpreadsheet,
+    setStore,
+    StoreMethod
+} from "../../utils/chrome-services";
 import { compareArrays } from "../../utils/compareArrays";
+import { User_BaseWork } from "../content-script/User_BaseWork";
+import { forEach } from "remeda";
+import session = chrome.storage.session;
 
-log('background script running');
+chrome.runtime.onConnect.addListener((port) => {
+    log('background script running');
+
+    let syncUser = SyncUserStore.getState().user;
+    const {setAccessToken} = SyncUserStore.getState().actions;
+    log('syncUser from onMessage', syncUser);
+
+    chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
+        .then(() => {
+            log('access level set');
+        });
+});
+
+createMessageHandlers({
+    [MessageName.CheckLogin]: async (payload) => {
+        log('checkLogin message received', payload);
+        let syncUser = SyncUserStore.getState().user;
+        if(syncUser.isLoggedIn) {
+            log('user is logged in');
+            //save user to session storage
+            setStore('user', syncUser, StoreMethod.SESSION);
+            return { status: true } ;
+        } else return { status: false } ;
+    },
+    [MessageName.QuerySpreadsheet]: async (msg) => {
+        let syncUser = SyncUserStore.getState().user;
+        const { setAccessToken } = SessionUserStore.getState().actions;
+
+        if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
+            throw new Error('no spreadsheetId or accessToken');
+        }
+        //let syncUser = SyncUserStore.getState().user;
+        log('querySheet message received');
+        let responseArray: boolean[] = [];
+        return querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
+            log('querySheet response', response);
+
+            if (response.status && response.status === "error") {
+                log('querySheet error', response.error);
+                //TODO: clean this mess
+                if (syncUser.refreshToken != null) {
+                    exchangeRefreshForAccessToken(syncUser.refreshToken).then((newAccessToken) => {
+                        log('newAccessToken', newAccessToken);
+                        if (newAccessToken) {
+                            chrome.storage.session.set({accessToken: newAccessToken}).then(() => {
+                                log('newAccessToken set');
+                                setAccessToken(newAccessToken);
+
+                                if (syncUser.spreadsheetId != null) {
+                                    querySpreadsheet(syncUser.spreadsheetId, newAccessToken, msg.list).then((response) => {
+                                        log('querySheet response', response);
+                                        const responseArray = compareArrays(msg.list, response.table.rows);
+                                        log('responseArray', responseArray);
+                                        return responseArray;
+
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                return response.error;
+            }
+
+            forEach(response.table.rows, (row) => {
+                log('row', row);
+
+                let status = row.c[1] ? row.c[1].v : 'read';
+                let history = row.c[2] ? row.c[2].v : '';
+                let personalTags = row.c[3] ? row.c[3].v.split(',') : [];
+                let rating = row.c[4] ? row.c[4].v : 0;
+                let readCount = row.c[5] ? row.c[5].v : 1;
+                let skipReason = row.c[6] ? row.c[6].v : '';
+
+                let work = new User_BaseWork(row.c[0].v, status, history, personalTags, rating, readCount, skipReason);
+
+                chrome.storage.session.set({[row.c[0].v]: work}).then(r =>
+                    log('set session storage', r)
+                );
+            });
+
+            responseArray = compareArrays(msg.list, response.table.rows);
+            log('responseArray', responseArray);
+            log('responseArray type', typeof responseArray);
+            return responseArray;
+        }).catch((error) => {
+            throw new Error(error);
+        });
+    },
+    [MessageName.AddWorkToSheet]: async (payload) => {
+        let sessionUser = SyncUserStore.getState().user;
+        if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
+            return await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+
+        } else {
+            log(payload)
+            log('sessionUser', sessionUser);
+            return false;
+        }
+        //await querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, payload.list).then((response) => {
+        //    response.table.rows.forEach((row) => {
+        //        log('row', row);
+//
+        //        let status = row.c[1] ? row.c[1].v : 'read';
+        //        let history = row.c[2] ? row.c[2].v : '';
+        //        let personalTags = row.c[3] ? row.c[3].v.split(',') : [];
+        //        let rating = row.c[4] ? row.c[4].v : 0;
+        //        let readCount = row.c[5] ? row.c[5].v : 1;
+        //        let skipReason = row.c[6] ? row.c[6].v : '';
+//
+        //        let work = new User_BaseWork(row.c[0].v, status, history, personalTags, rating, readCount, skipReason);
+//
+        //        chrome.storage.session.set({[row.c[0].v]: work}).then(r =>
+        //            log('set session storage', r)
+        //        );
+        //    });
+//
+        //    const responseArray = compareArrays(payload.list, response.table.rows);
+        //    log('responseArray', responseArray);
+        //    return responseArray;
+        //}).catch((error) => {
+        //    throw new Error(error);
+        //});
+    }//
+});
+
+
+
+
+    //receiveMessage(port, MessageName.CheckLogin, async (payload) => {
+    //    log('checkLogin message received', payload);
+    //    if(syncUser.isLoggedIn) {
+    //        log('user is logged in');
+    //        chrome.storage.session.set({ user: syncUser }).then(() => {
+    //            log('sessUser set');
+    //        });
+    //        return { isLoggedIn: true };
+    //    } else return { isLoggedIn: false };
+    //});
+
+    /*port.onMessage.addListener((msg) => {
+
+//TODO: change to outer check for user and handle accordingly
+
+
+        if (msg.message === 'addWorkToSheet') {
+            if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
+                return;
+            }
+            log('addWorkToSheet message received');
+            addWorkToSheet(syncUser.spreadsheetId, syncUser.accessToken, msg.work).then((response) => {
+                log('sending response', response);
+                port.postMessage({response: response});
+            });
+            return true;
+            //getLocalAccessToken().then((token) => {
+            //    log('token', token);
+            //    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
+            //        addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
+            //            log('response', response);
+            //            port.postMessage({ response: response });
+            //        });
+            //    });
+            //});
+        } else if (msg.message === 'querySpreadsheet') {
+            if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
+                return;
+            }
+            log('querySheet message received');
+            querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
+                log('querySheet response', response);
+
+                if (response.status && response.status === "error") {
+                    log('querySheet error', response.error);
+                    //TODO: clean this mess
+                    if (syncUser.refreshToken != null) {
+                        exchangeRefreshForAccessToken(syncUser.refreshToken).then((newAccessToken) => {
+                            log('newAccessToken', newAccessToken);
+                            if (newAccessToken) {
+                                chrome.storage.session.set({accessToken: newAccessToken}).then(() => {
+                                    log('newAccessToken set');
+                                    setAccessToken(newAccessToken);
+
+                                    if (syncUser.spreadsheetId != null) {
+                                        querySpreadsheet(syncUser.spreadsheetId, newAccessToken, msg.list).then((response) => {
+                                            log('querySheet response', response);
+                                            const responseArray = compareArrays(msg.list, response.table.rows);
+                                            log('responseArray', responseArray);
+                                            port.postMessage({response: responseArray});
+
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    port.postMessage({response: response.error});
+                    return;
+                }
+
+                forEach(response.table.rows, (row) => {
+                    log('row', row);
+
+                    let status = row.c[1] ? row.c[1].v : 'read';
+                    let history = row.c[2] ? row.c[2].v : '';
+                    let personalTags = row.c[3] ? row.c[3].v.split(',') : [];
+                    let rating = row.c[4] ? row.c[4].v : 0;
+                    let readCount = row.c[5] ? row.c[5].v : 1;
+                    let skipReason = row.c[6] ? row.c[6].v : '';
+
+                    let work = new User_BaseWork(row.c[0].v, status, history, personalTags, rating, readCount, skipReason);
+
+                    chrome.storage.session.set({[row.c[0].v]: work}).then(r =>
+                        log('set session storage', r)
+                    );
+                });
+
+                const responseArray = compareArrays(msg.list, response.table.rows);
+                log('responseArray', responseArray);
+                port.postMessage({response: responseArray});
+            });
+            return true;
+        }
+        return true;
+    });
+});*/
+
 //receiveMessage(
 //    MessageName.AddWorkToSheet,
 //    async (payload): Promise<boolean> => {
-//        let syncUser = UserStore.getState().user;
+//        let syncUser = SyncUserStore.getState().user;
 //        if (syncUser.spreadsheetId !== undefined && syncUser.accessToken !== undefined) {
 //            return await addWorkToSheet(syncUser.spreadsheetId, syncUser.accessToken, payload.work);
 //
@@ -22,7 +259,7 @@ log('background script running');
 //receiveMessage(
 //    MessageName.QuerySpreadsheet,
 //    async (payload): Promise<boolean[]> => {
-//        let sessionUser = UserStore.getState().user;
+//        let sessionUser = SyncUserStore.getState().user;
 //        if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
 //            const response = await querySpreadsheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.list);
 //            const responseArray = compareArrays(payload.list, response.table.rows);
@@ -39,7 +276,7 @@ log('background script running');
 
 //chrome.runtime.onConnect.addListener(function (port) {
 //    log('checking access token');
-//    let syncUser = UserStore.getState().user;
+//    let syncUser = SyncUserStore.getState().user;
 ////
 //    log('found syncUser', syncUser.accessToken);
     //userStoreLogin(syncUser.accessToken, syncUser.refreshToken);
@@ -108,56 +345,7 @@ log('background script running');
 
 
 //});
-chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
-    let syncUser = UserStore.getState().user;
-    log('msg from sender: ', sender)
-    if (msg.message === 'checkLogin') {
-        log('checkLogin message received');
-        log('syncUser', syncUser);
-        sendResponse({ loggedIn: syncUser.isLoggedIn });
-    }
-//TODO: change to outer check for user and handle accordingly
-    if (msg.message === 'addWorkToSheet') {
-        if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
-            return;
-        }
-        log('addWorkToSheet message received');
-        addWorkToSheet(syncUser.spreadsheetId, syncUser.accessToken, msg.work).then((response) => {
-            log('sending response', response);
-            sendResponse({response: response});
-        });
-        return true;
-        //getLocalAccessToken().then((token) => {
-        //    log('token', token);
-        //    fetchSpreadsheetUrl().then((spreadsheetUrl) => {
-        //        addWorkToSheet(spreadsheetUrl, token, msg.work).then((response) => {
-        //            log('response', response);
-        //            sendResponse({ response: response });
-        //        });
-        //    });
-        //});
-    } else if (msg.message === 'querySpreadsheet') {
-        if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
-            return;
-        }
-        log('querySheet message received');
-        log('syncUser', syncUser);
-        querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
-            log('querySheet response', response);
 
-            if(response.status && response.status === "error") {
-                log('querySheet error', response.error);
-                sendResponse({ response: response.error });
-                return;
-            }
-            const responseArray = compareArrays(msg.list, response.table.rows);
-            log('responseArray', responseArray);
-            sendResponse({ response: responseArray });
-        });
-        return true;
-    }
-    return true;
-})
 chrome.storage.onChanged.addListener((changes) => {
     log('storage changed', changes);
     log('user-store', changes['user-store']);
@@ -214,7 +402,7 @@ chrome.storage.onChanged.addListener(() => {
 });    
 
 chrome.tabs.onUpdated.addListener((tab) => {
-    chrome.runtime.onMessage.addListener((isLoaded, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((isLoaded, sender, port.postMessage) => {
         if (isLoaded) {
             (async () => {
                 const response = await chrome.tabs.sendMessage(tab, { type: "getLoginStatus" });

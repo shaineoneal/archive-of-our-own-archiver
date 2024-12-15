@@ -125,11 +125,47 @@ const sheetLayout = {
         },
         {
             namedRangeId: '10',
-            name: 'rating',
+            name: 'history',
             range: {
                 sheetId: 0,
                 startColumnIndex: 10,
                 endColumnIndex: 11
+            }
+        },
+        {
+            namedRangeId: '11',
+            name: 'personalTags',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 11,
+                endColumnIndex: 12
+            }
+        },
+        {
+            namedRangeId: '12',
+            name: 'rating',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 12,
+                endColumnIndex: 13
+            }
+        },
+        {
+            namedRangeId: '13',
+            name: 'readCount',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 13,
+                endColumnIndex: 14
+            }
+        },
+        {
+            namedRangeId: '14',
+            name: 'skipReason',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 14,
+                endColumnIndex: 15
             }
         }
 
@@ -239,7 +275,39 @@ const sheetLayout = {
                             },
                             {
                                 userEnteredValue: {
+                                    stringValue: 'History',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Personal Tags',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
+                            {
+                                userEnteredValue: {
                                     stringValue: 'Rating',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Read Count',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Skip Reason',
                                 },
                                 userEnteredFormat: {
                                     textFormat: { bold: true },
@@ -259,7 +327,11 @@ const sheetLayout = {
             { startColumn: 7, columnMetadata: { pixelSize: 100 } }, //word count
             { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //chapter count
             { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //status
-            { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //rating
+            { startColumn: 10, columnMetadata: { pixelSize: 300 } }, //history
+            { startColumn: 11, columnMetadata: { pixelSize: 200 } }, //personal tags
+            { startColumn: 12, columnMetadata: { pixelSize: 100 } }, //rating
+            { startColumn: 13, columnMetadata: { pixelSize: 100 } }, //read count
+            { startColumn: 14, columnMetadata: { pixelSize: 200 } }, //skip reason
         ],
     },
 };

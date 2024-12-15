@@ -11,11 +11,14 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
     let boolArray: boolean[] = new Array(20).fill(false);
 
     log('searchList', searchList);
+    log('searchList type', typeof searchList[0]);
     log('response', response);
+    log('response type', typeof response[0].c[0].v);
 
     searchList.forEach((searchItem) => {
         response.forEach((responseItem) => {
-            if (searchItem === responseItem.c[0].f) {
+            log('searchItem', searchItem, 'responseItem', responseItem.c[0].v);
+            if (searchItem === responseItem.c[0].v) {
                 boolArray[searchList.indexOf(searchItem)] = true;
                 response.splice(response.indexOf(responseItem), 1);
             }
