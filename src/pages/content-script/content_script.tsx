@@ -1,21 +1,9 @@
 import { standardBlurbsPage } from '..';
 import log from '../../utils/logger';
+import { initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 
 
 log('log: content_script.tsx loaded');
-
-chrome.runtime.sendMessage({message: 'checkLogin'}, (response) => {
-    log('response: ', response);
-    if(response.loggedIn) {
-        log('user is logged in');
-        pageTypeDetect();
-    } else {
-        log('user is not logged in');
-    }
-});
-
-
-
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -27,14 +15,64 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 /*
-connectPort().then((port) => {
-    log('connected to port');
+ * @startuml
+ * participant content_script [[content_script.tsx]]
+ * participant background [[../background/background.ts]]
+ * participant "session storage" as session
+ *
+ * content_script -> background : connectPort
+ * activate background
+ * background --> content_script : port
+ * deactivate background
+ *
+ * activate content_script
+ * content_script -> background : checkLogin
+ * activate background
+ * background -> background : check login
+ * activate background #green
+ * background -> session : set user
+ * activate session
+ * session --> background : user set
+ * deactivate session
+ * background --> content_script : loggedIn
+ * @enduml
+ */
+initializePort()
+//    .then((port) => {
+//    log('connected to port');
+//
+//    //port.postMessage({ message: 'checkLogin' });
+//    sendMessage(port, MessageName.CheckLogin, {})
+//
+//    //receiveMessage(port, 'querySpreadsheet', async (payload) => {
+//    //    log('querySpreadsheet payload: ', payload);
+//    //    return true;
+//    //});
+//    port.onMessage.addListener((msg) => {
+//        log('content_script', 'port.onMessage: ', msg);
+//        if (msg.payload === true) {
+//            log('user is logged in');
+//            pageTypeDetect(port);
+//        }
+//        else if (!msg.loggedIn) {
+//            log('user is not logged in');
+//        }
+//    });
+//});
 
-    //getToken(port).then((token) => {
-    //    log('token: ', token);
-    //    pageTypeDetect();
-    //});
-});
+sendMessage(
+    MessageName.CheckLogin,
+    {},
+    (response) => {
+        log('checkLogin response: ', response);
+        if (response.status) {
+            log('user is logged in');
+            pageTypeDetect();
+        } else {
+            log('user is not logged in');
+        }
+    }
+)
 
 //open up connection to background script
 async function connectPort(): Promise<chrome.runtime.Port> {
@@ -43,39 +81,9 @@ async function connectPort(): Promise<chrome.runtime.Port> {
     return port;
 }
 
-//confirm port connection and get auth token
-async function getToken(port: chrome.runtime.Port) {
-
-    const token = new Promise<string>((resolve) => {
-        port.postMessage({ message: 'getAuthToken' });
-        port.onMessage.addListener((msg) => {
-            log('content_script', 'port.onMessage: ', msg);
-            if (msg.token) {
-                log('resolved token: ', msg.token);
-                resolve(msg.token);
-            }
-            if(msg.error) {     //user is not logged in
-                log('error: ', msg.error);
-                resolve('');
-            }
-        });
-        //reject('Error getting token');
-    });
-
-    log('token check: ', token);
-    token.then((token) => {
-        log('token: ', token);
-        return token;
-    }).catch((err) => {
-        log('error: ', err);
-        return '';
-    });
-}
-*/
-
 //TODO: check for work v. bookmark page first
 
-async function pageTypeDetect() {
+function pageTypeDetect() {
     if(document.querySelector('.index.group.work')) {    //AFAIK, all blurbs pages have these classes
         //standard 20 work page
         standardBlurbsPage();

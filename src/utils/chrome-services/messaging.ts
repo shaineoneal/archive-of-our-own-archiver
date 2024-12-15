@@ -1,4 +1,20 @@
-import { BaseWork } from "../../pages/content-script";
+import { Ao3_BaseWork, BaseWork } from "../../pages/content-script";
+import log from "../logger";
+
+let port: chrome.runtime.Port | null = null;
+
+// Initializes the port in the content script
+export const initializePort = () => {
+    console.log("Initializing port...");
+    if (!port) {
+        port = chrome.runtime.connect({ name: "persistent-port" });
+
+        port.onDisconnect.addListener(() => {
+            console.log("Port disconnected. Reinitializing...");
+            port = null;
+        });
+    }
+};
 
 /**
  * Enum of message names.
@@ -9,6 +25,7 @@ export enum MessageName {
     GetAccessToken = 'getAccessToken',
     AddWorkToSheet = 'addWorkToSheet',
     QuerySpreadsheet = 'querySpreadsheet',
+    CheckLogin = 'checkLogin',
 }
 
 /**
@@ -38,7 +55,7 @@ interface Messages extends Partial<Record<MessageName, Message>> {
     };
     [MessageName.AddWorkToSheet]: {
         payload: {
-            work: BaseWork;
+            work: Ao3_BaseWork;
         };
         response: boolean;
     };
@@ -48,6 +65,12 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         };
         response: boolean[];
     };
+    [MessageName.CheckLogin]: {
+        payload: {};
+        response: {
+            status: boolean;
+        };
+    }
 }
 
 /**
@@ -94,38 +117,41 @@ export const  sendMessage = <T extends MessageTypes>(
     payload: MessagePayload<T>,
     callback: MessageCallback<T>,
 ): void => {
-    chrome.runtime.sendMessage(
-        { name, payload },
-        callback
-    );
+    if (!port) {
+        console.error('Port not initialized');
+        return;
+    }
+    port.postMessage( { name, payload } );
+
+    //Listen for a single response
+    const onResponse = (response: MessageResponse<T>) => {
+        callback(response);
+        port?.onMessage.removeListener(onResponse);
+    }
+    port.onMessage.addListener(onResponse);
 };
 
-/**
- * Registers a message listener for a specific message type.
- *
- * @template T - The type of the message.
- * @param name - The name of the message to listen for.
- * @param responder - A function that processes the message payload and returns a promise with the response.
- * 
- * @example
- * receiveMessage('exampleMessage', async (payload) => {
- *   // Process the payload and return a response
- *   return { success: true };
- * });
- */
-export const receiveMessage = <T extends MessageTypes>(
-    name: T,
-    responder: (payload: MessagePayload<T>) => Promise<MessageResponse<T>>,
-): void => {
-    chrome.runtime.onMessage.addListener(
-        (request: { name: T, payload: MessagePayload<T> }, _, callback: MessageCallback<T>): boolean => {
-            if (request.name !== name) return false;
-            
-            responder(request.payload)
-                .then(callback)
-                .catch(console.log);
-            
-            return true;
-        },
-    );
+
+
+export const createMessageHandlers = (handlers: {
+    [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponse<K>>;
+}): void => {
+    chrome.runtime.onConnect.addListener((port) => {
+        port.onMessage.addListener(async (message) => {
+            const { name, payload } = message;
+
+            const handler = handlers[message.name as MessageTypes];
+            if (!handler) {
+                port.postMessage({ error: `No handler for message: ${name}` });
+                return;
+            }
+
+            try {
+                const response = await handler(payload);
+                port.postMessage( response );
+            } catch (error) {
+                port.postMessage({ error });
+            }
+        });
+    });
 };

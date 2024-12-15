@@ -25,19 +25,12 @@ function handleStore(method: StoreMethod, action: 'set' | 'get' | 'remove', key:
         return data;
     };
 
-    if (method === StoreMethod.SYNC) {
-        return new Promise((resolve, reject) => {
-            if (action === 'set') storage.set({ [key]: value }, (data) => resolve(callback(data)));
-            else if (action === 'get') storage.get(key, (data) => resolve(callback(data)));
-            else if (action === 'remove') storage.remove(key, (data) => resolve(callback(data)));
-            else reject('Invalid action');
-        });
-    } else {
-        if (action === 'set') return callback(storage.set({ [key]: value }));
-        else if (action === 'get') return callback(storage.get(key));
-        else if (action === 'remove') return callback(storage.remove(key));
-        else throw new Error('Invalid action');
-    }
+    return new Promise((resolve, reject) => {
+        if (action === 'set') storage.set({ [key]: value }, (data) => resolve(callback(data)));
+        else if (action === 'get') storage.get(key, (data) => resolve(callback(data)));
+        else if (action === 'remove') storage.remove(key, (data) => resolve(callback(data)));
+        else reject('Invalid action');
+    });
 }
 
 /**
