@@ -63,13 +63,21 @@ export function standardBlurbsPage() {
 async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
     log('injectWorkStatuses: ', response);
     log('injectWorkStatuses type: ', typeof response[0]);
-    chrome.storage.session.get('57079471', (result) => {
-        log('sess result: ', result);
-    });
+
     response.forEach((workRef: boolean, index: number) => {
         log('workRef: ', workRef)
         if (workRef) {
-            changeBlurbStyle('read', worksOnPage[index]);
+            log('worksOnPage[index]: ', worksOnPage[index]);
+            const workId = worksOnPage[index].id.split('_')[1]
+            chrome.storage.session.get(workId, (result) => {
+                log('sess result: ', result);
+                log('result status: ', result[workId].status);
+                if(result[workId].status === 'read') {
+                    changeBlurbStyle('read', worksOnPage[index]);
+
+                }
+            });
+
         }
     });
 }
