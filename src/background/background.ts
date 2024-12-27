@@ -19,21 +19,25 @@ chrome.runtime.onConnect.addListener(function (port) {
                 log('port token', 'none');
                 chrome.scripting.executeScript({
                     target: { tabId: port.sender?.tab?.id || 0 },
-                    func: () => {
-                        window.confirm('You need an auth token! Log back in?');
+                    func: ()    => {
+                        return window.confirm('You need an auth token! Log back in?');
                     }
                 }).then((response) => {
                     log('im a genius', response);
-                    launchWebAuthFlow(true).then((cookie) => {
-                        log('cookie', cookie);
-                        chrome.runtime.reload();
-                        chrome.scripting.executeScript({
-                            target: { tabId: port.sender?.tab?.id || 0 },
-                            func: () => {
-                               window.location.reload();
-                            }
+                    if (response[0].result) {
+                        launchWebAuthFlow(true).then((cookie) => {
+                            log('cookie', cookie);
+                            chrome.runtime.reload();
+                            chrome.scripting.executeScript({
+                                target: { tabId: port.sender?.tab?.id || 0 },
+                                func: () => {
+                                   window.location.reload();
+                                }
+                            });
                         });
-                    });
+                    } else {
+                        port.postMessage({ error: 'User not logged in' });
+                    }
                 });
             });
         } else if (msg.message === 'fetchSpreadsheetUrl') {
