@@ -16,7 +16,7 @@ export const insideWork = (port: chrome.runtime.Port) => {
         if (msg.reason === 'workQuerySheet') {
             if (msg.response) {
                 log('workRef: ', msg.response)
-                if (msg.response) {
+                if (msg.response.table.rows.length > 0) {
                     looksRead(true);
                 }
             }
