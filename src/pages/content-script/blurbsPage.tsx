@@ -7,7 +7,7 @@ import { BaseWork } from "./BaseWork";
 import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 
 
-export function standardBlurbsPage() {
+export async function  standardBlurbsPage() {
 
     const temp = document.querySelector('li.work, li.bookmark');
 
