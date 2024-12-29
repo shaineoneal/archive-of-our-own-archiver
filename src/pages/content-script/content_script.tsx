@@ -33,7 +33,9 @@ sendMessage(
 function pageTypeDetect() {
     if(document.querySelector('.index.group.work')) {    //AFAIK, all blurbs pages have these classes
         //standard 20 work page
-        standardBlurbsPage();
+        standardBlurbsPage().then(() => {
+            log('standardBlurbsPage done');
+        });
 
     } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
         log('Work Page');
