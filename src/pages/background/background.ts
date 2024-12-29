@@ -50,9 +50,9 @@ createMessageHandlers({
         let responseArray: boolean[] = [];
         return querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
             log('querySheet response', response);
-
-            if (response.status && response.status === "error") {
-                log('querySheet error', response.error);
+            log('querySheet error', response.table.rows.length);
+            if (response.table.rows.length == 0) {
+                log('no rows');
                 //TODO: clean this mess
                 if (syncUser.refreshToken != null) {
                     exchangeRefreshForAccessToken(syncUser.refreshToken).then((newAccessToken) => {
