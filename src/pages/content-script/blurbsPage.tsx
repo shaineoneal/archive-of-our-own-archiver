@@ -62,22 +62,27 @@ export async function  standardBlurbsPage() {
  */
 async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
     log('injectWorkStatuses: ', response);
-    log('injectWorkStatuses type: ', typeof response[0]);
 
-    response.forEach((workRef: boolean, index: number) => {
-        log('workRef: ', workRef)
-        if (workRef) {
-            log('worksOnPage[index]: ', worksOnPage[index]);
-            const workId = worksOnPage[index].id.split('_')[1]
-            chrome.storage.session.get(workId, (result) => {
-                log('sess result: ', result);
-                log('result status: ', result[workId].status);
-                if(result[workId].status === 'read') {
-                    changeBlurbStyle('read', worksOnPage[index]);
 
-                }
-            });
+    if(response === null) {
+        return Error;
+    } else {
+        log('injectWorkStatuses first: ', response[0]);
+        response.forEach((workRef: boolean, index: number) => {
+            log('workRef: ', workRef)
+            if (workRef) {
+                log('worksOnPage[index]: ', worksOnPage[index]);
+                const workId = worksOnPage[index].id.split('_')[1]
+                chrome.storage.session.get(workId, (result) => {
+                    log('sess result: ', result);
+                    log('result status: ', result[workId].status);
+                    if (result[workId].status === 'read') {
+                        changeBlurbStyle('read', worksOnPage[index]);
 
-        }
-    });
+                    }
+                });
+
+            }
+        });
+    }
 }
