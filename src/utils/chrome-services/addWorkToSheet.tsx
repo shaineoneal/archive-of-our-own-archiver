@@ -17,6 +17,11 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
     log('authToken', authToken);
     log('spreadsheetId', spreadsheetId);
 
+    const history = {
+        action: "added",
+        date: new Date().toLocaleString(),
+    }
+
     const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
         method: HttpMethod.POST,
@@ -52,7 +57,10 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                                     { userEnteredValue: {stringValue: work.description},
                                         userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //6
                                     {userEnteredValue: {numberValue: work.wordCount}},                   //7
-                                    {userEnteredValue: {numberValue: work.chapterCount}}
+                                    {userEnteredValue: {numberValue: work.chapterCount}},
+                                    { userEnteredValue: {stringValue: "read"}},
+                                    { userEnteredValue: {stringValue: JSON.stringify(history)},
+                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //9
                                 ]
                             },
                         ],
