@@ -9,11 +9,6 @@ import { MessageName, sendMessage } from "../../utils/chrome-services/messaging"
 
 export async function  standardBlurbsPage() {
 
-    const temp = document.querySelector('li.work, li.bookmark');
-
-    log('temp style: ', getComputedStyle(temp!));
-    log('temp style: ', JSON.stringify(getComputedStyle(temp!)));
-
     const worksOnPage = Array.from(
         document.querySelectorAll(
             'li.work, li.bookmark'
@@ -24,7 +19,6 @@ export async function  standardBlurbsPage() {
     worksOnPage.forEach((work) => {
         let newEl = document.createElement('div');
         newEl.classList.add('blurb-with-toggles');
-
 
         newEl.style.cssText = JSON.stringify(getComputedStyle(work));
 
@@ -47,8 +41,12 @@ export async function  standardBlurbsPage() {
         { list: searchList },
         (response) => {
             log('QuerySpreadsheet response: ', response)
+            if (response === null) {
+                log('No work statuses to inject.')
+                return;
+            }
             injectWorkStatuses(worksOnPage, response).then(() => {
-                log('injected work statuses');
+                log('Injected work statuses.');
             });
         }
     )
@@ -61,21 +59,16 @@ export async function  standardBlurbsPage() {
  * @param { boolean[] } response - the list of works from sheet
  */
 async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
-    log('injectWorkStatuses: ', response);
-
 
     if(response === null) {
         return Error;
     } else {
-        log('injectWorkStatuses first: ', response[0]);
         response.forEach((workRef: boolean, index: number) => {
             log('workRef: ', workRef)
             if (workRef) {
-                log('worksOnPage[index]: ', worksOnPage[index]);
                 const workId = worksOnPage[index].id.split('_')[1]
                 chrome.storage.session.get(workId, (result) => {
-                    log('sess result: ', result);
-                    log('result status: ', result[workId].status);
+                    log('session result: ', result);
                     if (result[workId].status === 'read') {
                         changeBlurbStyle('read', worksOnPage[index]);
 

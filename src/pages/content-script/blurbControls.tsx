@@ -42,8 +42,6 @@ export function addBlurbControls(workWrap: Element) {
         //});
     });
 
-    log('blurbToggles: ', work);
-
     const toggle = work.cloneNode(false) as HTMLElement;
     toggle.className = 'blurb-toggle';
     toggle.removeAttribute('id');
