@@ -1,9 +1,9 @@
 import log from '../../utils/logger';
-import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
+import { SessionUserStore, SyncUserStore, useActions, useUser } from "../../utils/zustand";
 import {
     addWorkToSheet,
     createMessageHandlers,
-    exchangeRefreshForAccessToken,
+    exchangeRefreshForAccessToken, isAccessTokenValid,
     MessageName,
     querySpreadsheet,
     setStore,
@@ -11,7 +11,6 @@ import {
 } from "../../utils/chrome-services";
 import { compareArrays } from "../../utils/compareArrays";
 import { User_BaseWork } from "../content-script/User_BaseWork";
-import { forEach } from "remeda";
 import session = chrome.storage.session;
 
 chrome.runtime.onConnect.addListener((port) => {
@@ -78,7 +77,7 @@ createMessageHandlers({
                 return response.error;
             }
 
-            forEach(response.table.rows, (row) => {
+            response.table.rows.forEach((row) => {
                 log('row', row);
 
                 let status = row.c[1] ? row.c[1].v : 'read';
@@ -91,13 +90,12 @@ createMessageHandlers({
                 let work = new User_BaseWork(row.c[0].v, status, history, personalTags, rating, readCount, skipReason);
 
                 chrome.storage.session.set({[row.c[0].v]: work}).then(r =>
-                    log('set session storage', r)
+                    log('added work to session storage', r)
                 );
             });
 
             responseArray = compareArrays(msg.list, response.table.rows);
             log('responseArray', responseArray);
-            log('responseArray type', typeof responseArray);
             return responseArray;
         }).catch((error) => {
             throw new Error(error);
@@ -113,12 +111,56 @@ createMessageHandlers({
             log('sessionUser', sessionUser);
             return false;
         }
+    },
+    [MessageName.GetCurrentTab]: async (payload) => {
+            let queryOptions = { active: true, lastFocusedWindow: true };
+            // `tab` will either be a `tabs.Tab` instance or `undefined`.
+            let [tab] = await chrome.tabs.query(queryOptions);
+            if (!tab.url) {
+                return 'no tab';
+            }
+            return tab.url;
+    },
+    [MessageName.TabVisible]: async (payload) => {
+        log('tabVisible message received', payload);
+        let user = SyncUserStore.getState().user;
+        const {setAccessToken} = SyncUserStore.getState().actions;
+        log('user', user);
+        // if user has access token, check if it's valid
+        if(user.accessToken !== undefined) {
+            log('user has access token');
+            isAccessTokenValid(user.accessToken).then(() => {
+                log('access token is valid');
+                return true;
+            }).catch(async (error) => {
+                log('access token is invalid');
+                // If there is an error, exchange the refresh token for an access token
+                if (user.refreshToken) {
+                    const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                    chrome.runtime.reload();
+                    chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {
+                        tabs.forEach((tab) => {
+                            chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
+                        });
+                    });
+                    return (newAccessToken !== undefined);
+                } else {
+                    log('User does not have a refresh token:');
+                    // If the user does not have a refresh token, log them out
+                    setAccessToken(undefined);
+                    return false;
+                }
+            });
+        } else {
+            log('user does not have access token');
+            return false;
+        }
+        return (user.accessToken !== undefined);
     }
 });
 
 chrome.storage.onChanged.addListener((changes) => {
     log('storage changed', changes);
-    log('user-store', changes['user-store']);
     if( changes['user-store'] ) {
         log('user changed', changes['user-store']);
         chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {

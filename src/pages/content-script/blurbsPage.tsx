@@ -21,24 +21,27 @@ export async function  standardBlurbsPage() {
     );
 
     let searchList: number[] = [];
-    worksOnPage.forEach((work) => {
-        let newEl = document.createElement('div');
-        newEl.classList.add('blurb-with-toggles');
+    log(document.querySelector('.blurb-with-toggles'));
+    if(document.querySelector('.blurb-with-toggles') === null) {
+        worksOnPage.forEach((work) => {
+            let newEl = document.createElement('div');
+            newEl.classList.add('blurb-with-toggles');
 
 
-        newEl.style.cssText = JSON.stringify(getComputedStyle(work));
+            newEl.style.cssText = JSON.stringify(getComputedStyle(work));
 
-        wrap(work, newEl);
+            wrap(work, newEl);
 
-        addBlurbControls(newEl);
-        //if it's a bookmark, use the class to get the work id
-        if (work.classList.contains('bookmark')) {
-            searchList.push(Number(work.classList[3].split('-')[1]));
-        } else {
-            //else it's a work, use the id to get the work id
-            searchList.push(Number(work.id.split('_')[1]));
-        }
-    });
+            addBlurbControls(newEl);
+            //if it's a bookmark, use the class to get the work id
+            if (work.classList.contains('bookmark')) {
+                searchList.push(Number(work.classList[3].split('-')[1]));
+            } else {
+                //else it's a work, use the id to get the work id
+                searchList.push(Number(work.id.split('_')[1]));
+            }
+        });
+    }
 
     log('searchList: ', searchList);
 
@@ -61,10 +64,11 @@ export async function  standardBlurbsPage() {
  * @param { boolean[] } response - the list of works from sheet
  */
 async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
-    log('injectWorkStatuses: ', response);
+    log('injectWorkStatuses: ', (response as any).error);
 
 
-    if(response === null) {
+    if(response === null || response === undefined || (response as any).error) {
+        //user needs new access token
         return Error;
     } else {
         log('injectWorkStatuses first: ', response[0]);

@@ -1,6 +1,8 @@
 import { standardBlurbsPage } from '..';
 import log from '../../utils/logger';
 import { initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
+import { exchangeRefreshForAccessToken, isAccessTokenValid } from "../../utils/chrome-services";
+import { useActions, useUser } from "../../utils/zustand";
 
 log('log: content_script.tsx loaded');
 
@@ -43,3 +45,27 @@ function pageTypeDetect() {
         log('PANIK: Unknown page');
     }
 }
+
+document.addEventListener('visibilitychange', async function(){
+    if(document.visibilityState === 'visible') {
+        log('tab is visible, checking access token');
+        sendMessage(
+            MessageName.TabVisible,
+            {},
+            (response) => {
+                log('TabVisible response: ', response);
+                if(response.error) {
+                    log('error: ', response.error);
+                    return;
+                }
+                if (response) {
+                    log('user is logged in');
+                    pageTypeDetect();
+                } else {
+                    log('user is not logged in');
+                }
+            }
+        )
+    }
+    log('visibilitychange: ', document.visibilityState);
+})

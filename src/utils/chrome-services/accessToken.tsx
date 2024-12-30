@@ -1,5 +1,6 @@
 import log from '../logger';
 import { HttpMethod, makeRequest } from './httpRequest';
+import { useActions } from "../zustand";
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
@@ -45,7 +46,7 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
     }
 
     const parsedResponse = await response.json();
-    return parsedResponse.access_token;
+    return parsedResponse.accessToken;
 }
 
 /**

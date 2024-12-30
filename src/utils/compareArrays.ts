@@ -11,7 +11,6 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
     let boolArray: boolean[] = new Array(searchList.length).fill(false);
 
     log('searchList', searchList);
-    log('searchList type', typeof searchList[0]);
     log('response', response);
     if(response.length > 0) {
         log('response type', typeof response[0].c[0].v);

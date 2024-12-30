@@ -26,6 +26,8 @@ export enum MessageName {
     AddWorkToSheet = 'addWorkToSheet',
     QuerySpreadsheet = 'querySpreadsheet',
     CheckLogin = 'checkLogin',
+    GetCurrentTab = 'getCurrentTab',
+    TabVisible = 'tabVisible',
 }
 
 /**
@@ -70,7 +72,15 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         response: {
             status: boolean;
         };
-    }
+    };
+    [MessageName.GetCurrentTab]: {
+        payload: {};
+        response: string;
+    };
+    [MessageName.TabVisible]: {
+        payload: {};
+        response: any;
+    };
 }
 
 /**
