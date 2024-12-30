@@ -3,8 +3,6 @@ import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest";
 
 export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]) {
 
-    log('querySpreadsheet', 'spreadsheetId', spreadsheetId);
-
     let query = createEncodedQuery(searchList);
 
     const response = await makeRequest({
