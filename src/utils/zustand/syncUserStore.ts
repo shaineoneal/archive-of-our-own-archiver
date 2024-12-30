@@ -72,14 +72,12 @@ export const SyncUserStore = create<UserStoreType>()(
                 async getItem(name: string): Promise<StorageValue<any>> {
 
                     const data = await getStore(name, StoreMethod.SYNC);
-                    log('getItem: ', name, 'data: ', data);
                     return {
                         state: data[name]
                     };
                 },
 
                 async setItem(name: string, storageValue: StorageValue<any>) {
-                    log('setItem: ', name, 'data: ', storageValue.state);
                     await setStore(name, storageValue.state, StoreMethod.SYNC);
                 },
 
