@@ -28,8 +28,8 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 createMessageHandlers({
-    [MessageName.CheckLogin]: async (payload) => {
-        log('checkLogin message received', payload);
+    [MessageName.CheckLogin]: async () => {
+        log('checkLogin message received');
         let syncUser = SyncUserStore.getState().user;
         if(syncUser.isLoggedIn) {
             log('user is logged in');
@@ -118,7 +118,6 @@ createMessageHandlers({
 
 chrome.storage.onChanged.addListener((changes) => {
     log('storage changed', changes);
-    log('user-store', changes['user-store']);
     if( changes['user-store'] ) {
         log('user changed', changes['user-store']);
         chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {
