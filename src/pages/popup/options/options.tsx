@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useUser } from '../../../utils/zustand';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
 import { NewSheet, Logout } from './';
 import { createRoot } from 'react-dom/client';
 import '../../../styles.css';
+import log from '../../../utils/logger';
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
@@ -14,12 +15,25 @@ export function openOptionsPage() {
  * @returns the Options component
  */
 const Options =  () => {
+    let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${useUser().spreadsheetId}`;
 
 
-    useEffect(() => {
-    }, []);
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(\/|$)/;
 
-    //TODO: evalate if this is needed
+        const match = event.target.value.match(regex);
+        log('match: ', match);
+        if(match && match[1]) {
+            const spreadsheetId = match[1];
+            log('spreadsheetId: ', spreadsheetId);
+            //TODO: set spreadsheetId
+        } else {
+            //TODO: handle invalid url
+        }
+
+    };
+
+    //TODO: evaluate if this is needed
     //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //    log('heard message: ', message);
     //    if (message.message === 'spreadsheetUrlChanged') {
@@ -43,6 +57,11 @@ const Options =  () => {
             <main>
                 <div className="options-container">
                     <div>Google Spreadsheets URL</div>
+                    <input 
+                        type="text" 
+                        defaultValue={spreadsheetUrl}
+                        onChange={onChange}
+                    />
                     <Logout/>
                     <NewSheet/>
                 </div>
