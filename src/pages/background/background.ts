@@ -7,7 +7,8 @@ import {
     MessageName,
     querySpreadsheet,
     setStore,
-    StoreMethod
+    StoreMethod,
+    removeWorkFromSheet
 } from "../../utils/chrome-services";
 import { compareArrays } from "../../utils/compareArrays";
 import { User_BaseWork } from "../content-script/User_BaseWork";
@@ -50,8 +51,9 @@ createMessageHandlers({
         let responseArray: boolean[] = [];
         return querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
             log('querySheet response', response);
-            log('querySheet error', response.table.rows.length);
+
             if (response.table.rows.length == 0) {
+
                 log('no rows');
                 //TODO: clean this mess
                 if (syncUser.refreshToken != null) {
@@ -107,11 +109,16 @@ createMessageHandlers({
         let sessionUser = SyncUserStore.getState().user;
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
             return await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
-
         } else {
             log(payload)
             log('sessionUser', sessionUser);
             return false;
+        }
+    },
+    [MessageName.RemoveWorkFromSheet]: async (payload) => {
+        let sessionUser = SyncUserStore.getState().user;
+        if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
+            return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.workId);
         }
     }
 });
