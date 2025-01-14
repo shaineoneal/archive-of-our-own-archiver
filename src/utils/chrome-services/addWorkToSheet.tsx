@@ -44,6 +44,7 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                         rows: [
                             {
                                 values: [
+                                    { userEnteredValue: {formulaValue: '=ROW(INDIRECT("R[0]C[1]", FALSE))'}},                     //0
                                     { userEnteredValue: {numberValue: work.workId}},                     //0
                                     { userEnteredValue: {stringValue: work.title}},                      //1
                                     { userEnteredValue: {stringValue: work.authors.toString()},
@@ -76,7 +77,6 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                     }
                 }
             ],
-            includeSpreadsheetInResponse: false
         }
     });
 
