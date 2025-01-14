@@ -76,13 +76,13 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                     }
                 }
             ],
-            includeSpreadsheetInResponse: false
+
         }
     });
 
     const parsedResponse = await response.json();
 
-    log('addWorkToSheet', 'response', parsedResponse);
+    log('addWorkToSheet', 'response', parsedResponse[0]);
     return response.ok;
 }
 
