@@ -7,7 +7,7 @@ import { BaseWork } from "./BaseWork";
 import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 
 
-export async function  standardBlurbsPage() {
+export async function standardBlurbsPage() {
 
     const worksOnPage = Array.from(
         document.querySelectorAll(
@@ -24,7 +24,6 @@ export async function  standardBlurbsPage() {
 
         wrap(work, newEl);
 
-        addBlurbControls(newEl);
         //if it's a bookmark, use the class to get the work id
         if (work.classList.contains('bookmark')) {
             searchList.push(Number(work.classList[3].split('-')[1]));
@@ -45,8 +44,15 @@ export async function  standardBlurbsPage() {
                 log('No work statuses to inject.')
                 return;
             }
+            // @ts-ignore
+            if (response.error) {
+                // @ts-ignore
+                log('Error querying spreadsheet: ', response.error);
+                return;
+            }
             injectWorkStatuses(worksOnPage, response).then(() => {
                 log('Injected work statuses.');
+                addBlurbControls(worksOnPage);
             });
         }
     )
