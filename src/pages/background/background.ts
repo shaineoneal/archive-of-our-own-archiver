@@ -3,24 +3,20 @@ import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
 import {
     addWorkToSheet,
     createMessageHandlers,
-    exchangeRefreshForAccessToken,
+    exchangeRefreshForAccessToken, getStore,
     MessageName,
     querySpreadsheet,
     setStore,
     StoreMethod,
-    removeWorkFromSheet
 } from "../../utils/chrome-services";
 import { compareArrays } from "../../utils/compareArrays";
 import { User_BaseWork } from "../content-script/User_BaseWork";
 import { forEach } from "remeda";
 import session = chrome.storage.session;
+import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromSheet";
 
 chrome.runtime.onConnect.addListener((port) => {
     log('background script running');
-
-    let syncUser = SyncUserStore.getState().user;
-    const {setAccessToken} = SyncUserStore.getState().actions;
-    log('syncUser from onMessage', syncUser);
 
     chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
         .then(() => {
@@ -32,6 +28,7 @@ createMessageHandlers({
     [MessageName.CheckLogin]: async () => {
         log('checkLogin message received');
         let syncUser = SyncUserStore.getState().user;
+        log('syncUser', syncUser);
         if(syncUser.isLoggedIn) {
             log('user is logged in');
             //save user to session storage
@@ -46,14 +43,14 @@ createMessageHandlers({
         if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
             throw new Error('no spreadsheetId or accessToken');
         }
+
         //let syncUser = SyncUserStore.getState().user;
         log('querySheet message received');
         let responseArray: boolean[] = [];
         return querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.list).then((response) => {
             log('querySheet response', response);
-
+            log('querySheet # rows', response.table.rows.length);
             if (response.table.rows.length == 0) {
-
                 log('no rows');
                 //TODO: clean this mess
                 if (syncUser.refreshToken != null) {
@@ -93,7 +90,7 @@ createMessageHandlers({
 
                 let work = new User_BaseWork(index, row.c[1].v, status, history, personalTags, rating, readCount, skipReason);
 
-                chrome.storage.session.set({[row.c[0].v]: work}).then(r =>
+                chrome.storage.session.set({[row.c[1].v]: work}).then(r =>
                     log('set session storage', r)
                 );
             });
@@ -109,6 +106,7 @@ createMessageHandlers({
         let sessionUser = SyncUserStore.getState().user;
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
             return await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+
         } else {
             log(payload)
             log('sessionUser', sessionUser);
@@ -117,8 +115,16 @@ createMessageHandlers({
     },
     [MessageName.RemoveWorkFromSheet]: async (payload) => {
         let sessionUser = SyncUserStore.getState().user;
+        const workId = `${payload.workId}`;
+        const work = await getStore(workId, StoreMethod.SESSION);
+        const workIndex = work[workId].index;
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
-            return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.workId);
+            return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
+
+        } else {
+            log(payload)
+            log('sessionUser', sessionUser);
+            return false;
         }
     }
 });
@@ -130,12 +136,12 @@ chrome.storage.onChanged.addListener((changes) => {
         chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {
             tabs.forEach((tab) => {
                 log('sending message to tab', tab);
-                chrome.tabs.sendMessage(tab.id!, {message: "userChanged", newUser: changes['user-store'].newValue})
-                    .then((response) => {
-                        chrome.runtime.reload();
-                        chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
-                        log('response from content script', response)
-                    });
+                //chrome.tabs.sendMessage(tab.id!, {message: "userChanged", newUser: changes['user-store'].newValue})
+                //    .then((response) => {
+                        //chrome.runtime.reload();
+                        //chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
+                //        log('response from content script', response)
+                //    });
 
             });
         });
