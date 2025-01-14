@@ -5,13 +5,26 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
 
     let query = createEncodedQuery(searchList);
 
+    //const response = await makeRequest({
+    //    url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?&tq=${query}`,
+    //    method: HttpMethod.GET,
+    //    headers: {
+    //        'Content-Type': 'application/json',
+    //        Authorization: `Bearer ${authToken}`,
+    //    },
+    //})
+
     const response = await makeRequest({
-        url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tq=${query}&access_token=${authToken}`,
+        url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet`,
         method: HttpMethod.GET,
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
+        body: {
+            ranges: searchList.map((workId) => `Sheet1!A${workId}:O${workId}`),
+            majorDimension: 'ROWS',
+        }
     })
 
     return parseResponse(response);
