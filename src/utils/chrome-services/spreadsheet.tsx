@@ -34,8 +34,8 @@ const sheetLayout = {
     properties: { title: 'AO3E' },
     namedRanges: [
         {
-            namedRangeId: '0',
-            name: 'WorkID',
+            namedRangeId: '1',
+            name: 'index',
             range: {
                 sheetId: 0,
                 startColumnIndex: 0,
@@ -43,8 +43,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '1',
-            name: 'title',
+            namedRangeId: '2',
+            name: 'WorkID',
             range: {
                 sheetId: 0,
                 startColumnIndex: 1,
@@ -52,8 +52,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '2',
-            name: 'authors',
+            namedRangeId: '3',
+            name: 'title',
             range: {
                 sheetId: 0,
                 startColumnIndex: 2,
@@ -61,8 +61,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '3',
-            name: 'fandoms',
+            namedRangeId: '4',
+            name: 'authors',
             range: {
                 sheetId: 0,
                 startColumnIndex: 3,
@@ -70,8 +70,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '4',
-            name: 'relationships',
+            namedRangeId: '5',
+            name: 'fandoms',
             range: {
                 sheetId: 0,
                 startColumnIndex: 4,
@@ -79,8 +79,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '5',
-            name: 'tags',
+            namedRangeId: '6',
+            name: 'relationships',
             range: {
                 sheetId: 0,
                 startColumnIndex: 5,
@@ -88,8 +88,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '6',
-            name: 'description',
+            namedRangeId: '7',
+            name: 'tags',
             range: {
                 sheetId: 0,
                 startColumnIndex: 6,
@@ -97,8 +97,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '7',
-            name: 'wordCount',
+            namedRangeId: '8',
+            name: 'description',
             range: {
                 sheetId: 0,
                 startColumnIndex: 7,
@@ -106,8 +106,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '8',
-            name: 'chapterCount',
+            namedRangeId: '9',
+            name: 'wordCount',
             range: {
                 sheetId: 0,
                 startColumnIndex: 8,
@@ -115,8 +115,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '9',
-            name: 'status',
+            namedRangeId: '10',
+            name: 'chapterCount',
             range: {
                 sheetId: 0,
                 startColumnIndex: 9,
@@ -124,8 +124,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '10',
-            name: 'history',
+            namedRangeId: '11',
+            name: 'status',
             range: {
                 sheetId: 0,
                 startColumnIndex: 10,
@@ -133,8 +133,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '11',
-            name: 'personalTags',
+            namedRangeId: '12',
+            name: 'history',
             range: {
                 sheetId: 0,
                 startColumnIndex: 11,
@@ -142,8 +142,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '12',
-            name: 'rating',
+            namedRangeId: '13',
+            name: 'personalTags',
             range: {
                 sheetId: 0,
                 startColumnIndex: 12,
@@ -151,8 +151,8 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '13',
-            name: 'readCount',
+            namedRangeId: '14',
+            name: 'rating',
             range: {
                 sheetId: 0,
                 startColumnIndex: 13,
@@ -160,12 +160,21 @@ const sheetLayout = {
             }
         },
         {
-            namedRangeId: '14',
-            name: 'skipReason',
+            namedRangeId: '15',
+            name: 'readCount',
             range: {
                 sheetId: 0,
                 startColumnIndex: 14,
                 endColumnIndex: 15
+            }
+        },
+        {
+            namedRangeId: '16',
+            name: 'skipReason',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 15,
+                endColumnIndex: 16
             }
         }
 
@@ -174,11 +183,11 @@ const sheetLayout = {
         properties: {
             title: 'Access Works',
             sheetId: 0,
-            /*gridProperties: {
+            gridProperties: {
                 rowCount: 1,
-                columnCount: 11,
+                columnCount: 16,
                 columnGroupControlAfter: true,
-            }*/
+            }
         },
         protectedRanges: [
             {
@@ -195,6 +204,14 @@ const sheetLayout = {
                 rowData:  [
                     {
                         values: [
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Index',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
                             {
                                 userEnteredValue: {
                                     stringValue: 'Work ID',
@@ -317,21 +334,21 @@ const sheetLayout = {
                     },
                 ],
             },
-            { startColumn: 0, columnMetadata: { pixelSize: 100 } }, //work ID
-            { startColumn: 1, columnMetadata: { pixelSize: 200 } }, //title
-            { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //authors
-            { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //fandoms
-            { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //relationships
-            { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //tags
-            { startColumn: 6, columnMetadata: { pixelSize: 300 } }, //description
-            { startColumn: 7, columnMetadata: { pixelSize: 100 } }, //word count
-            { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //chapter count
-            { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //status
-            { startColumn: 10, columnMetadata: { pixelSize: 300 } }, //history
-            { startColumn: 11, columnMetadata: { pixelSize: 200 } }, //personal tags
-            { startColumn: 12, columnMetadata: { pixelSize: 100 } }, //rating
-            { startColumn: 13, columnMetadata: { pixelSize: 100 } }, //read count
-            { startColumn: 14, columnMetadata: { pixelSize: 200 } }, //skip reason
+            { startColumn: 1, columnMetadata: { pixelSize: 100 } }, //work ID
+            { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
+            { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //authors
+            { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
+            { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
+            { startColumn: 6, columnMetadata: { pixelSize: 200 } }, //tags
+            { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
+            { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
+            { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
+            { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
+            { startColumn: 11, columnMetadata: { pixelSize: 300 } }, //history
+            { startColumn: 12, columnMetadata: { pixelSize: 200 } }, //personal tags
+            { startColumn: 13, columnMetadata: { pixelSize: 100 } }, //rating
+            { startColumn: 14, columnMetadata: { pixelSize: 100 } }, //read count
+            { startColumn: 15, columnMetadata: { pixelSize: 200 } }, //skip reason
         ],
     },
 };
