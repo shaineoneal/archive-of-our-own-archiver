@@ -26,4 +26,5 @@ export function changeBlurbStyle(workStatus: WorkStatus, work: Element) {
         default:
             break;
     }
+    return work;
 }
