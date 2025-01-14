@@ -22,10 +22,11 @@ export const initializePort = () => {
  * Each message name is a property of the Messages interface.
  */
 export enum MessageName {
-    GetAccessToken = 'getAccessToken',
     AddWorkToSheet = 'addWorkToSheet',
-    QuerySpreadsheet = 'querySpreadsheet',
     CheckLogin = 'checkLogin',
+    GetAccessToken = 'getAccessToken',
+    QuerySpreadsheet = 'querySpreadsheet',
+    RemoveWorkFromSheet = 'removeWorkFromSheet',
 }
 
 /**
@@ -47,23 +48,11 @@ interface Message {
  * The response property represents the data returned in the response.
  */
 interface Messages extends Partial<Record<MessageName, Message>> {
-    [MessageName.GetAccessToken]: {
-        payload: {
-            reason: string;
-        };
-        response: string;
-    };
     [MessageName.AddWorkToSheet]: {
         payload: {
             work: Ao3_BaseWork;
         };
         response: boolean;
-    };
-    [MessageName.QuerySpreadsheet]: {
-        payload: {
-            list: number[];
-        };
-        response: boolean[];
     };
     [MessageName.CheckLogin]: {
         payload: {};
@@ -71,6 +60,24 @@ interface Messages extends Partial<Record<MessageName, Message>> {
             status: boolean;
         };
     }
+    [MessageName.GetAccessToken]: {
+        payload: {
+            reason: string;
+        };
+        response: string;
+    };
+    [MessageName.QuerySpreadsheet]: {
+        payload: {
+            list: number[];
+        };
+        response: boolean[];
+    };
+    [MessageName.RemoveWorkFromSheet]: {
+        payload: {
+            workId: number;
+        };
+        response: false | void;
+    };
 }
 
 /**
