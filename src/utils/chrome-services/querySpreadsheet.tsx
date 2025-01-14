@@ -10,20 +10,19 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
         method: HttpMethod.GET,
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-        },
+        }
     })
 
     return parseResponse(response);
 }
 
 function createEncodedQuery(searchList: number[]): string {
-    let query = `select A, J, K, L, M, N, O where A matches`;
+    let query = `select A, B, K, L, M, N, O, P where B matches`;
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;
         } else {
-            query += ` or A matches '${workId}'`;
+            query += ` or B matches '${workId}'`;
         }
     });
     return encodeURIComponent(query);
