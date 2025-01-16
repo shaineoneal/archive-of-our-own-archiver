@@ -73,7 +73,18 @@ export class Ao3_BaseWork extends BaseWork {
             throw new Error(`Work not found on page`);
         }
 
-        const workId = parseInt(workNode.id.split('_')[1]);
+        let workId;
+
+        if(workNode.id) {
+            workId = parseInt(workNode.id.split('_')[1]);
+        }
+        else {
+            const workIdNode = workNode.querySelector(`.work`);
+            if (!workIdNode) {
+                throw new Error(`Work not found on page`);
+            }
+            workId = parseInt(workIdNode.id.split('_')[1]);
+        }
 
         const title = workNode.querySelector('.heading > a')!.textContent;
 
