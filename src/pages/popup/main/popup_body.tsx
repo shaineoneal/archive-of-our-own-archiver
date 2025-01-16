@@ -23,17 +23,33 @@ export const PopupBody = () => {
 
     useEffect(() => {
         (async () => {
-            if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
+            if (user.refreshToken && !user.accessToken) {
+                log('User has a refresh token but no access token');
+
+                // If the user just has a refresh token (for some reason), exchange it for an access token
+                const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                if (newAccessToken === undefined) {
+                    // If the new access token is undefined, log them out
+                    setAccessToken(undefined);
+                    setIsLoggedIn(false);
+                }
+                // If the new access token is different from the current one, update the access token
+                setAccessToken(newAccessToken);
+
+                setLoader(false);
+                return;
+
+            } else if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
                 // If the user is not logged in, set the loader to false and return
                 setLoader(false);
                 return;
             }
-
-            try {
-                // Check if the access token is valid
-                await isAccessTokenValid(user.accessToken);
-            } catch (error) {
-                // If there is an error, exchange the refresh token for an access token
+            // Check if the access token is valid
+            const isValid = await isAccessTokenValid(user.accessToken);
+            log('Access token is valid:', isValid);
+            if (!isValid) {
+                log('Access token is invalid');
+               // If there is an error, exchange the refresh token for an access token
                 if (user.refreshToken) {
                     const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
                     if (newAccessToken === undefined) {

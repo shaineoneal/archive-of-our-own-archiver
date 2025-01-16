@@ -9,14 +9,11 @@ import { MessageName, sendMessage } from "../../utils/chrome-services/messaging"
 
 export async function standardBlurbsPage() {
 
-    const worksOnPage = Array.from(
-        document.querySelectorAll(
-            'li.work, li.bookmark'
-        ) as unknown as HTMLCollectionOf<HTMLElement>
-    );
+    const worksOnPage = document.querySelectorAll('li.work, li.bookmark') as NodeList
 
     let searchList: number[] = [];
     worksOnPage.forEach((work) => {
+        const workEl = work as Element;
     //    let newEl = document.createElement('div');
     //    newEl.classList.add('blurb-with-toggles');
 //
@@ -25,11 +22,11 @@ export async function standardBlurbsPage() {
     //    wrap(work, newEl);
 //
     //    //if it's a bookmark, use the class to get the work id
-        if (work.classList.contains('bookmark')) {
-            searchList.push(Number(work.classList[3].split('-')[1]));
+        if (workEl.classList.contains('bookmark')) {
+            searchList.push(Number(workEl.classList[3].split('-')[1]));
         } else {
             //else it's a work, use the id to get the work id
-            searchList.push(Number(work.id.split('_')[1]));
+            searchList.push(Number(workEl.id.split('_')[1]));
         }
     });
 
@@ -38,11 +35,11 @@ export async function standardBlurbsPage() {
     sendMessage(
         MessageName.QuerySpreadsheet,
         { list: searchList },
-        (response) => {
+        async (response) => {
             log('QuerySpreadsheet response: ', response)
             if (response === null) {
                 log('No work statuses to inject.')
-                addBlurbControls(worksOnPage);
+                addBlurbControls(worksOnPage, []);
                 return;
             }
             // @ts-ignore
@@ -51,10 +48,10 @@ export async function standardBlurbsPage() {
                 log('Error querying spreadsheet: ', response.error);
                 return;
             }
-            injectWorkStatuses(worksOnPage, response).then(() => {
-                log('Injected work statuses.');
-                addBlurbControls(worksOnPage);
-            });
+            await injectWorkStatuses(worksOnPage, response);
+            log('Injected work statuses.');
+            addBlurbControls(worksOnPage, response);
+
         }
     )
 
@@ -65,7 +62,7 @@ export async function standardBlurbsPage() {
  * @param { HTMLElement[] } worksOnPage - the works on the page
  * @param { boolean[] } response - the list of works from sheet
  */
-async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[]) {
+async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
 
     if(response === null) {
         return Error;
@@ -73,16 +70,16 @@ async function injectWorkStatuses(worksOnPage: HTMLElement[], response: boolean[
         response.forEach((workRef: boolean, index: number) => {
             log('workRef: ', workRef)
             if (workRef) {
-                const workId = worksOnPage[index].id.split('_')[1]
+                const workId = (worksOnPage[index] as Element).id.split('_')[1]
                 chrome.storage.session.get(workId, (result) => {
                     log('session result: ', result);
                     if (result[workId].status === 'read') {
-                        changeBlurbStyle('read', worksOnPage[index]);
-
+                        changeBlurbStyle('read', (worksOnPage[index].parentNode!));
                     }
                 });
 
             }
         });
     }
+    log('updated works: ', worksOnPage);
 }
