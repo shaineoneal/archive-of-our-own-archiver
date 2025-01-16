@@ -1,5 +1,6 @@
 import { Ao3_BaseWork, BaseWork } from "../../pages/content-script";
 import log from "../logger";
+import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
 
 let port: chrome.runtime.Port | null = null;
 
@@ -52,7 +53,7 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         payload: {
             work: Ao3_BaseWork;
         };
-        response: boolean;
+        response: User_BaseWork;
     };
     [MessageName.CheckLogin]: {
         payload: {};
@@ -76,7 +77,7 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         payload: {
             workId: number;
         };
-        response: false | void;
+        response: boolean;
     };
 }
 
