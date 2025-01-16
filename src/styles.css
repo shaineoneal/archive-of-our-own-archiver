@@ -152,6 +152,9 @@ a.no-underline {
     border-top: 1px solid #555;
     padding:0.429em 0.75em;
     margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 li.work {
@@ -166,6 +169,7 @@ li.work {
 .toggle {
     border-bottom: 1px dotted;
     cursor: pointer;
+    height: fit-content;
 }
 
 #root {
@@ -175,4 +179,14 @@ li.work {
 .status-read {
     border-left-color: #FFFFFF !important;
     border-left-width: 10px !important;
+}
+
+.blurb-info {
+    display: flex;
+    flex-direction: column;
+    text-align: end;
+}
+
+.blurb-info > p {
+    margin: 0;
 }

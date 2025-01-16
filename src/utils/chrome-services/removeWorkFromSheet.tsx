@@ -3,37 +3,20 @@ import { HttpMethod, makeRequest } from "./httpRequest";
 import log from "../logger";
 
 
-export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string, workId: number) => {
-    const response = await createFilterView(spreadsheetId, accessT, workId);
-    log('removeWorkFromSheet', response);
-    if(response) {
-        await deleteWork(spreadsheetId, accessT, workId);
-    }
-
-}
-const createFilterView = async (spreadsheetId: string, accessT: string, workId: number) => {
-    const filterView = {
-        filter: {
-            range: {
-                sheetId: 0,
-                startRowIndex: 0,
-                endRowIndex: 10000,
-                startColumnIndex: 0,
-                endColumnIndex: 10
-            },
-            filterSpecs: [
-                {
-                    filterCriteria: {
-                        condition: {
-                            type: 'NUMBER_EQ',
-                            values: [{ userEnteredValue: `${workId}` }]
-                        }
-                    },
-                    columnIndex: 0
-                }
-            ]
-        }
-    }
+/**
+ * Adds a work entry to a Google Sheets spreadsheet.
+ *
+ * @param {string} spreadsheetId - The URL of the Google Sheets spreadsheet.
+ * @param {string} accessT - The authentication token for Google Sheets API.
+ * @param {number} workIndex - The work entry to be added to the spreadsheet.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the work entry was successfully added, otherwise throws an error.
+ */
+//TODO: currently hard coded for the first sheet, need to make it dynamic
+export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string, workIndex: number): Promise<boolean> => {
+    log('removeWorkFromSheet');
+    log('authToken', accessT);
+    log('spreadsheetId', spreadsheetId);
+    log('workIndex', workIndex);
 
     const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
@@ -45,57 +28,24 @@ const createFilterView = async (spreadsheetId: string, accessT: string, workId: 
         body: {
             requests: [
                 {
-                    setBasicFilter: filterView
-                }
-            ],
-            includeSpreadsheetInResponse: true,
-            responseIncludeGridData: true
-        }
-    });
-
-    const parsedResponse = await response.json();
-
-    log('removeWorkFromSheet', 'response', parsedResponse);
-    //log('replies', parsedResponse.replies);
-    return !!parsedResponse.updatedSpreadsheet.sheets[0].data[0].rowData[1];
-
-}
-
-const deleteWork = async (spreadsheetId: string, accessT: string, workId: number) => {
-    await makeRequest({
-        url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
-        method: HttpMethod.POST,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessT}`,
-        },
-        body: {
-            requests: [
-                {
-                    setBasicFilter: {
-                        filter: {
-                            range: {
-                                sheetId: 0,
-                                startRowIndex: 0,
-                                endRowIndex: 10000,
-                                startColumnIndex: 0,
-                                endColumnIndex: 10
-                            }
-                        },
-                        filterSpecs: [
-                            {
-                                columnIndex: 0,
-                                filterCriteria: {
-                                    condition: {
-                                        type: 'NUMBER_EQ',
-                                        values: [{userEnteredValue: `${workId}`}]
-                                    }
-                                }
-                            },
-                        ]
+                    deleteDimension: {
+                        range: {
+                            sheetId: 0,
+                            dimension: 'ROWS',
+                            startIndex: workIndex - 1,
+                            endIndex: workIndex
+                        }
                     }
                 }
             ],
+            includeSpreadsheetInResponse: false
         }
     });
+
+    log('unparsed response', response);
+    const parsedResponse = await response.json();
+
+    log('removeWorkFromSheet', 'response', parsedResponse);
+    // If the response is ok, return void, otherwise return false
+    return response.ok;
 }
