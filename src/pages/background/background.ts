@@ -104,22 +104,29 @@ createMessageHandlers({
     },
     [MessageName.AddWorkToSheet]: async (payload) => {
         let sessionUser = SyncUserStore.getState().user;
+        log('payload', payload);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
-            return await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+            const work =  await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+            setStore(`${payload.work.workId}`, work, StoreMethod.SESSION);
+            return work;
 
         } else {
             log(payload)
             log('sessionUser', sessionUser);
-            return false;
+            throw new Error('no spreadsheetId or accessToken');
+            //TODO: handle this better
         }
     },
     [MessageName.RemoveWorkFromSheet]: async (payload) => {
+        log('payload', payload);
         let sessionUser = SyncUserStore.getState().user;
         const workId = `${payload.workId}`;
+        log('workId', workId);
         const work = await getStore(workId, StoreMethod.SESSION);
         const workIndex = work[workId].index;
+        log('workIndex', workIndex);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
-           // return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
+            return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
 
         } else {
             log(payload)

@@ -3,38 +3,43 @@ import log from '../../utils/logger';
 import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { wrap } from "../../utils";
+import { changeBlurbStyle } from "./changeBlurbStyle";
+import { convertToAO3Date, getStore, StoreMethod } from "../../utils/chrome-services";
 
 const TOGGLES = {
     add: 'Add Work',
     remove: 'Remove Work'
 }
 
-export function addBlurbControls(worksOnPage: HTMLElement[]) {
+export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]) {
     log('addBlurbControls worksOnPage: ', worksOnPage);
-    worksOnPage.forEach((work) => {
-        let newEl = document.createElement('div');
-        newEl.classList.add('blurb-with-toggles');
+    worksOnPage.forEach((work, index) => {
+        const workEl = work as Element;
+        const workIdClass = workEl.id.split('_')[1];
 
-        newEl.style.cssText = JSON.stringify(getComputedStyle(work));
+        log('workIdClass: ', workIdClass);
 
-        wrap(work, newEl);
+        // Create a new div to wrap the work element
+        let workWrap = document.createElement('div');
+        workWrap.classList.add('blurb-with-toggles', 'archiver-controls', workIdClass);
 
-        const workId = work.id.split('_')[1];
+        workWrap.style.cssText = JSON.stringify(getComputedStyle(workEl));
 
-        const toggle = work.cloneNode(false) as HTMLElement;
-        toggle.className = 'blurb-toggle';
-        toggle.removeAttribute('id');
-        toggle.removeAttribute('role');
+        // Wrap the work element in the new div
+        wrap(work, workWrap);
 
-        if(work.classList.contains('status-read')) {
-            toggle.appendChild(removeWorkControl(newEl));
-        } else {
-            toggle.appendChild(addWorkControl(newEl));
-        }
+        // Add the toggle controls to the new div
+        let infoBox = document.createElement('li');
+        infoBox.classList.add('blurb-toggle', 'archiver-controls');
+        workWrap.appendChild(infoBox);
 
-        if(work && work.parentNode) {
-            work.parentNode.insertBefore(toggle, work);
-        }
+        // If the work is already on the list, add the remove control
+        // Otherwise, add the add control
+        infoBox.appendChild(boolRead[index] ? removeWorkControl(workWrap) : addWorkControl(workWrap));
+
+        // Add the info box
+        workWrap.insertBefore(infoBox, work);
+
     });
    // const work = workWrap.firstChild! as HTMLElement;
     let on_list = false; //TODO: check if work is on list
@@ -50,7 +55,7 @@ export function addBlurbControls(worksOnPage: HTMLElement[]) {
     //workWrap.insertBefore(toggle, workWrap.firstChild);
 }
 
-function addWorkControl(work: HTMLElement) {
+export function addWorkControl(workWrap: Element) {
     const innerToggle = document.createElement('a');
     innerToggle.textContent = 'Add Work';
     innerToggle.className = 'toggle';
@@ -58,19 +63,22 @@ function addWorkControl(work: HTMLElement) {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('blurbToggle clicked!: ', work);
+        log('addWork clicked!: ', workWrap);
 
-        const workBlurb = Ao3_BaseWork.createWork(work);
+        const workBlurb = Ao3_BaseWork.createWork(workWrap);
         log('workBlurb: ', workBlurb);
+        const work = workWrap.querySelector('.work') as Element;
+
 
         sendMessage(
             MessageName.AddWorkToSheet,
             {work: workBlurb},
             (response) => {
                 log('content script response: ', response);
-                if (response === true) {
+                if (response) {
                     log('response: ', response);
-                    work.classList.add('status-read');
+                    changeBlurbStyle('read', workWrap);
+
                 }   //else popup login
             }
         )
@@ -79,7 +87,7 @@ function addWorkControl(work: HTMLElement) {
     return innerToggle;
 }
 
-function removeWorkControl(work: HTMLElement) {
+export function removeWorkControl(workWrap: Element) {
     const innerToggle = document.createElement('a');
     innerToggle.textContent = 'Remove Work';
     innerToggle.className = 'toggle';
@@ -87,10 +95,12 @@ function removeWorkControl(work: HTMLElement) {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('blurbToggle clicked!: ', work);
+        log('removeWork clicked!: ', workWrap);
 
-        const workBlurb = Ao3_BaseWork.createWork(work);
-        log('workBlurb: ', workBlurb);
+        const workBlurb = Ao3_BaseWork.createWork(workWrap);
+        log('workBlurb.workId: ', workBlurb.workId);
+
+        const work = workWrap.querySelector('.work') as Element;
 
         sendMessage(
             MessageName.RemoveWorkFromSheet,
@@ -99,11 +109,60 @@ function removeWorkControl(work: HTMLElement) {
                 log('content script response: ', response);
                 if (response) {
                     log('response: ', response);
-                    work.classList.remove('status-read');
+                    changeBlurbStyle('', workWrap);
                 }   //else popup login
+                 // @ts-ignore
+                    if (response.error) {   // @ts-ignore
+                        log('error: ', response.error);
+                    }
+
             }
         )
     });
 
     return innerToggle;
+}
+
+export function addInfo(work: Element) {
+    log('adding info to work: ', work);
+
+    const workId = work.id.split('_')[1];
+    log('workId: ', workId);
+
+    let info = document.createElement('div');
+
+    chrome.storage.session.get(workId, (result) => {
+        log('result from session store: ', result);
+        const userWork = result[workId];
+        log('userWork: ', userWork);
+        log('userWork.history: ', userWork.history);
+        log('userWork.history: ', JSON.parse(userWork.history));
+        const history = JSON.parse(userWork.history);
+        //log('history: ', history[history.length - 1].toLocaleDateString(""));
+        //log('testing', convertToAO3Date(history[history.length - 1]));
+        let date = new Date(history[history.length - 1].date);
+        let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const dateStr = `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+
+        info.className = 'blurb-info';
+
+
+
+        const lastRead = document.createElement('p');
+        lastRead.textContent = `Last read: ${dateStr}`;
+        lastRead.classList.add('last-read', 'datetime');
+
+        const readCount = document.createElement('p');
+        readCount.textContent = `Read ${userWork.readCount} time(s)`;
+        readCount.classList.add('read-count', 'datetime');
+
+        info.appendChild(lastRead);
+        info.appendChild(readCount);
+
+
+    });
+    const blurbInfo = document.querySelector('.blurb-info') as Node;
+    log('blurbInfo: ', info);
+
+    return info as Node;
 }

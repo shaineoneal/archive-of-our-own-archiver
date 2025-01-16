@@ -73,6 +73,6 @@ export async function isAccessTokenValid(token: string): Promise<string> {
     if (response.ok) {
         return token;
     } else {
-        throw new Error('Token is invalid');
+        return '';
     }
 }
