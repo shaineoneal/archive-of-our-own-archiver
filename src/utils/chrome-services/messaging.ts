@@ -28,6 +28,8 @@ export enum MessageName {
     GetAccessToken = 'getAccessToken',
     QuerySpreadsheet = 'querySpreadsheet',
     RemoveWorkFromSheet = 'removeWorkFromSheet',
+    RefreshAccessToken = 'refreshAccessToken',
+    UpdateWorkInSheet = 'updateWorkInSheet',
 }
 
 /**
@@ -76,6 +78,16 @@ interface Messages extends Partial<Record<MessageName, Message>> {
     [MessageName.RemoveWorkFromSheet]: {
         payload: {
             workId: number;
+        };
+        response: boolean;
+    };
+    [MessageName.RefreshAccessToken]: {
+        payload: {};
+        response: string;
+    };
+    [MessageName.UpdateWorkInSheet]: {
+        payload: {
+            work: User_BaseWork;
         };
         response: boolean;
     };

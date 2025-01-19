@@ -19,13 +19,14 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
     log('spreadsheetId', spreadsheetId);
 
     const date = new Date();
-    const sheetDate = date.toLocaleString()
-    const ao3Date = `${date.getDay()} ${date.getMonth()} ${date.getFullYear()}`;
+    const sheetDate = date.toLocaleString();
 
     const history = [{
         action: "added",
         date: sheetDate,
     }];
+
+    const defaultUserWork = new User_BaseWork(work.workId);
 
     const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/AccessWorks!A1:append?valueInputOption=USER_ENTERED&includeValuesInResponse=true`,
@@ -50,8 +51,12 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
                             work.description,
                             work.wordCount,
                             work.chapterCount,
-                            'read',
+                            'read',     //TODO: change this to a variable
                             JSON.stringify(history),
+                            defaultUserWork.personalTags?.toString() ?? '',
+                            defaultUserWork.rating,
+                            defaultUserWork.readCount,
+                            defaultUserWork.skipReason?.toString() ?? ''
                         ]
 
 
