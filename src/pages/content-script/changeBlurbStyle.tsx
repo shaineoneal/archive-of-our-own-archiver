@@ -1,6 +1,6 @@
 import { WorkStatus } from "../../utils/types/data";
 import log from "../../utils/logger";
-import { addInfo, addWorkControl, removeWorkControl } from "./blurbControls";
+import { addControls, addInfo, addWorkControl, removeWorkControl } from "./blurbControls";
 import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromSheet";
 
 const STATUS_CLASSES = {
@@ -42,8 +42,11 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             break;
         case 'read':
             work!.classList.add('status','status-read');
-            toggleEl.removeChild(toggleEl.firstChild!);
-            toggleEl.appendChild(removeWorkControl(wrapEl));
+            // remove controls and info
+            if(toggleEl.querySelector('.blurb-controls')) toggleEl.removeChild(toggleEl.querySelector('.blurb-controls')!);
+            if(toggleEl.querySelector('.blurb-info')) toggleEl.removeChild(toggleEl.querySelector('.blurb-info')!);
+            // add back controls and info
+            toggleEl.appendChild(addControls(wrapEl));
             toggleEl.appendChild(addInfo(workEl));
             break;
         default:
@@ -53,7 +56,8 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             workEl.querySelectorAll('.status').forEach((statusEl) => { statusEl.remove() });
             toggleEl.querySelectorAll('.blurb-info').forEach((infoEl) => { infoEl.remove() });
             toggleEl.querySelectorAll('.toggle').forEach((toggleEl) => { toggleEl.remove() });
-            toggleEl.appendChild(addWorkControl(wrapEl));
+            if(toggleEl.querySelector('.blurb-controls')) toggleEl.removeChild(toggleEl.querySelector('.blurb-controls')!);
+            toggleEl.appendChild(addControls(wrapEl));
             break;
     }
     log('work: ', workEl);
