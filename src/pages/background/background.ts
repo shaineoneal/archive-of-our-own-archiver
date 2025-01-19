@@ -3,9 +3,9 @@ import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
 import {
     addWorkToSheet,
     createMessageHandlers,
-    exchangeRefreshForAccessToken, getStore,
+    exchangeRefreshForAccessToken, getStore, isAccessTokenValid,
     MessageName,
-    querySpreadsheet,
+    querySpreadsheet, removeStore,
     setStore,
     StoreMethod,
 } from "../../utils/chrome-services";
@@ -14,6 +14,9 @@ import { User_BaseWork } from "../content-script/User_BaseWork";
 import { forEach } from "remeda";
 import session = chrome.storage.session;
 import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromSheet";
+import { updateWorkInSheet } from "../../utils/chrome-services/updateWorkInSheet";
+import { TRUE } from "sass";
+import { setAccessTokenCookie } from "../../utils/chrome-services/cookies";
 
 chrome.runtime.onConnect.addListener((port) => {
     log('background script running');
@@ -33,6 +36,10 @@ createMessageHandlers({
             log('user is logged in');
             //save user to session storage
             setStore('user', syncUser, StoreMethod.SESSION);
+            if (syncUser.accessToken) {
+                log('setting access token cookie');
+                await setAccessTokenCookie(syncUser.accessToken);
+            }
             return { status: true } ;
         } else return { status: false } ;
     },
@@ -88,7 +95,7 @@ createMessageHandlers({
                 let readCount = row.c[6] ? row.c[6].v : 1;
                 let skipReason = row.c[7] ? row.c[7].v : '';
 
-                let work = new User_BaseWork(index, row.c[1].v, status, history, personalTags, rating, readCount, skipReason);
+                let work = new User_BaseWork(row.c[1].v, index, status, history, personalTags, rating, readCount, skipReason);
 
                 chrome.storage.session.set({[row.c[1].v]: work}).then(r =>
                     log('set session storage', r)
@@ -126,13 +133,56 @@ createMessageHandlers({
         const workIndex = work[workId].index;
         log('workIndex', workIndex);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
-            return await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
-
+            const resp = await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
+            if (resp) {
+                log('work removed from sheet');
+                removeStore(workId, StoreMethod.SESSION);
+                return true;
+            } else return false;
         } else {
             log(payload)
             log('sessionUser', sessionUser);
             return false;
         }
+    },
+    [MessageName.RefreshAccessToken]: async () => {
+        let syncUser = SyncUserStore.getState().user;
+        log('refreshAccessToken message received');
+        let accessToken = '';
+        if (syncUser.refreshToken != null) {
+            exchangeRefreshForAccessToken(syncUser.refreshToken).then(async (newAccessToken) => {
+                log('newAccessToken', newAccessToken);
+                if (newAccessToken) {
+
+                    if (await isAccessTokenValid(newAccessToken)) {
+                        log('newAccessToken is valid');
+                        await setAccessTokenCookie(newAccessToken);
+                        chrome.storage.session.set({accessToken: newAccessToken}).then(() => {
+                            log('newAccessToken set');
+                        });
+                        accessToken = newAccessToken;
+                    }
+                }
+            });
+        }
+        return accessToken;
+    },
+    [MessageName.UpdateWorkInSheet]: async (payload) => {
+        log('payload', payload);
+        let sessionUser = SyncUserStore.getState().user;
+        log('sessionUser', sessionUser);
+        if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
+            const resp =  await updateWorkInSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+            if(resp) {
+                log('work updated in sheet');
+                setStore(`${payload.work.workId}`, payload.work, StoreMethod.SESSION);
+                return true;
+            } else {
+                log('work not updated in sheet');
+                return false;
+            }
+        } else return false;
+
     }
 });
 
@@ -140,15 +190,16 @@ chrome.storage.onChanged.addListener((changes) => {
     log('storage changed', changes);
     if( changes['user-store'] ) {
         log('user changed', changes['user-store']);
+
         chrome.tabs.query({ url: "*://*.archiveofourown.org/*" }, (tabs) => {
             tabs.forEach((tab) => {
                 log('sending message to tab', tab);
-                //chrome.tabs.sendMessage(tab.id!, {message: "userChanged", newUser: changes['user-store'].newValue})
-                //    .then((response) => {
-                        //chrome.runtime.reload();
-                        //chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
-                //        log('response from content script', response)
-                //    });
+                chrome.tabs.sendMessage(tab.id!, {message: "userChanged", newUser: changes['user-store'].newValue})
+                    .then((response) => {
+                        chrome.runtime.reload();
+                        chrome.tabs.reload(tab.id!).then(r => log('reloaded tab', r));
+                        log('response from content script', response)
+                    });
 
             });
         });

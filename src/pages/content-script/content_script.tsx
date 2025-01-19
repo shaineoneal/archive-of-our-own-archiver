@@ -1,6 +1,7 @@
 import { standardBlurbsPage } from '..';
 import log from '../../utils/logger';
 import { initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
+import { getAccessTokenCookie } from "../../utils/chrome-services/cookies";
 
 log('log: content_script.tsx loaded');
 
@@ -43,3 +44,25 @@ function pageTypeDetect() {
         log('PANIK: Unknown page');
     }
 }
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        log('tab is now visible');
+
+        getAccessTokenCookie().then((accessToken) => {
+            if (accessToken) log('accessToken found!: ', accessToken);
+            else {
+                log('no accessToken found');
+                sendMessage(
+                    MessageName.RefreshAccessToken,
+                    {},
+                    (response) => {
+                        if (response)
+                            log('refreshAccessToken response: ', response);
+                    }
+                )
+            }
+        });
+
+    }
+});
