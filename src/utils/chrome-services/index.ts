@@ -5,6 +5,7 @@ export * from './messaging';
 export * from './oauthSignIn';
 export * from './querySpreadsheet';
 export * from './refreshToken';
+export * from './removeWorkFromSheet';
 export * from './spreadsheet';
 export * from './store';
 
