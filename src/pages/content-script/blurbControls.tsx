@@ -4,7 +4,8 @@ import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { wrap } from "../../utils";
 import { changeBlurbStyle } from "./changeBlurbStyle";
-import { convertToAO3Date, getStore, StoreMethod } from "../../utils/chrome-services";
+import { convertToAO3Date, getStore, setStore, StoreMethod } from "../../utils/chrome-services";
+import { User_BaseWork } from "./User_BaseWork";
 
 const TOGGLES = {
     add: 'Add Work',
@@ -33,9 +34,9 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]) {
         infoBox.classList.add('blurb-toggle', 'archiver-controls');
         workWrap.appendChild(infoBox);
 
-        // If the work is already on the list, add the remove control
+        // If the work is already on the list, add the increment and the remove control
         // Otherwise, add the add control
-        infoBox.appendChild(boolRead[index] ? removeWorkControl(workWrap) : addWorkControl(workWrap));
+        infoBox.appendChild(addControls(workWrap));
 
         // Add the info box
         workWrap.insertBefore(infoBox, work);
@@ -123,6 +124,29 @@ export function removeWorkControl(workWrap: Element) {
     return innerToggle;
 }
 
+export function addControls(workWrap: Element): Node {
+    log('adding controls to work: ', workWrap);
+
+    const work = workWrap.querySelector('.work') as Element;
+
+    const workId = work.id.split('_')[1];
+    log('workId: ', workId);
+
+    let controls = document.createElement('div');
+    controls.className = 'blurb-controls';
+    chrome.storage.session.get(workId, (result) => {
+        if (!result[workId]) {
+            controls.appendChild(addWorkControl(workWrap));
+        }
+        else {
+            controls.appendChild(incrementReadCountControl(workWrap));
+            controls.appendChild(removeWorkControl(workWrap));
+        }
+    });
+
+    return controls as Node;
+}
+
 export function addInfo(work: Element) {
     log('adding info to work: ', work);
 
@@ -136,14 +160,22 @@ export function addInfo(work: Element) {
         const userWork = result[workId];
         log('userWork: ', userWork);
         log('userWork.history: ', userWork.history);
-        log('userWork.history: ', JSON.parse(userWork.history));
-        const history = JSON.parse(userWork.history);
+
+        const history = userWork.history
+            ? typeof userWork.history === 'string'
+                ? JSON.parse(userWork.history)
+                : userWork.history
+            : [];
+
         //log('history: ', history[history.length - 1].toLocaleDateString(""));
         //log('testing', convertToAO3Date(history[history.length - 1]));
-        let date = new Date(history[history.length - 1].date);
-        let months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        const dateStr = `${date.getDay()} ${months[date.getMonth()]} ${date.getFullYear()}`;
 
+        let dateStr = 'pre-2025';
+        if(history.length !== 0) {
+            let date = new Date(history[history.length - 1].date);
+            let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            dateStr = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
         info.className = 'blurb-info';
 
 
@@ -165,4 +197,65 @@ export function addInfo(work: Element) {
     log('blurbInfo: ', info);
 
     return info as Node;
+}
+
+function incrementReadCountControl(workWrap: Element) {
+    const innerToggle = document.createElement('a');
+    innerToggle.textContent = '+1';
+    innerToggle.className = 'toggle';
+
+    innerToggle.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        log('incrementReadCount clicked!: ', workWrap);
+
+        const aWork = Ao3_BaseWork.createWork(workWrap);
+        const workId = `${aWork.workId}`;
+
+        chrome.storage.session.get(workId, (result) => {
+            if (!result[workId]) {
+                return;
+            }
+            const uWork = result[aWork.workId];
+            log('uWork: ', uWork);
+
+            uWork.readCount += 1;
+            const history = uWork.history
+                ? typeof uWork.history === 'string'
+                    ? JSON.parse(uWork.history)
+                    : uWork.history
+                : [{action: "added", date: 'pre-2025'}];
+            history.push({
+                action: "reread",
+                date: new Date().toLocaleString(),
+            });
+            log('hist', history);
+
+            let work = new User_BaseWork(
+                aWork.workId,
+                uWork.index,
+                uWork.status,
+                history,
+                uWork.personalTags,
+                uWork.rating,
+                uWork.readCount,
+                uWork.skipReason
+            );
+
+            sendMessage(
+                MessageName.UpdateWorkInSheet,
+                {work: work},
+                (response) => {
+                    log('content script response: ', response);
+                    if (response) {
+                        log('response: ', response);
+
+                        changeBlurbStyle('read', workWrap);
+                    }   //else popup login
+                }
+            )
+        });
+    });
+
+    return innerToggle;
 }
