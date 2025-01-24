@@ -1,6 +1,6 @@
 import { standardBlurbsPage } from '..';
 import log from '../../utils/logger';
-import { initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
+import { closePort, initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { getAccessTokenCookie } from "../../utils/chrome-services/cookies";
 
 log('log: content_script.tsx loaded');
@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     log('content_script', 'heard message: ', message);
     if (message.message === 'userChanged') {
         log('userChanged');
+        pageTypeDetect();
         sendResponse({ response: 'userChanged heard' });
     }
 });
@@ -24,6 +25,7 @@ sendMessage(
             log('user is logged in');
             pageTypeDetect();
         } else {
+
             log('user is not logged in');
         }
     }
@@ -53,16 +55,24 @@ document.addEventListener('visibilitychange', () => {
             if (accessToken) log('accessToken found!: ', accessToken);
             else {
                 log('no accessToken found');
-                sendMessage(
-                    MessageName.RefreshAccessToken,
-                    {},
-                    (response) => {
-                        if (response)
-                            log('refreshAccessToken response: ', response);
-                    }
-                )
+                chrome.runtime.sendMessage({ message: 'refreshAccessToken' });
+                //initializePort();
+                //sendMessage(
+                //    MessageName.RefreshAccessToken,
+                //    {},
+                //    (response) => {
+                //        log('refreshAccessToken response: ', response);
+                //        if (response) {
+                //            log('refreshAccessToken response: ', response);
+                //            pageTypeDetect();
+                //        }
+                //    }
+                //)
             }
         });
 
+    } else {
+        log('tab is now hidden, closing port');
+        closePort();
     }
 });

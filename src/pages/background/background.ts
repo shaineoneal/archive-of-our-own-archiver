@@ -17,6 +17,7 @@ import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromS
 import { updateWorkInSheet } from "../../utils/chrome-services/updateWorkInSheet";
 import { TRUE } from "sass";
 import { setAccessTokenCookie } from "../../utils/chrome-services/cookies";
+import sendMessage = chrome.tabs.sendMessage;
 
 chrome.runtime.onConnect.addListener((port) => {
     log('background script running');
@@ -28,17 +29,38 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 createMessageHandlers({
+    // Called when the popup is opened
     [MessageName.CheckLogin]: async () => {
         log('checkLogin message received');
+        const { setAccessToken } = SyncUserStore.getState().actions;
         let syncUser = SyncUserStore.getState().user;
         log('syncUser', syncUser);
-        if(syncUser.isLoggedIn) {
+        if(syncUser.isLoggedIn && syncUser.accessToken) {
             log('user is logged in');
-            //save user to session storage
+            // save user to session storage0.
             setStore('user', syncUser, StoreMethod.SESSION);
-            if (syncUser.accessToken) {
-                log('setting access token cookie');
-                await setAccessTokenCookie(syncUser.accessToken);
+            // is access token valid?
+            const isValid = await isAccessTokenValid(syncUser.accessToken)
+            log('is access token valid', isValid);
+            if(!isValid) {
+                log('access token is not valid');
+                if (syncUser.refreshToken) {
+                    try {
+                        const newAccessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
+                        log('newAccessToken', newAccessToken);
+                        if (newAccessToken) {
+                            setAccessToken(newAccessToken);
+                            await setAccessTokenCookie(newAccessToken);
+                            log('newAccessToken set');
+                        }
+                    } catch (error) {
+                        log('Error exchanging refresh token for access token', error);
+                    }
+                }
+            } else {
+                setAccessToken(isValid);
+                await setAccessTokenCookie(isValid);
+                log('newAccessToken set');
             }
             return { status: true } ;
         } else return { status: false } ;
@@ -134,11 +156,13 @@ createMessageHandlers({
         log('workIndex', workIndex);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
             const resp = await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
-            if (resp) {
-                log('work removed from sheet');
-                removeStore(workId, StoreMethod.SESSION);
-                return true;
-            } else return false;
+            //TODO: fix this
+            //if (resp) {
+            //    log('work removed from sheet');
+            //    removeStore(workId, StoreMethod.SESSION);
+            //    return true;
+            //} else return false;
+            return false;
         } else {
             log(payload)
             log('sessionUser', sessionUser);
@@ -147,25 +171,26 @@ createMessageHandlers({
     },
     [MessageName.RefreshAccessToken]: async () => {
         let syncUser = SyncUserStore.getState().user;
+        const { setAccessToken } = SyncUserStore.getState().actions;
         log('refreshAccessToken message received');
-        let accessToken = '';
-        if (syncUser.refreshToken != null) {
-            exchangeRefreshForAccessToken(syncUser.refreshToken).then(async (newAccessToken) => {
-                log('newAccessToken', newAccessToken);
-                if (newAccessToken) {
-
-                    if (await isAccessTokenValid(newAccessToken)) {
-                        log('newAccessToken is valid');
-                        await setAccessTokenCookie(newAccessToken);
-                        chrome.storage.session.set({accessToken: newAccessToken}).then(() => {
-                            log('newAccessToken set');
-                        });
-                        accessToken = newAccessToken;
+        if (syncUser.refreshToken) {
+            try {
+                const accessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
+                log('accessToken', accessToken);
+                if (accessToken) {
+                    if (await isAccessTokenValid(accessToken)) {
+                        log('accessToken is valid');
+                        await setAccessTokenCookie(accessToken);
+                        setAccessToken(accessToken);
                     }
+                    return accessToken;
                 }
-            });
-        }
-        return accessToken;
+                else return 'testing';
+            } catch (error) {
+                log('Error exchanging refresh token for access token', error);
+                return '';
+            }
+        } else return '';
     },
     [MessageName.UpdateWorkInSheet]: async (payload) => {
         log('payload', payload);
@@ -186,6 +211,7 @@ createMessageHandlers({
     }
 });
 
+//TODO: this forces a lot of reloads, make calls to refresh the page instead
 chrome.storage.onChanged.addListener((changes) => {
     log('storage changed', changes);
     if( changes['user-store'] ) {
@@ -204,4 +230,28 @@ chrome.storage.onChanged.addListener((changes) => {
             });
         });
     }
+});
+
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+    log('background', 'heard message: ', message);
+    let syncUser = SyncUserStore.getState().user;
+    const {setAccessToken} = SyncUserStore.getState().actions;
+    log('refreshAccessToken message received');
+    if (syncUser.refreshToken) {
+        try {
+            const accessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
+            log('accessToken', accessToken);
+            if (accessToken) {
+                if (await isAccessTokenValid(accessToken)) {
+                    log('accessToken is valid');
+                    await setAccessTokenCookie(accessToken);
+                    setAccessToken(accessToken);
+                }
+                sendResponse(accessToken);
+            } else return 'testing';
+        } catch (error) {
+            log('Error exchanging refresh token for access token', error);
+            return '';
+        }
+    } else return '';
 });
