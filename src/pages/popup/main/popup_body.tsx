@@ -19,7 +19,7 @@ import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     const user = useUser();
-    const { setAccessToken, setIsLoggedIn } = useActions();
+    const { setAccessToken, setIsLoggedIn, logout } = useActions();
 
     useEffect(() => {
         (async () => {
@@ -30,12 +30,11 @@ export const PopupBody = () => {
                 const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
                 if (newAccessToken === undefined) {
                     // If the new access token is undefined, log them out
-                    setAccessToken(undefined);
-                    setIsLoggedIn(false);
+                    logout();
+                    return;
                 }
                 // If the new access token is different from the current one, update the access token
                 setAccessToken(newAccessToken);
-
                 setLoader(false);
                 return;
 
@@ -45,29 +44,28 @@ export const PopupBody = () => {
                 return;
             }
             // Check if the access token is valid
-            const isValid = await isAccessTokenValid(user.accessToken);
-            log('Access token is valid:', isValid);
-            if (!isValid) {
+            if (!await isAccessTokenValid(user.accessToken)) {
                 log('Access token is invalid');
-               // If there is an error, exchange the refresh token for an access token
                 if (user.refreshToken) {
-                    const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
-                    if (newAccessToken === undefined) {
-                        // If the new access token is undefined, log them out
-                        setAccessToken(undefined);
-                        setIsLoggedIn(false);
-                    }
-                    if (newAccessToken !== user.accessToken) {
-                        // If the new access token is different from the current one, update the access token
+                    try {
+                        // If the access token is invalid, exchange the refresh token for a new access token
+                        const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                        if (!newAccessToken) {
+                            logout();
+                            return;
+                        }
                         setAccessToken(newAccessToken);
+                    } catch (e) {
+                        log('Error exchanging refresh token for access token', e);
+                        logout();
+                        return;
                     }
+
                 } else {
-                    log('User does not have a refresh token');
-                    // If the user does not have a refresh token, log them out
-                    setAccessToken(undefined);
+                    logout();
+                    return;
                 }
-            }
-            // Set the loader to false
+            } else log ('Access token is valid');
             setLoader(false);
         })();
     }, [user]);

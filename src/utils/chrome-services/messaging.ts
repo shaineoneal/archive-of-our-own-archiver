@@ -17,6 +17,13 @@ export const initializePort = () => {
     }
 };
 
+export const closePort = () => {
+    if (port) {
+        port.disconnect();
+        port = null;
+    }
+}
+
 /**
  * Enum of message names.
  *
