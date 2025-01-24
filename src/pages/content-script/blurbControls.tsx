@@ -97,7 +97,7 @@ function removeWorkControl(work: HTMLElement) {
             {workId: workBlurb.workId},
             (response) => {
                 log('content script response: ', response);
-                if (response === true) {
+                if (response) {
                     log('response: ', response);
                     work.classList.remove('status-read');
                 }   //else popup login
