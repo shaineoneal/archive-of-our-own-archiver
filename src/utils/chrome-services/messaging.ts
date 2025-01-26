@@ -11,7 +11,7 @@ export const initializePort = () => {
         port = chrome.runtime.connect({ name: "persistent-port" });
 
         port.onDisconnect.addListener(() => {
-            console.log("Port disconnected. Reinitializing...");
+            log("Port disconnected.");
             port = null;
         });
     }
