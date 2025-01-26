@@ -39,7 +39,7 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         },
     });
     if (!response.ok) {
-        return undefined;
+        throw new Error('Error getting refresh token');
     }
 
     const parsedResponse = await response.json();
