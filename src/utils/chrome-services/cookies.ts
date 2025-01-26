@@ -17,16 +17,6 @@ chrome.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', va
 
 export async function getAccessTokenCookie(): Promise<string | undefined> {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-    const accessToken = cookies.find(cookie => cookie[0] === 'accessToken')?.[1];
-    log('cookies: ', cookies);
-    log('accessToken: ', accessToken);
-    return accessToken;
-    //return await chrome.cookies.get({ url: 'https://archiveofourown.org', name: 'accessToken' })
-    //    .then(cookie => {
-    //        log('cookie: ', cookie)
-    //        return cookie?.value;
-    //    }).catch(err => {
-    //        log('cookie error: ', err);
-    //        return undefined;
-    //    });
+    log('cookies found: ', cookies);
+    return cookies.find(cookie => cookie[0] === 'accessToken')?.[1];
 }
