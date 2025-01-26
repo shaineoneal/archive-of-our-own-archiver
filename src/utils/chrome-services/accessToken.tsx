@@ -38,13 +38,12 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
             grant_type: 'refresh_token',
         },
     });
-
-    log('exchangeRefreshForAccessToken Response: ', response);
     if (!response.ok) {
         return undefined;
     }
 
     const parsedResponse = await response.json();
+    log('exchangeRefreshForAccessToken Parsed Response: ', parsedResponse);
     return parsedResponse.access_token;
 }
 
