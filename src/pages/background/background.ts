@@ -52,6 +52,8 @@ createMessageHandlers({
                             setAccessToken(newAccessToken);
                             await setAccessTokenCookie(newAccessToken);
                             log('newAccessToken set');
+                        } else {
+                            log('Error exchanging refresh token for access token');
                         }
                     } catch (error) {
                         log('Error exchanging refresh token for access token', error);
