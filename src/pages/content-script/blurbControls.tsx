@@ -3,16 +3,24 @@ import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { log } from '../../utils/logger';
 import { MessageResponse } from "../../utils/types/MessageResponse";
-import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { changeBlurbStyle } from "./changeBlurbStyle";
 import { User_BaseWork } from "./User_BaseWork";
+import { wrap } from "../../utils";
 
+/**
+ * Toggles for adding and removing works
+ */
 const TOGGLES = {
     add: 'Add Work',
     remove: 'Remove Work'
-}
+};
 
-export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]) {
+/**
+ * Add blurb controls to the works on the page
+ * @param worksOnPage - List of works on the page
+ * @param boolRead - Array indicating if the works are read
+ */
+export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): void {
     log('addBlurbControls worksOnPage: ', worksOnPage);
     worksOnPage.forEach((work, index) => {
         const workEl = work as Element;
@@ -34,8 +42,7 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]) {
         infoBox.classList.add('blurb-toggle', 'archiver-controls');
         workWrap.appendChild(infoBox);
 
-        // If the work is already on the list, add the increment and the remove control
-        // Otherwise, add the add control
+        // Add the controls
         infoBox.appendChild(addControls(workWrap));
 
         // Add the info box
@@ -56,7 +63,12 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]) {
     //workWrap.insertBefore(toggle, workWrap.firstChild);
 }
 
-export function addWorkControl(workWrap: Element) {
+/**
+ * Add work control to the work wrap
+ * @param workWrap - The work wrap element
+ * @returns The control element
+ */
+export function addWorkControl(workWrap: Element): HTMLElement {
     const innerToggle = document.createElement('a');
     innerToggle.textContent = 'Add Work';
     innerToggle.className = 'toggle';
@@ -89,7 +101,12 @@ export function addWorkControl(workWrap: Element) {
     return innerToggle;
 }
 
-export function removeWorkControl(workWrap: Element) {
+/**
+ * Remove work control from the work wrap
+ * @param workWrap - The work wrap element
+ * @returns The control element
+ */
+export function removeWorkControl(workWrap: Element): HTMLElement {
     const innerToggle = document.createElement('a');
     innerToggle.textContent = 'Remove Work';
     innerToggle.className = 'toggle';
