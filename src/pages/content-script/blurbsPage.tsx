@@ -32,23 +32,20 @@ export async function standardBlurbsPage() {
     sendMessage(
         MessageName.QuerySpreadsheet,
         { list: searchList },
-        async (response) => {
+        async (response: MessageResponse<boolean[]>) => {
             log('QuerySpreadsheet response: ', response)
             if (response === null) {
                 log('No work statuses to inject.')
                 addBlurbControls(worksOnPage, []);
                 return;
             }
-            // @ts-ignore
             if (response.error) {
-                // @ts-ignore
                 log('Error querying spreadsheet: ', response.error);
                 return;
             }
-            await injectWorkStatuses(worksOnPage, response);
+            await injectWorkStatuses(worksOnPage, response.response);
             log('Injected work statuses.');
-            addBlurbControls(worksOnPage, response);
-
+            addBlurbControls(worksOnPage, response.response);
         }
     )
 
