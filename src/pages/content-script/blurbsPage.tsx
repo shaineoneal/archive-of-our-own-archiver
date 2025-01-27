@@ -5,6 +5,12 @@ import { addBlurbControls } from './blurbControls';
 import { changeBlurbStyle } from './changeBlurbStyle';
 
 export async function standardBlurbsPage() {
+    // check if page already has work statuses
+    const workStatuses = document.querySelectorAll('.blurb-with-toggles') as NodeList;
+    if (workStatuses.length > 0) {
+        log('Work statuses already injected.')
+        return;
+    }
 
     const worksOnPage = document.querySelectorAll('li.work, li.bookmark') as NodeList
 
@@ -19,6 +25,8 @@ export async function standardBlurbsPage() {
     });
 
     log('searchList: ', searchList);
+
+    initializePort();
 
     sendMessage(
         MessageName.QuerySpreadsheet,
