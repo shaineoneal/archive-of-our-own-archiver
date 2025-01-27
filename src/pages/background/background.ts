@@ -146,7 +146,7 @@ createMessageHandlers({
             //TODO: handle this better
         }
     },
-    [MessageName.RemoveWorkFromSheet]: async (payload) => {
+    [MessageName.RemoveWorkFromSheet]: async (payload): Promise<MessageResponse<boolean>> => {
         log('payload', payload);
         let sessionUser = SyncUserStore.getState().user;
         const workId = `${payload.workId}`;
@@ -156,17 +156,17 @@ createMessageHandlers({
         log('workIndex', workIndex);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
             const resp = await removeWorkFromSheet(sessionUser.spreadsheetId, sessionUser.accessToken, workIndex);
-            //TODO: fix this
-            //if (resp) {
-            //    log('work removed from sheet');
-            //    removeStore(workId, StoreMethod.SESSION);
-            //    return true;
-            //} else return false;
-            return false;
+            if (resp) {
+                log('work removed from sheet');
+                removeStore(workId, StoreMethod.SESSION);
+                return { response: true };
+            } else {
+                return { response: false };
+            }
         } else {
-            log(payload)
+            log(payload);
             log('sessionUser', sessionUser);
-            return false;
+            return { response: false };
         }
     },
     [MessageName.RefreshAccessToken]: async () => {

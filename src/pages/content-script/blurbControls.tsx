@@ -100,9 +100,7 @@ export function removeWorkControl(workWrap: Element) {
         log('removeWork clicked!: ', workWrap);
 
         const workBlurb = Ao3_BaseWork.createWork(workWrap);
-        log('workBlurb.workId: ', workBlurb.workId);
-
-        const work = workWrap.querySelector('.work') as Element;
+        log('workBlurb.workId: ', workBlurb);
 
         sendMessage(
             MessageName.RemoveWorkFromSheet,
@@ -113,14 +111,9 @@ export function removeWorkControl(workWrap: Element) {
                 } else {
                     log('content script response: ', response.response);
                     changeBlurbStyle('', workWrap);
-                }   //else popup login
-                 // @ts-ignore
-                    if (response.error) {   // @ts-ignore
-                        log('error: ', response.error);
-                    }
-
+                }
             }
-        )
+        );
     });
 
     return innerToggle;

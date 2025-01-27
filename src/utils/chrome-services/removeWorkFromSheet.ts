@@ -2,13 +2,12 @@ import { log } from "../logger";
 import { HttpMethod, makeRequest } from "./httpRequest";
 
 
-export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string, workId: number) => {
-    const response = await createFilterView(spreadsheetId, accessT, workId);
-    log('removeWorkFromSheet', response);
-    if(response) {
-        await deleteWork(spreadsheetId, accessT, workId);
-    }
+export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string, workId: number): Promise<boolean> => {
 
+    
+    const resp = await deleteWork(spreadsheetId, accessT, workId);
+    log('removeWorkFromSheet', JSON.stringify(resp));
+    return resp;
 }
 const createFilterView = async (spreadsheetId: string, accessT: string, workId: number) => {
     const filterView = {
@@ -60,8 +59,8 @@ const createFilterView = async (spreadsheetId: string, accessT: string, workId: 
 
 }
 
-const deleteWork = async (spreadsheetId: string, accessT: string, workId: number) => {
-    await makeRequest({
+const deleteWork = async (spreadsheetId: string, accessT: string, workIndex: number): Promise<boolean> => {
+    const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
         method: HttpMethod.POST,
         headers: {
@@ -71,30 +70,21 @@ const deleteWork = async (spreadsheetId: string, accessT: string, workId: number
         body: {
             requests: [
                 {
-                    setBasicFilter: {
-                        filter: {
-                            range: {
-                                sheetId: 0,
-                                startRowIndex: 0,
-                                endRowIndex: 10000,
-                                startColumnIndex: 0,
-                                endColumnIndex: 10
-                            }
-                        },
-                        filterSpecs: [
-                            {
-                                columnIndex: 0,
-                                filterCriteria: {
-                                    condition: {
-                                        type: 'NUMBER_EQ',
-                                        values: [{userEnteredValue: `${workId}`}]
-                                    }
-                                }
-                            },
-                        ]
+                    deleteDimension: {
+                        range: {
+                            sheetId: 0,
+                            dimension: 'ROWS',
+                            startIndex: workIndex - 1,
+                            endIndex: workIndex
+                        }
                     }
                 }
             ],
         }
     });
+    log('deleteWork', response);
+    log('deleteWork', await response.json());
+    
+
+    return response.ok;
 }
