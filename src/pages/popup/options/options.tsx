@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { SyncUserStore, useActions, useUser } from '../../../utils/zustand';
+import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import { NewSheet, Logout } from './';
-import { createRoot } from 'react-dom/client';
 import '../../../styles.css';
 import { log } from '../../../utils/logger';
 import { SyncUserStore, useActions } from '../../../utils/zustand';

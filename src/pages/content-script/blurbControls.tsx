@@ -5,7 +5,6 @@ import { log } from '../../utils/logger';
 import { MessageResponse } from "../../utils/types/MessageResponse";
 import { Ao3_BaseWork } from './Ao3_BaseWork';
 import { changeBlurbStyle } from "./changeBlurbStyle";
-import { convertToAO3Date, getStore, setStore, StoreMethod } from "../../utils/chrome-services";
 import { User_BaseWork } from "./User_BaseWork";
 
 const TOGGLES = {

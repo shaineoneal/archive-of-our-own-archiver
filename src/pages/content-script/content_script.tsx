@@ -1,5 +1,4 @@
 import { standardBlurbsPage } from '..';
-import { closePort, initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { getAccessTokenCookie } from "../../utils/chrome-services/cookies";
 import { closePort, initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
 import { log } from '../../utils/logger';

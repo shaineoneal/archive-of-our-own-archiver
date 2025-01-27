@@ -3,9 +3,6 @@ import { log } from '../../utils/logger';
 import { MessageResponse } from "../../utils/types/MessageResponse";
 import { addBlurbControls } from './blurbControls';
 import { changeBlurbStyle } from './changeBlurbStyle';
-import { BaseWork } from "./BaseWork";
-import { MessageName, sendMessage } from "../../utils/chrome-services/messaging";
-
 
 export async function standardBlurbsPage() {
 
