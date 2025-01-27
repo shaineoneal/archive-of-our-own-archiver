@@ -11,13 +11,11 @@ import {
 } from "../../utils/chrome-services";
 import { compareArrays } from "../../utils/compareArrays";
 import { User_BaseWork } from "../content-script/User_BaseWork";
-import { forEach } from "remeda";
+import { MessageResponse } from "../../utils/types/MessageResponse"; // Ensure this import is present
 import session = chrome.storage.session;
 import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromSheet";
 import { updateWorkInSheet } from "../../utils/chrome-services/updateWorkInSheet";
-import { TRUE } from "sass";
 import { setAccessTokenCookie } from "../../utils/chrome-services/cookies";
-import sendMessage = chrome.tabs.sendMessage;
 
 chrome.runtime.onConnect.addListener((port) => {
     log('background script running');
