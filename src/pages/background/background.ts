@@ -1,4 +1,4 @@
-import log from '../../utils/logger';
+import { log } from '../../utils/logger';
 import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
 import {
     addWorkToSheet,
