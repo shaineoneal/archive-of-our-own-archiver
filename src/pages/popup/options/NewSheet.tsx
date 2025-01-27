@@ -1,7 +1,5 @@
 import { createSpreadsheet } from '../../../utils/chrome-services';
-import { SyncUserStore, useActions, useLoaderStore, useUser } from '../../../utils/zustand';
-import { useEffect } from "react";
-import log from "../../../utils/logger";
+import { SyncUserStore, useActions, useLoaderStore } from '../../../utils/zustand';
 
 /**
  * Component for creating a new Google Sheet.
