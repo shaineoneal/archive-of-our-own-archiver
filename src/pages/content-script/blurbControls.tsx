@@ -73,11 +73,12 @@ export function addWorkControl(workWrap: Element) {
 
         sendMessage(
             MessageName.AddWorkToSheet,
-            {work: workBlurb},
-            (response) => {
-                log('content script response: ', response);
-                if (response) {
-                    log('response: ', response);
+            { work: workBlurb },
+            (response: MessageResponse<User_BaseWork>) => {
+                if (response.error) {
+                    log('addWork error: ', response.error);
+                } else {
+                    log('content script response: ', response.response);
                     changeBlurbStyle('read', workWrap);
 
                 }   //else popup login
@@ -105,11 +106,12 @@ export function removeWorkControl(workWrap: Element) {
 
         sendMessage(
             MessageName.RemoveWorkFromSheet,
-            {workId: workBlurb.workId},
-            (response) => {
-                log('content script response: ', response);
-                if (response) {
-                    log('response: ', response);
+            { workId: workBlurb.workId },
+            (response: MessageResponse<boolean>) => {
+                if (response.error) {
+                    log('removeWork error: ', response.error);
+                } else {
+                    log('content script response: ', response.response);
                     changeBlurbStyle('', workWrap);
                 }   //else popup login
                  // @ts-ignore
@@ -244,12 +246,12 @@ function incrementReadCountControl(workWrap: Element) {
 
             sendMessage(
                 MessageName.UpdateWorkInSheet,
-                {work: work},
-                (response) => {
-                    log('content script response: ', response);
-                    if (response) {
-                        log('response: ', response);
-
+                { work: work },
+                (response: MessageResponse<boolean>) => {
+                    if (response.error) {
+                        log('incrementReadCount error: ', response.error);
+                    } else {
+                        log('content script response: ', response.response);
                         changeBlurbStyle('read', workWrap);
                     }   //else popup login
                 }
