@@ -5,7 +5,10 @@ import { MessageResponse } from "../types/MessageResponse";
 
 let port: chrome.runtime.Port | null = null;
 
-// Initializes the port in the content script
+/**
+ * Initializes the persistent port for communication with the background script.
+ * If the port is already initialized, it does nothing.
+ */
 export const initializePort = () => {
     console.log("Initializing port...");
     if (!port) {
@@ -140,7 +143,7 @@ type MessageCallback<T extends MessageTypes> = (response: MessageResponseType<T>
  * @param payload - The data to send in the message.
  * @param callback - A function that processes the response.
  */
-export const  sendMessage = <T extends MessageTypes>(
+export const sendMessage = <T extends MessageTypes>(
     name: T,
     payload: MessagePayload<T>,
     callback: MessageCallback<T>,
@@ -149,7 +152,7 @@ export const  sendMessage = <T extends MessageTypes>(
         console.error('Port not initialized');
         return;
     }
-    port.postMessage( { name, payload } );
+    port.postMessage({ name, payload });
 
     // Listen for a single response
     const onResponse = (response: MessageResponseType<T>) => {
@@ -158,8 +161,6 @@ export const  sendMessage = <T extends MessageTypes>(
     }
     port.onMessage.addListener(onResponse);
 };
-
-
 
 export const createMessageHandlers = (handlers: {
     [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponseType<K>>;
@@ -176,7 +177,7 @@ export const createMessageHandlers = (handlers: {
 
             try {
                 const response = await handler(payload);
-                port.postMessage( response );
+                port.postMessage(response);
             } catch (error) {
                 port.postMessage({ error });
             }

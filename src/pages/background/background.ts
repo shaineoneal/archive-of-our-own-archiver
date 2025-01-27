@@ -35,10 +35,8 @@ createMessageHandlers({
         log('syncUser', syncUser);
         if(syncUser.isLoggedIn && syncUser.accessToken) {
             log('user is logged in');
-            // save user to session storage0.
             setStore('user', syncUser, StoreMethod.SESSION);
-            // is access token valid?
-            const isValid = await isAccessTokenValid(syncUser.accessToken)
+            const isValid = await isAccessTokenValid(syncUser.accessToken);
             log('is access token valid', isValid);
             if(!isValid) {
                 log('access token is not valid');
