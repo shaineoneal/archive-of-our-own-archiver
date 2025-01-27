@@ -1,6 +1,5 @@
 import { log } from "../logger";
 import { HttpMethod, makeRequest } from "./httpRequest";
-import log from "../logger";
 
 
 export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string, workId: number) => {
