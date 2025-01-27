@@ -11,18 +11,9 @@ export async function standardBlurbsPage() {
     let searchList: number[] = [];
     worksOnPage.forEach((work) => {
         const workEl = work as Element;
-    //    let newEl = document.createElement('div');
-    //    newEl.classList.add('blurb-with-toggles');
-//
-    //    newEl.style.cssText = JSON.stringify(getComputedStyle(work));
-//
-    //    wrap(work, newEl);
-//
-    //    //if it's a bookmark, use the class to get the work id
         if (workEl.classList.contains('bookmark')) {
             searchList.push(Number(workEl.classList[3].split('-')[1]));
         } else {
-            //else it's a work, use the id to get the work id
             searchList.push(Number(workEl.id.split('_')[1]));
         }
     });
@@ -48,7 +39,6 @@ export async function standardBlurbsPage() {
             addBlurbControls(worksOnPage, response.response);
         }
     )
-
 }
 
 /**
@@ -57,7 +47,6 @@ export async function standardBlurbsPage() {
  * @param { boolean[] } response - the list of works from sheet
  */
 async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
-
     if(response === null) {
         return Error;
     } else {
@@ -71,7 +60,6 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
                         changeBlurbStyle('read', (worksOnPage[index].parentNode!));
                     }
                 });
-
             }
         });
     }
