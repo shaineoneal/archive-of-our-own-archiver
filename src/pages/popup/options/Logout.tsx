@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import log from '../../../utils/logger';
+import { revokeTokens } from "../../../utils/chrome-services";
+import { log } from '../../../utils/logger';
 import { useActions, useUser } from '../../../utils/zustand';
 import { revokeTokens } from "../../../utils/chrome-services";
 

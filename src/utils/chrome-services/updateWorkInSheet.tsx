@@ -1,6 +1,6 @@
-import { makeRequest, HttpMethod } from './httpRequest';
-import log from '../logger';
 import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
+import { log } from '../logger';
+import { HttpMethod, makeRequest } from './httpRequest';
 
 export const updateWorkInSheet = async (spreadsheetId: string, accessToken: string, work: User_BaseWork): Promise<boolean> => {
     log('updateWorkInSheet', work);

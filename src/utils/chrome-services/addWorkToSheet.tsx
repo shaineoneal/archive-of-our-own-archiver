@@ -1,7 +1,7 @@
 import { Ao3_BaseWork, BaseWork } from '../../pages/content-script';
-import log from '../logger';
-import { HttpMethod, makeRequest } from "./httpRequest";
 import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
+import { log } from '../logger';
+import { HttpMethod, makeRequest } from "./httpRequest";
 
 
 /**

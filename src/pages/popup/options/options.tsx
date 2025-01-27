@@ -5,7 +5,9 @@ import { BiArrowBack } from 'react-icons/bi';
 import { NewSheet, Logout } from './';
 import { createRoot } from 'react-dom/client';
 import '../../../styles.css';
-import log from '../../../utils/logger';
+import { log } from '../../../utils/logger';
+import { SyncUserStore, useActions } from '../../../utils/zustand';
+import { Logout, NewSheet } from './';
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }

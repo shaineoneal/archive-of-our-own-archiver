@@ -1,4 +1,4 @@
-import log from '../logger';
+import { log } from '../logger';
 import { HttpMethod, makeRequest } from './httpRequest';
 
 const { oauth2 } = chrome.runtime.getManifest();
