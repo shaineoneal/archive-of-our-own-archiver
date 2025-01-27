@@ -1,4 +1,4 @@
-import log from './logger';
+import { log } from './logger';
 /**
  * Compares two arrays and returns a boolean array indicating which elements in the search list are found in the response.
  *

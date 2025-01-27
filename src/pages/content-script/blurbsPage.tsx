@@ -1,6 +1,6 @@
-import { wrap } from '../../utils';
-import log from '../../utils/logger';
-import { Ao3_BaseWork } from './Ao3_BaseWork';
+import { initializePort, MessageName, sendMessage } from "../../utils/chrome-services/messaging";
+import { log } from '../../utils/logger';
+import { MessageResponse } from "../../utils/types/MessageResponse";
 import { addBlurbControls } from './blurbControls';
 import { changeBlurbStyle } from './changeBlurbStyle';
 import { BaseWork } from "./BaseWork";

@@ -1,5 +1,5 @@
-import { chromeLaunchWebAuthFlow, requestAuthorization, revokeTokens, createSpreadsheet } from '../../../utils/chrome-services';
-import log from '../../../utils/logger';
+import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '../../../utils/chrome-services';
+import { log } from '../../../utils/logger';
 import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
 
 

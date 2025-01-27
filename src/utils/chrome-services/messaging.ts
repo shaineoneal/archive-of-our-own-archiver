@@ -1,6 +1,8 @@
 import { Ao3_BaseWork, BaseWork } from "../../pages/content-script";
 import log from "../logger";
 import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
+import { log } from "../logger";
+import { MessageResponse } from "../types/MessageResponse";
 
 let port: chrome.runtime.Port | null = null;
 
