@@ -4,76 +4,112 @@ import { closePort, initializePort, MessageName, sendMessage } from "../../utils
 import { log } from '../../utils/logger';
 import { MessageResponse } from "../../utils/types/MessageResponse";
 
-log('log: content_script.tsx loaded');
+// Interface for message structure
+interface Message {
+    message: string;
+}
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+// Listener for messages from the background script
+const messageListener = (message: Message, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void): void => {
     log('content_script', 'heard message: ', message);
     if (message.message === 'userChanged') {
         log('userChanged');
-        pageTypeDetect();
-        sendResponse({ response: 'userChanged heard' });
+        handleUserChanged(sendResponse);
     }
-});
+};
 
-initializePort()
+// Handle user change event
+function handleUserChanged(sendResponse: (response: any) => void): void {
+    disconnectContentScript();
+    sendResponse({ response: 'userChanged heard' });
+}
 
-sendMessage(
-    MessageName.CheckLogin,
-    {},
-    (response) => {
-        log('checkLogin response: ', response);
-        if (response.status) {
-            log('user is logged in');
-            pageTypeDetect();
+// Handle visibility change of the tab
+function handleVisibilityChange(): void {
+    if (document.visibilityState === 'visible') {
+        log('tab is now visible');
+        initializePort();
+        checkAccessToken();
+    } else {
+        log('tab is now hidden, closing port');
+        closePort();
+        disconnectContentScript();
+    }
+}
+
+// Check if the access token cookie is present
+function checkAccessToken(): void {
+    getAccessTokenCookie().then((accessToken: string | undefined) => {
+        if (accessToken) {
+            log('accessToken found!: ', accessToken);
         } else {
-
-            log('user is not logged in');
+            log('no accessToken cookie found');
+            refreshAccessToken();
         }
-    }
-)
+    });
+}
 
-//TODO: check for work v. bookmark page first
+// Request to refresh the access token
+function refreshAccessToken(): void {
+    sendMessage(
+        MessageName.RefreshAccessToken,
+        {},
+        (response: MessageResponse<string>) => {
+            if (response.error) {
+                log('refreshAccessToken error: ', response.error);
+            } else {
+                log('refreshAccessToken response: ', response.response);
+                pageTypeDetect();
+            }
+        }
+    );
+}
 
-function pageTypeDetect() {
-    if(document.querySelector('.index.group.work')) {    //AFAIK, all blurbs pages have these classes
-        //standard 20 work page
+// Detect the type of page and handle accordingly
+function pageTypeDetect(): void {
+    if (document.querySelector('.index.group.work')) {
         standardBlurbsPage().then(() => {
             log('standardBlurbsPage done');
         });
-
-    } else if (document.querySelector('.work.meta.group')){ //only found if inside a work
+    } else if (document.querySelector('.work.meta.group')) {
         log('Work Page');
     } else {
         log('PANIK: Unknown page');
     }
 }
 
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        log('tab is now visible');
+// Disconnect the content script from the background script
+function disconnectContentScript(): void {
+    chrome.runtime.onMessage.removeListener(messageListener);
+    closePort();
+}
 
-        getAccessTokenCookie().then((accessToken) => {
-            if (accessToken) log('accessToken found!: ', accessToken);
-            else {
-                log('no accessToken found');
-                chrome.runtime.sendMessage({ message: 'refreshAccessToken' });
-                //initializePort();
-                //sendMessage(
-                //    MessageName.RefreshAccessToken,
-                //    {},
-                //    (response) => {
-                //        log('refreshAccessToken response: ', response);
-                //        if (response) {
-                //            log('refreshAccessToken response: ', response);
-                //            pageTypeDetect();
-                //        }
-                //    }
-                //)
+// Main function to initialize the content script
+function main(): void {
+    log('log: content_script.tsx loaded');
+    initializePort();
+    sendMessage(
+        MessageName.CheckLogin,
+        {},
+        (response: MessageResponse<{ status: boolean }>) => {
+            if (response.error) {
+                log('checkLogin error: ', response.error);
+            } else {
+                log('checkLogin response: ', response.response);
+                if (response.response.status) {
+                    log('user is logged in');
+                    pageTypeDetect();
+                } else {
+                    log('user is not logged in');
+                }
             }
-        });
+        }
+    );
+}
 
-    } else {
-        log('tab is now hidden, closing port');
-        closePort();
-    }
-});
+// Add event listeners
+chrome.runtime.onMessage.addListener(messageListener);
+document.addEventListener('visibilitychange', handleVisibilityChange);
+
+// Execute the main function
+main();
