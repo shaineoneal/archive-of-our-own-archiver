@@ -1,4 +1,4 @@
-import log from '../logger';
+import { log } from '../logger';
 import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest";
 
 export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]) {

@@ -1,5 +1,5 @@
 import { WorkStatus } from "../../utils/types/data";
-import log from "../../utils/logger";
+import { log } from "../../utils/logger";
 import { addControls, addInfo, addWorkControl, removeWorkControl } from "./blurbControls";
 import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromSheet";
 

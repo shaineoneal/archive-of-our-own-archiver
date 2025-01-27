@@ -1,5 +1,4 @@
-import log from '../logger';
-import {HttpMethod, makeRequest} from "./httpRequest";
+import { log } from '../logger';
 
 export async function createSpreadsheet(token: string) {
 
