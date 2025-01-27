@@ -63,41 +63,41 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         payload: {
             work: Ao3_BaseWork;
         };
-        response: User_BaseWork;
+        response: MessageResponse<User_BaseWork>;
     };
     [MessageName.CheckLogin]: {
         payload: {};
-        response: {
+        response: MessageResponse<{
             status: boolean;
-        };
+        }>;
     }
     [MessageName.GetAccessToken]: {
         payload: {
             reason: string;
         };
-        response: string;
+        response: MessageResponse<string>;
     };
     [MessageName.QuerySpreadsheet]: {
         payload: {
             list: number[];
         };
-        response: boolean[];
+        response: MessageResponse<boolean[]>;
     };
     [MessageName.RemoveWorkFromSheet]: {
         payload: {
             workId: number;
         };
-        response: boolean;
+        response: MessageResponse<boolean>;
     };
     [MessageName.RefreshAccessToken]: {
         payload: {};
-        response: string;
+        response: MessageResponse<string>;
     };
     [MessageName.UpdateWorkInSheet]: {
         payload: {
             work: User_BaseWork;
         };
-        response: boolean;
+        response: MessageResponse<boolean>;
     };
 }
 
@@ -122,7 +122,7 @@ type MessagePayload<T extends MessageTypes> = Messages[T]['payload']
  * Used to infer the type of the response parameter in sendMessage and receiveMessage.
  * @param T - The message name.
  */
-type MessageResponse<T extends MessageTypes> = Messages[T]['response']
+type MessageResponseType<T extends MessageTypes> = Messages[T]['response']
 
 /**
  * Type representing the callback of a message.
@@ -130,7 +130,7 @@ type MessageResponse<T extends MessageTypes> = Messages[T]['response']
  * Used to infer the type of the callback parameter in sendMessage and receiveMessage.
  * @param T - The message name.
  */
-type MessageCallback<T extends MessageTypes> = (response: MessageResponse<T>) => void;
+type MessageCallback<T extends MessageTypes> = (response: MessageResponseType<T>) => void;
 
 /**
  * Sends a message to the background script.
@@ -151,8 +151,8 @@ export const  sendMessage = <T extends MessageTypes>(
     }
     port.postMessage( { name, payload } );
 
-    //Listen for a single response
-    const onResponse = (response: MessageResponse<T>) => {
+    // Listen for a single response
+    const onResponse = (response: MessageResponseType<T>) => {
         callback(response);
         port?.onMessage.removeListener(onResponse);
     }
@@ -162,7 +162,7 @@ export const  sendMessage = <T extends MessageTypes>(
 
 
 export const createMessageHandlers = (handlers: {
-    [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponse<K>>;
+    [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponseType<K>>;
 }): void => {
     chrome.runtime.onConnect.addListener((port) => {
         port.onMessage.addListener(async (message) => {
