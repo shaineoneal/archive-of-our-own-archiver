@@ -2,6 +2,7 @@ import { create, useStore } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { getStore, removeStore, setStore, StoreMethod } from "../chrome-services";
+import { omit } from "lodash";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
