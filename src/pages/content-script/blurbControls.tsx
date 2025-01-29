@@ -21,12 +21,9 @@ const TOGGLES = {
  * @param boolRead - Array indicating if the works are read
  */
 export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): void {
-    log('addBlurbControls worksOnPage: ', worksOnPage);
     worksOnPage.forEach((work, index) => {
         const workEl = work as Element;
         const workIdClass = workEl.id.split('_')[1];
-
-        log('workIdClass: ', workIdClass);
 
         // Create a new div to wrap the work element
         const workWrap = document.createElement('div');
@@ -127,18 +124,14 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
  * @returns The controls element
  */
 export function addControls(workWrap: Element): Node {
-    log('adding controls to work: ', workWrap);
 
     const work = workWrap.querySelector('.work') as Element;
     const workId = work.id.split('_')[1];
-    log('workId: ', workId);
 
     const controls = document.createElement('div');
     controls.className = 'blurb-controls';
     chrome.storage.session.get(workId, (result) => {
-        log('result from session storage:', result);
         if (!result[workId]) {
-            log(`No entry found for workId: ${workId}`);
             controls.appendChild(addWorkControl(workWrap));
         } else {
             log(`Entry found for workId: ${workId}`, result[workId]);

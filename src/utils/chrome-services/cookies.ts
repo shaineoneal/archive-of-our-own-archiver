@@ -5,13 +5,13 @@ export async function setAccessTokenCookie(value: string) {
     //log('setting cookie: ', value);
 // get current date
     let currentDate = new Date();
-    const expirationDate = new Date(currentDate.getTime() + 3600);
+    const expirationDate = new Date(currentDate.getTime() + 3600000);
     log('currentDate: ', currentDate);
     log('expirationDate: ', expirationDate);
 
     //document.cookie = `accessToken=${value}; expires=${expirationDate.getTime() + 3600}; domain=archiveofourown.org; path=/`;
     // Set the access token cookie with a 30-second expiration
-chrome.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', value, expirationDate: expirationDate.getTime() / 1000 })
+chrome.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', value, expirationDate: expirationDate.getTime() })
 .then(cookie => console.log('cookie set: ', cookie));
 }
 
