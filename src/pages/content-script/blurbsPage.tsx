@@ -71,5 +71,4 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
             }
         });
     }
-    log('updated works: ', worksOnPage);
 }
