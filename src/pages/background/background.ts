@@ -35,11 +35,22 @@ createMessageHandlers({
         log('syncUser', syncUser);
         if (syncUser.isLoggedIn && syncUser.accessToken) {
             log('user is logged in');
-            setStore('user', syncUser, StoreMethod.SESSION);
-            const isValid = await isAccessTokenValid(syncUser.accessToken);
-            log('is access token valid', isValid);
-            if (!isValid) {
-                log('access token is not valid');
+            setStore('user', syncUser, StoreMethod.SYNC);
+            try {
+                const isValid = await isAccessTokenValid(syncUser.accessToken);
+                log('is access token valid', isValid);
+                if(isValid) {
+                    setAccessToken(syncUser.accessToken);
+                    await setAccessTokenCookie(syncUser.accessToken);
+                    log('newAccessToken set');
+                    return { response: { status: true } };
+                } else { 
+                    return { response: { status: false } };
+                }
+
+            } catch (error) {
+                log('Error checking access token', error);
+
                 if (syncUser.refreshToken) {
                     try {
                         const newAccessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
@@ -57,14 +68,7 @@ createMessageHandlers({
                         log('Error exchanging refresh token for access token', error);
                         return { response: { status: false } };
                     }
-                } else {
-                    return { response: { status: false } };
-                }
-            } else {
-                setAccessToken(isValid);
-                await setAccessTokenCookie(isValid);
-                log('newAccessToken set');
-                return { response: { status: true } };
+                } else { return { response: { status: false } } };
             }
         } else {
             return { response: { status: false } };
