@@ -38,8 +38,9 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
             grant_type: 'refresh_token',
         },
     });
+    log('exchangeRefreshForAccessToken Response: ', response);
     if (!response.ok) {
-        throw new Error('Error getting refresh token');
+        throw new Error('Error exchanging refresh token for access token');
     }
 
     const parsedResponse = await response.json();
@@ -52,26 +53,28 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
  *
  * @async
  * @param {string} token - The access token to validate.
- * @returns {Promise<string>} A promise that resolves with the token if it is valid.
- * @throws {Error} Throws an error if the token is invalid.
+ * @returns {Promise<boolean>} A promise that resolves with true if the token is valid, otherwise false.
+ * @throws {Error} Throws an error if there is an issue with the request.
  */
-export async function isAccessTokenValid(token: string): Promise<string> {
+export async function isAccessTokenValid(token: string): Promise<boolean> {
     if (token === '') {
-        throw new Error('Token is invalid');
+        return false;
     }
 
-    const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-        method: HttpMethod.GET,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+    try {
+        const response = await makeRequest({
+            url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+            method: HttpMethod.GET,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            return data.aud === oauth2!.client_id;
         }
-    });
-
-    if (response.ok) {
-        return token;
-    } else {
-        return '';
+    } catch (error) {
+        throw new Error('Error validating token');
     }
+    return false;
 }
