@@ -41,7 +41,7 @@ function handleVisibilityChange(): void {
 function checkAccessToken(): void {
     getAccessTokenCookie().then((accessToken: string | undefined) => {
         if (accessToken) {
-            log('accessToken found!: ', accessToken);
+            log('accessToken cookie found!: ', accessToken);
         } else {
             log('no accessToken cookie found');
             refreshAccessToken();
