@@ -39,12 +39,12 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         },
     });
     log('exchangeRefreshForAccessToken Response: ', response);
-    if (!response.ok) {
-        throw new Error('Error exchanging refresh token for access token');
-    }
 
     const parsedResponse = await response.json();
     log('exchangeRefreshForAccessToken Parsed Response: ', parsedResponse);
+    if (!response.ok) {
+        throw new Error('Error exchanging refresh token for access token');
+    }
     return parsedResponse.access_token;
 }
 
