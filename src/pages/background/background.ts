@@ -26,6 +26,26 @@ chrome.runtime.onConnect.addListener((port) => {
         });
 });
 
+async function handleTokenExchange<T>(refreshToken: string): Promise<MessageResponse<T>> {
+    const { setAccessToken } = SyncUserStore.getState().actions;
+    try {
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
+        log('newAccessToken', newAccessToken);
+        if (newAccessToken) {
+            setAccessToken(newAccessToken);
+            await setAccessTokenCookie(newAccessToken);
+            log('newAccessToken set');
+            return { response: true as unknown as T };
+        } else {
+            log('Error exchanging refresh token for access token');
+            return { response: false as unknown as T };
+        }
+    } catch (error) { 
+        log('Error exchanging refresh token for access token', error);
+        return { response: false as unknown as T };
+    }
+}
+
 createMessageHandlers({
     // Called when the popup is opened
     [MessageName.CheckLogin]: async (): Promise<MessageResponse<{ status: boolean }>> => {
@@ -52,23 +72,10 @@ createMessageHandlers({
                 log('Error checking access token', error);
 
                 if (syncUser.refreshToken) {
-                    try {
-                        const newAccessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
-                        log('newAccessToken', newAccessToken);
-                        if (newAccessToken) {
-                            setAccessToken(newAccessToken);
-                            await setAccessTokenCookie(newAccessToken);
-                            log('newAccessToken set');
-                            return { response: { status: true } };
-                        } else {
-                            log('Error exchanging refresh token for access token');
-                            return { response: { status: false } };
-                        }
-                    } catch (error) {
-                        log('Error exchanging refresh token for access token', error);
-                        return { response: { status: false } };
-                    }
-                } else { return { response: { status: false } } };
+                    return await handleTokenExchange<boolean>(syncUser.refreshToken);
+                } else {
+                    return { response: false };
+                }
             }
         } else {
             return { response: { status: false } };
@@ -114,25 +121,8 @@ createMessageHandlers({
         const { setAccessToken } = SyncUserStore.getState().actions;
         log('refreshAccessToken message received', 'syncUser', syncUser);
         if (syncUser.refreshToken) {
-            try {
-                const accessToken = await exchangeRefreshForAccessToken(syncUser.refreshToken);
-                log('accessToken', accessToken);
-                if (accessToken) {
-                    if (await isAccessTokenValid(accessToken)) {
-                        log('accessToken is valid');
-                        await setAccessTokenCookie(accessToken);
-                        setAccessToken(accessToken);
-                    }
-                    return { response: accessToken };
-                } else {
-
-                    return { response: '' };
-                }
-            } catch (error) {
-                log('Error exchanging refresh token for access token\n', error);
-                return { response: '' };
-            }
-        } else {
+            return await handleTokenExchange<string>(syncUser.refreshToken);
+        } else { 
             return { response: '' };
         }
     },
