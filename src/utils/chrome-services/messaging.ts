@@ -70,9 +70,7 @@ interface Messages extends Partial<Record<MessageName, Message>> {
     };
     [MessageName.CheckLogin]: {
         payload: {};
-        response: MessageResponse<{
-            status: boolean;
-        }>;
+        response: MessageResponse<boolean>;
     }
     [MessageName.GetAccessToken]: {
         payload: {

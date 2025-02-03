@@ -48,7 +48,7 @@ async function handleTokenExchange<T>(refreshToken: string): Promise<MessageResp
 
 createMessageHandlers({
     // Called when the popup is opened
-    [MessageName.CheckLogin]: async (): Promise<MessageResponse<{ status: boolean }>> => {
+    [MessageName.CheckLogin]: async (): Promise<MessageResponse<boolean>> => {
         log('checkLogin message received');
         const { setAccessToken } = SyncUserStore.getState().actions;
         let syncUser = SyncUserStore.getState().user;
@@ -63,22 +63,18 @@ createMessageHandlers({
                     setAccessToken(syncUser.accessToken);
                     await setAccessTokenCookie(syncUser.accessToken);
                     log('newAccessToken set');
-                    return { response: { status: true } };
-                } else { 
-                    return { response: { status: false } };
-                }
-
-            } catch (error) {
-                log('Error checking access token', error);
-
-                if (syncUser.refreshToken) {
-                    return await handleTokenExchange<boolean>(syncUser.refreshToken);
+                    return { response: true };
                 } else {
                     return { response: false };
                 }
+
+            } catch (error) {
+                log(error);
+                return { response: false };
             }
         } else {
-            return { response: { status: false } };
+            log('user is not logged in');
+            return { response: false };
         }
     },
     [MessageName.AddWorkToSheet]: async (payload): Promise<MessageResponse<User_BaseWork>> => {

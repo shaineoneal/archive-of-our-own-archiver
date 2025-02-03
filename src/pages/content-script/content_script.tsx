@@ -91,12 +91,12 @@ function main(): void {
     sendMessage(
         MessageName.CheckLogin,
         {},
-        (response: MessageResponse<{ status: boolean }>) => {
+        (response: MessageResponse<boolean>) => {
             if (response.error) {
                 log('checkLogin error: ', response.error);
             } else {
                 log('checkLogin response: ', response.response);
-                if (response.response.status) {
+                if (response.response) {
                     log('user is logged in');
                     pageTypeDetect();
                 } else {
