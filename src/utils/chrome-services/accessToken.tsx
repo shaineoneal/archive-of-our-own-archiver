@@ -3,7 +3,47 @@ import { HttpMethod, makeRequest } from './httpRequest';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
-const redirectUri = chrome.identity.getRedirectURL();
+
+/**
+ * Makes a request to exchange the refresh token for an access token.
+ *
+ * @param {string} refreshT - The refresh token.
+ * @returns {Promise<Response>} - The response from the OAuth2 server.
+ */
+const requestAccessToken = (refreshT: string): Promise<Response> => {
+    if(!oauth2 || !client_secret) {
+        throw new Error('Invalid oauth2 configuration');
+    }
+    return makeRequest({
+        url: 'https://oauth2.googleapis.com/token',
+        method: HttpMethod.POST,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: {
+            client_id: oauth2.client_id,
+            client_secret: client_secret,
+            refresh_token: refreshT,
+            grant_type: 'refresh_token',
+        },
+    });
+};
+
+/**
+ * Parses the response from the OAuth2 server.
+ *
+ * @param {Response} response - The response from the OAuth2 server.
+ * @returns {Promise<string>} - The access token.
+ * @throws {Error} - Throws an error if the response is not ok or if there is an error parsing the response.
+ */
+const parseAccessTokenResponse = async (response: Response): Promise<string> => {
+    const parsedResponse = await response.json();
+    log('exchangeRefreshForAccessToken parsedResponse: ', parsedResponse);
+    if (!response.ok) {
+        throw new Error(parsedResponse.error);
+    }
+    return parsedResponse.access_token;
+};
 
 /**
  * Fetches a new access token using the OAuth2 refresh token.
@@ -25,27 +65,15 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         throw new Error('Error getting refresh token');
     }
 
-    const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com/token',
-        method: HttpMethod.POST,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: {
-            client_id: oauth2.client_id,
-            client_secret: client_secret,
-            refresh_token: refreshT,
-            grant_type: 'refresh_token',
-        },
-    });
+    const response = await requestAccessToken(refreshT);
     log('exchangeRefreshForAccessToken Response: ', response);
 
-    const parsedResponse = await response.json();
-    log('exchangeRefreshForAccessToken Parsed Response: ', parsedResponse);
-    if (!response.ok) {
+    try {
+        return await parseAccessTokenResponse(response);
+    } catch (error) {
+        log('Error parsing response: ', error);
         throw new Error('Error exchanging refresh token for access token');
     }
-    return parsedResponse.access_token;
 }
 
 /**
@@ -57,6 +85,8 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
  * @throws {Error} Throws an error if there is an issue with the request.
  */
 export async function isAccessTokenValid(token: string): Promise<boolean> {
+    log('isAccessTokenValid token: ', token);
+
     if (token === '') {
         return false;
     }
@@ -71,6 +101,7 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
         });
         if (response.ok) {
             const data = await response.json();
+            log('isAccessTokenValid data: ', data);
             return data.aud === oauth2!.client_id;
         }
     } catch (error) {
