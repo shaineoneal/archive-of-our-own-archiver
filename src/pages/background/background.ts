@@ -17,8 +17,13 @@ import { removeWorkFromSheet } from "../../utils/chrome-services/removeWorkFromS
 import { updateWorkInSheet } from "../../utils/chrome-services/updateWorkInSheet";
 import { setAccessTokenCookie } from "../../utils/chrome-services/cookies";
 
+let syncUser = SyncUserStore.getState().user;
+
 chrome.runtime.onConnect.addListener((port) => {
     log('background script running');
+
+    //update syncedUser with the current state
+    syncUser = SyncUserStore.getState().user;
 
     chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
         .then(() => {
@@ -51,12 +56,15 @@ createMessageHandlers({
     [MessageName.CheckLogin]: async (): Promise<MessageResponse<boolean>> => {
         log('checkLogin message received');
         const { setAccessToken } = SyncUserStore.getState().actions;
-        let syncUser = SyncUserStore.getState().user;
         log('syncUser', syncUser);
-        if (syncUser.isLoggedIn && syncUser.accessToken) {
+        if (syncUser.isLoggedIn && syncUser.refreshToken) {
             log('user is logged in');
-            setStore('user', syncUser, StoreMethod.SYNC);
+            //setStore('user', syncUser, StoreMethod.SYNC);
             try {
+                if(syncUser.accessToken === undefined) {
+                    log('no access token');
+                    return await handleTokenExchange<boolean>(syncUser.refreshToken);
+                }
                 const isValid = await isAccessTokenValid(syncUser.accessToken);
                 log('is access token valid', isValid);
                 if(isValid) {
@@ -66,6 +74,7 @@ createMessageHandlers({
                     return { response: true };
                 } else {
                     return { response: false };
+                    log('access token is not valid');
                 }
 
             } catch (error) {
@@ -114,7 +123,6 @@ createMessageHandlers({
     },
     [MessageName.RefreshAccessToken]: async (): Promise<MessageResponse<string>> => {
         let syncUser = SyncUserStore.getState().user;
-        const { setAccessToken } = SyncUserStore.getState().actions;
         log('refreshAccessToken message received', 'syncUser', syncUser);
         if (syncUser.refreshToken) {
             return await handleTokenExchange<string>(syncUser.refreshToken);
