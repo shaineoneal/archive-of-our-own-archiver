@@ -3,7 +3,7 @@ import { SessionUserStore, SyncUserStore } from "../../utils/zustand";
 import {
     addWorkToSheet,
     createMessageHandlers,
-    exchangeRefreshForAccessToken, getStore, isAccessTokenValid,
+    exchangeRefreshForAccessToken, getStore, getValidAccessToken, isAccessTokenValid,
     MessageName,
     querySpreadsheet, removeStore,
     setStore,
@@ -73,8 +73,8 @@ createMessageHandlers({
                     log('newAccessToken set');
                     return { response: true };
                 } else {
-                    return { response: false };
                     log('access token is not valid');
+                    return await handleTokenExchange<boolean>(syncUser.refreshToken);
                 }
 
             } catch (error) {
@@ -90,9 +90,23 @@ createMessageHandlers({
         let sessionUser = SyncUserStore.getState().user;
         log('payload', payload);
         if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
-            const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
-            setStore(`${payload.work.workId}`, work, StoreMethod.SESSION);
-            return { response: work };
+            try {
+                const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, payload.work);
+                setStore(`${payload.work.workId}`, work, StoreMethod.SESSION);
+                return { response: work };
+            } catch (error) {
+                log('error adding work to sheet', error);
+                // if user has a refresh token, try to get a new access token
+                if (sessionUser.refreshToken) {
+                    let accessT = await getValidAccessToken(sessionUser.accessToken, sessionUser.refreshToken);
+                    if (accessT) {
+                        sessionUser.accessToken = accessT;
+                        setStore('user', sessionUser, StoreMethod.SYNC);
+                        return await handleTokenExchange<User_BaseWork>(sessionUser.refreshToken);
+                    } 
+                }
+                throw new Error('access token expired or invalid, and there was an error exchanging the refresh token');
+            }
         } else {
             log(payload);
             throw new Error('no spreadsheetId or accessToken');
