@@ -40,7 +40,7 @@ async function handleTokenExchange<T>(refreshToken: string): Promise<MessageResp
             log('Error exchanging refresh token for access token');
             return { response: false as unknown as T };
         }
-    } catch (error) { 
+    } catch (error) {
         log('Error exchanging refresh token for access token', error);
         return { response: false as unknown as T };
     }
