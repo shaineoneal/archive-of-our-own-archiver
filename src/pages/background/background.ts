@@ -203,3 +203,24 @@ createMessageHandlers({
         });
     }
 });
+
+// If storage updates, update the user store on any AO3 page and refresh the stored access token
+chrome.storage.onChanged.addListener((changes, area) => {
+    log('storage changed', changes, area);
+    if (area === 'sync') {
+        log('syncUser', syncUser);
+        if (changes['user-store']) {
+            let newUser = changes['user-store'].newValue.user;
+            log('newUser', newUser);
+            if (newUser !== syncUser) {
+                log('new user', newUser);
+                SyncUserStore.getState().actions.userStoreLogin(newUser.accessToken, newUser.refreshToken);
+                setAccessTokenCookie(newUser.accessToken);
+            }
+            if (newUser.refreshToken !== syncUser.refreshToken) {
+                log('new refresh token', newUser.refreshToken);
+                SyncUserStore.getState().actions.setRefreshToken(newUser.refreshToken);
+            }
+        }
+    }
+});
