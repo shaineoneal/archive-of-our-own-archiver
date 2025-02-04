@@ -78,3 +78,29 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
     }
     return false;
 }
+
+/**
+ * Retrieves a valid access token, either by validating the current one or exchanging the refresh token.
+ *
+ * @async
+ * @param {string} accessToken - The current access token.
+ * @param {string} refreshToken - The refresh token to exchange for a new access token if the current one is invalid.
+ * @returns {Promise<string>} A promise that resolves with a valid access token.
+ * @throws {Error} Throws an error if unable to retrieve a valid access token.
+ */
+export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
+    log('Checking access token validity:', accessToken);
+    if (await isAccessTokenValid(accessToken)) {
+        log('Access token is valid');
+        return accessToken;
+    } else {
+        log('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
+        if (newAccessToken) {
+            log('New access token obtained:', newAccessToken);
+            return newAccessToken;
+        } else {
+            throw new Error('Unable to retrieve a valid access token');
+        }
+    }
+}
