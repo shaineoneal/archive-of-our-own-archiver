@@ -126,6 +126,4 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
         'read'
     );
     return userWork;
-}
-
-    
+};
