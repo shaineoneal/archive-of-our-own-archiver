@@ -3,25 +3,30 @@ import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
 import { log } from '../logger';
 import { HttpMethod, makeRequest } from "./httpRequest";
 
+//TODO: currently hard coded for the first sheet, need to make it dynamic
 
 /**
- * Adds a work entry to a Google Sheets spreadsheet.
- *
- * @param {string} spreadsheetId - The URL of the Google Sheets spreadsheet.
- * @param {string} authToken - The authentication token for Google Sheets API.
- * @param {BaseWork} work - The work entry to be added to the spreadsheet.
- * @returns {Promise<boolean>} - A promise that resolves to true if the work entry was successfully added, otherwise throws an error.
+ * Represents a history entry.
  */
-//TODO: currently hard coded for the first sheet, need to make it dynamic
 interface HistoryEntry {
     action: string;
     date: string;
 }
 
+/**
+ * Represents the request body for adding a work entry to the Google Sheets spreadsheet.
+ */
 interface RequestBody {
     range: string;
     majorDimension: string;
     values: any[][];
+}
+
+/**
+ * Creates a history entry with the current date and action "added".
+ *
+ * @returns {HistoryEntry[]} - An array containing the history entry.
+ */
 const createHistoryEntry = (): HistoryEntry[] => {
     const date = new Date();
     const sheetDate = date.toLocaleString();
@@ -31,6 +36,14 @@ const createHistoryEntry = (): HistoryEntry[] => {
     }];
 };
 
+/**
+ * Creates the request body for adding a work entry to the Google Sheets spreadsheet.
+ *
+ * @param {Ao3_BaseWork} work - The work entry to be added.
+ * @param {HistoryEntry[]} history - The history entry.
+ * @param {User_BaseWork} defaultUserWork - The default user work entry.
+ * @returns {RequestBody} - The request body.
+ */
 const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultUserWork: User_BaseWork): RequestBody => ({
     range: 'AccessWorks!A1',
     majorDimension: 'ROWS',
@@ -56,6 +69,14 @@ const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultU
     ]
 });
 
+/**
+ * Adds a work entry to a Google Sheets spreadsheet.
+ *
+ * @param {string} spreadsheetId - The URL of the Google Sheets spreadsheet.
+ * @param {string} authToken - The authentication token for Google Sheets API.
+ * @param {BaseWork} work - The work entry to be added to the spreadsheet.
+ * @returns {Promise<User_BaseWork>} - A promise that resolves to the added work entry.
+ */
 export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<User_BaseWork> => {
     log('addWorkToSheet', work);
     log('authToken', authToken);
@@ -81,7 +102,7 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
 
     log('addWorkToSheet', 'response', parsedResponse);
 
-    let userWork = new User_BaseWork(
+    // Handle potential authentication error
     if (parsedResponse.error && parsedResponse.status === 'UNAUTHENTICATED') {
         throw new Error('Error adding work to sheet: UNAUTHENTICATED');
     }
