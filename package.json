@@ -4,14 +4,14 @@
   "description": "chrome-extension-typescript-starter",
   "main": "index.js",
   "scripts": {
-    "docs": "typedoc --validation",
-    "watch": "webpack --config webpack/webpack.dev.js --watch",
-    "dev": "webpack --config webpack/webpack.dev.js ",
-    "build": "webpack --config webpack/webpack.prod.js",
-    "clean": "rimraf dist",
-    "test": "npx jest",
-    "style": "prettier --write \"src/**/*.{ts,tsx}\"",
-    "lint": "eslint --ext .ts,.tsx src"
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare"
   },
   "author": "",
   "license": "MIT",
@@ -22,8 +22,10 @@
   "devDependencies": {
     "@types/chrome": "^0.0.268",
     "@types/jquery": "^3.5.30",
+    "@types/lodash": "^4.17.15",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@wxt-dev/module-react": "^1.1.3",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "dotenv": "^16.4.5",
@@ -47,6 +49,7 @@
     "webextension-polyfill": "^0.12.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
+    "wxt": "^0.19.26",
     "zustand": "^4.5.4"
   },
   "dependencies": {
