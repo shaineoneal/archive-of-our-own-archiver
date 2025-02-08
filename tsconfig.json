@@ -1,16 +1,7 @@
 {
+    "extends": "./.wxt/tsconfig.json",
     "compilerOptions": {
-        "strict": true,
-        "target": "es6",
-        "moduleResolution": "node",
-        "module": "ES6",
-        "esModuleInterop": true,
-        "sourceMap": true,
-        "rootDir": "src",
-        "outDir": "dist/js",
-        "noImplicitAny": false,
         "jsx": "react-jsx",
-        "allowSyntheticDefaultImports": true,
-        "noEmit": false
+        "allowImportingTsExtensions": true
     }
 }
