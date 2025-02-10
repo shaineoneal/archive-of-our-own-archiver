@@ -12,10 +12,6 @@ on:
 jobs:
   build:
 
-    env:
-      REACT_APP_API_KEY: 'AIzaSyCGCqigMiktoLOKkUzjapcYuYGCqna4aJQ'
-      REACT_APP_CLIENT_SECRET: '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'
-
     runs-on: ubuntu-latest
 
     strategy:
