@@ -1,6 +1,6 @@
 import { standardBlurbsPage } from './blurbsPage.tsx';
-import { getAccessTokenCookie } from "@/utils/chrome-services/cookies.ts";
-import { closePort, initializePort, MessageName, sendMessage } from "@/utils/chrome-services/messaging.ts";
+import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
+import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
 

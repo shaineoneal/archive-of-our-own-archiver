@@ -1,7 +1,7 @@
 import { WorkStatus } from "@/utils/types/data.ts";
 import { log } from "@/utils/logger.ts";
 import { addControls, addInfo, addWorkControl, removeWorkControl } from "./blurbControls.tsx";
-import { removeWorkFromSheet } from "@/utils/chrome-services/removeWorkFromSheet.ts";
+import { removeWorkFromSheet } from "@/utils/browser-services/removeWorkFromSheet.ts";
 
 const STATUS_CLASSES = {
     reading: 'status-reading',
