@@ -1,6 +1,6 @@
 import { log } from "@/utils/logger.ts";
 import { handleTokenExchange, main as bgMain } from "./background.ts";
-import { createMessageHandlers, isAccessTokenValid, MessageName } from "@/utils/chrome-services";
+import { isAccessTokenValid, sendMessage, onMessage } from "@/utils/browser-services";
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { SyncUserStore } from "@/utils/zustand";
 import { setAccessTokenCookie } from "@/utils/chrome-services/cookies.ts";

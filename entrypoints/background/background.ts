@@ -7,13 +7,13 @@ import {
     querySpreadsheet, removeStore,
     setStore,
     StoreMethod,
-} from "@/utils/chrome-services";
+} from "../../utils/browser-services";
 import { compareArrays } from "@/utils/compareArrays.ts";
 import { User_BaseWork } from "@/entrypoints/content";
 import { MessageResponse } from "@/utils/types/MessageResponse"; // Ensure this import is present
-import { removeWorkFromSheet } from "@/utils/chrome-services/removeWorkFromSheet.ts";
-import { updateWorkInSheet } from "@/utils/chrome-services/updateWorkInSheet.tsx";
-import { setAccessTokenCookie } from "@/utils/chrome-services/cookies.ts";
+import { removeWorkFromSheet } from "@/utils/browser-services/removeWorkFromSheet.ts";
+import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
+import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { log } from "@/utils/logger.ts";
 
 let syncUser = SyncUserStore.getState().user;
