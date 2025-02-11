@@ -1,6 +1,6 @@
 import '../styles.css'
 import { Ao3_BaseWork } from './Ao3_BaseWork.ts';
-import { MessageName, sendMessage } from "@/utils/chrome-services/messaging.ts";
+import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { changeBlurbStyle } from "./changeBlurbStyle.tsx";
