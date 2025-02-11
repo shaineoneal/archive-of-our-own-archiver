@@ -1,4 +1,4 @@
-import { initializePort, MessageName, sendMessage } from "@/utils/chrome-services/messaging.ts";
+import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
 // @ts-ignore
