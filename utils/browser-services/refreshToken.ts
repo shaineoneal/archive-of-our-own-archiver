@@ -4,7 +4,7 @@ import { HttpMethod, makeRequest } from "./httpRequest.ts";
 /**
  * Revokes the given access token.
  * 
- * @category chrome-services
+ * @category browser-services
  * @param accessToken The access token to revoke.
  * @returns A promise that resolves with no value.
  * @throws {Error} If the request to revoke the token fails.
