@@ -1,5 +1,5 @@
-import { createSpreadsheet } from '../../../utils/chrome-services';
-import { SyncUserStore, useActions, useLoaderStore } from '../../../utils/zustand';
+import { createSpreadsheet } from '@/utils/browser-services';
+import { SyncUserStore, useActions, useLoaderStore } from '@/utils/zustand';
 
 /**
  * Component for creating a new Google Sheet.
