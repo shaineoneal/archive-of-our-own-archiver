@@ -28,27 +28,41 @@ export async function standardBlurbsPage() {
 
     log('searchList: ', searchList);
 
-    initializePort();
 
-    sendMessage(
-        MessageName.QuerySpreadsheet,
-        { list: searchList },
-        async (response: MessageResponse<boolean[]>) => {
-            log('QuerySpreadsheet response: ', response)
-            if (response === null) {
-                log('No work statuses to inject.')
-                addBlurbControls(worksOnPage, []);
-                return;
-            }
-            if (response.error) {
-                log('Error querying spreadsheet: ', response.error);
-                return;
-            }
-            await injectWorkStatuses(worksOnPage, response.response);
-            log('Injected work statuses.');
-            addBlurbControls(worksOnPage, response.response);
-        }
-    )
+
+    const resp = await sendMessage('querySpreadSheet', searchList);
+    log('querySpreadSheet response: ', resp);
+    if (resp.length == 0) {
+        log('No work statuses to inject.')
+        addBlurbControls(worksOnPage, []);
+        return;
+    }
+    //if (resp.error) {
+    //    log('Error querying spreadsheet: ', resp.error);
+    //    return;
+    //}
+    else { await injectWorkStatuses(worksOnPage, resp);
+    log('Injected work statuses.');
+    addBlurbControls(worksOnPage, resp);}
+    //sendMessage(
+    //    MessageName.QuerySpreadsheet,
+    //    { list: searchList },
+    //    async (response: MessageResponse<boolean[]>) => {
+    //        log('QuerySpreadsheet response: ', response)
+    //        if (response === null) {
+    //            log('No work statuses to inject.')
+    //            addBlurbControls(worksOnPage, []);
+    //            return;
+    //        }
+    //        if (response.error) {
+    //            log('Error querying spreadsheet: ', response.error);
+    //            return;
+    //        }
+    //        await injectWorkStatuses(worksOnPage, response.response);
+    //        log('Injected work statuses.');
+    //        addBlurbControls(worksOnPage, response.response);
+    //    }
+    //)
 }
 
 /**
