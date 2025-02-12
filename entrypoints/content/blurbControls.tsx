@@ -66,19 +66,19 @@ export function addWorkControl(workWrap: Element): HTMLElement {
         const workBlurb = Ao3_BaseWork.createWork(workWrap);
         log('workBlurb: ', workBlurb);
 
-        sendMessage(
-            MessageName.AddWorkToSheet,
-            { work: workBlurb },
-            (response: MessageResponse<User_BaseWork>) => {
-                if (response.error) {
-                    log('addWork error: ', response.error);
-                } else {
-                    log('content script response: ', response.response);
-                    changeBlurbStyle(WorkStatus.Read, workWrap);
-
-                }   //else popup login
-            }
-        );
+        //sendMessage(
+        //    MessageName.AddWorkToSheet,
+        //    { work: workBlurb },
+        //    (response: MessageResponse<User_BaseWork>) => {
+        //        if (response.error) {
+        //            log('addWork error: ', response.error);
+        //        } else {
+        //            log('content script response: ', response.response);
+        //            changeBlurbStyle(WorkStatus.Read, workWrap);
+//
+        //        }   //else popup login
+        //    }
+        //);
     });
 
     return innerToggle;
@@ -102,18 +102,18 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
         const workBlurb = Ao3_BaseWork.createWork(workWrap);
         log('workBlurb.workId: ', workBlurb);
 
-        sendMessage(
-            MessageName.RemoveWorkFromSheet,
-            { workId: workBlurb.workId },
-            (response: MessageResponse<boolean>) => {
-                if (response.error) {
-                    log('removeWork error: ', response.error);
-                } else {
-                    log('content script response: ', response.response);
-                    changeBlurbStyle(WorkStatus.Default, workWrap);
-                }
-            }
-        );
+        //sendMessage(
+        //    MessageName.RemoveWorkFromSheet,
+        //    { workId: workBlurb.workId },
+        //    (response: MessageResponse<boolean>) => {
+        //        if (response.error) {
+        //            log('removeWork error: ', response.error);
+        //        } else {
+        //            log('content script response: ', response.response);
+        //            changeBlurbStyle(WorkStatus.Default, workWrap);
+        //        }
+        //    }
+        //);
     });
 
     return innerToggle;
@@ -240,18 +240,18 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 uWork.skipReason
             );
 
-            sendMessage(
-                MessageName.UpdateWorkInSheet,
-                { work: work },
-                (response: MessageResponse<boolean>) => {
-                    if (response.error) {
-                        log('incrementReadCount error: ', response.error);
-                    } else {
-                        log('content script response: ', response.response);
-                        changeBlurbStyle(WorkStatus.Read, workWrap);
-                    }
-                }
-            );
+            //sendMessage(
+            //    MessageName.UpdateWorkInSheet,
+            //    { work: work },
+            //    (response: MessageResponse<boolean>) => {
+            //        if (response.error) {
+            //            log('incrementReadCount error: ', response.error);
+            //        } else {
+            //            log('content script response: ', response.response);
+            //            changeBlurbStyle(WorkStatus.Read, workWrap);
+            //        }
+            //    }
+            //);
         });
     });
 
