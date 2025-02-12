@@ -28,11 +28,11 @@ function handleUserChanged(sendResponse: (response: any) => void): void {
 export function handleVisibilityChange(): void {
     if (document.visibilityState === 'visible') {
         log('tab is now visible');
-        initializePort();
+        //initializePort();
         checkAccessToken();
     } else {
         log('tab is now hidden, closing port');
-        closePort();
+        //closePort();
         disconnectContentScript();
     }
 }
@@ -51,18 +51,18 @@ function checkAccessToken(): void {
 
 // Request to refresh the access token
 function refreshAccessToken(): void {
-    sendMessage(
-        MessageName.RefreshAccessToken,
-        {},
-        (response: MessageResponse<string>) => {
-            if (response.error) {
-                log('refreshAccessToken error: ', response.error);
-            } else {
-                log('refreshAccessToken response: ', response.response);
-                pageTypeDetect();
-            }
-        }
-    );
+    //sendMessage(
+    //    MessageName.RefreshAccessToken,
+    //    {},
+    //    (response: MessageResponse<string>) => {
+    //        if (response.error) {
+    //            log('refreshAccessToken error: ', response.error);
+    //        } else {
+    //            log('refreshAccessToken response: ', response.response);
+    //            pageTypeDetect();
+    //        }
+    //    }
+    //);
 }
 
 // Detect the type of page and handle accordingly
@@ -81,30 +81,37 @@ function pageTypeDetect(): void {
 // Disconnect the content script from the background script
 function disconnectContentScript(): void {
     chrome.runtime.onMessage.removeListener(messageListener);
-    closePort();
+    //closePort();
 }
 
 // Main function to initialize the content script
 export function main(): void {
     log('log: content_script.tsx loaded');
-    initializePort();
-    sendMessage(
-        MessageName.CheckLogin,
-        {},
-        (response: MessageResponse<boolean>) => {
-            if (response.error) {
-                log('checkLogin error: ', response.error);
-            } else {
-                log('checkLogin response: ', response.response);
-                if (response.response) {
-                    log('user is logged in');
-                    pageTypeDetect();
-                } else {
-                    log('user is not logged in');
-                }
-            }
-        }
-    );
+    const resp = await sendMessage('checkLogin', undefined);
+    //initializePort();
+    //sendMessage(
+    //    MessageName.CheckLogin,
+    //    {},
+    //    (response: MessageResponse<boolean>) => {
+    //        if (response.error) {
+    //            log('checkLogin error: ', response.error);
+    //        } else {
+    //            log('checkLogin response: ', response.response);
+    //            if (response.response) {
+    //                log('user is logged in');
+    //                pageTypeDetect();
+    //            } else {
+    //                log('user is not logged in');
+    //            }
+    //        }
+    //    }
+    //);
+    if(resp) {
+        log('user is logged in');
+        pageTypeDetect();
+    } else {
+        log('user is not logged in');
+    }
 }
 
 // Add event listeners
