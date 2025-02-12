@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^5.6.0",
+    "@webext-core/messaging": "^2.2.0",
     "@webext-pegasus/store-zustand": "^0.3.6",
     "@webext-pegasus/transport": "^0.3.6",
     "typedoc-github-theme": "^0.1.2"
