@@ -1,4 +1,3 @@
-import '../styles.css'
 import { Ao3_BaseWork } from './Ao3_BaseWork.ts';
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
@@ -6,6 +5,7 @@ import { MessageResponse } from "@/utils/types/MessageResponse";
 import { changeBlurbStyle } from "./changeBlurbStyle.tsx";
 import { User_BaseWork } from "./User_BaseWork.tsx";
 import { wrap } from "@/utils";
+import '@/entrypoints/styles.scss';
 import { WorkStatus } from "@/utils/types/data.ts";
 
 /**
@@ -30,14 +30,28 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): vo
         const workWrap = document.createElement('div');
         workWrap.classList.add('blurb-with-toggles', 'archiver-controls', workIdClass);
 
-        workWrap.style.cssText = JSON.stringify(getComputedStyle(workEl));
+        //workWrap.style.cssText = JSON.stringify(getComputedStyle(workEl));
 
         // Wrap the work element in the new div
         wrap(work, workWrap);
 
         // Add the toggle controls to the new div
         const infoBox = document.createElement('li');
-        infoBox.classList.add('blurb-toggle', 'archiver-controls');
+        infoBox.classList.add('blurb-toggle', 'archiver-controls', 'blurb', 'work', 'group');
+        const workStyles = getComputedStyle(workEl);
+
+        if(workStyles.cssText !== '') {
+            log('workStyles: ', workStyles);
+            infoBox.style.cssText = workStyles.cssText;
+        } else {
+            log('workStyles2: ', workStyles);
+            const cssText = Array.from(workStyles).reduce(
+                (css, prop) => `${css}${prop}: ${workStyles.getPropertyValue(prop)};`,
+            )
+            log('cssText: ', cssText);
+            infoBox.style.cssText = cssText;
+        }
+        infoBox.style.cssText = JSON.stringify(getComputedStyle(workEl));
         workWrap.appendChild(infoBox);
 
         // Add the controls
