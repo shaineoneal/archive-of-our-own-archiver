@@ -1,0 +1,213 @@
+$border-color: rgb(218, 220, 224);
+$background-color: rgb(26, 115, 232);
+$disabled-background-color: rgb(118, 118, 118);
+$font-family: Roboto, system-ui, sans-serif;
+$loader-color: black;
+$loader-border-color: var(--color);
+
+h1 {
+    text-align: center;
+}
+
+main {
+    padding: 8px;
+}
+
+button {
+    grid-column: 1;
+    grid-row: 1;
+    font-family: $font-family;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    user-select: none;
+    background: $background-color;
+    color: white;
+    cursor: pointer;
+    display: block;
+    font-weight: 500;
+    text-align: center;
+    padding: 8px;
+    width: 100%;
+    font-size: 1rem;
+    text-decoration: none;
+
+    &:disabled {
+        display: none;
+    }
+
+    &:active,
+    &.visited {
+        background: $disabled-background-color;
+    }
+}
+
+a.no-underline {
+    text-decoration: none;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    height: 35px;
+    align-items: stretch;
+    margin-bottom: 8px;
+
+    .logo {
+        margin-right: 8px;
+    }
+
+    .back-icon,
+    .settings-icon {
+        flex: none;
+        margin-right: 8px;
+        color: $disabled-background-color;
+        width: 32px;
+        height: 32px;
+    }
+
+    .settings-icon {
+        flex-direction: column;
+        width: 24px;
+        height: 24px;
+        margin: auto;
+    }
+
+    .title {
+        flex: auto;
+        font-size: 1.25rem;
+        font-weight: 750;
+        margin: auto;
+    }
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.loggedOut,
+.login {
+    display: grid;
+    place-items: center;
+    transition: opacity 0.4s ease;
+    width: 100%;
+    height: 2.25rem;
+}
+
+.loader {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    width: 334px;
+    height: 39px;
+    place-items: center;
+    justify-content: center;
+
+    &::before,
+    &::after {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+    }
+
+    &::before {
+        width: 36px;
+        height: 36px;
+        border: 4px solid $loader-color;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: loader 1s linear infinite;
+    }
+
+    &::after {
+        width: 34px;
+        height: 34px;
+        border: 2px solid transparent;
+        border-top-color: $loader-border-color;
+        border-radius: 50%;
+        animation: loader 0.6s linear reverse infinite;
+    }
+
+    &.small {
+        &::before {
+            width: 24px;
+            height: 24px;
+        }
+
+        &::after {
+            width: 22px;
+            height: 22px;
+        }
+    }
+}
+
+@keyframes loader {
+    100% {
+        transform: rotate(1turn);
+    }
+}
+
+.toggle {
+    line-height: 1.286;
+    padding: 0.25em 0.75em;
+    border: 1px solid #222;
+    border-radius: 0.25em;
+    background: #555;
+    box-shadow: inset 0 -8px 4px #232323, inset 0 8px 7px #555;
+    cursor: pointer;
+
+    &:hover {
+        color: #999;
+        border-color: #000;
+        box-shadow: inset 2px 2px 2px #000;
+    }
+
+    &:active {
+        color: #fff;
+        box-shadow: inset 1px 1px 3px #333;
+        border-color: #fff;
+    }
+}
+
+#root {
+    width: 350px;
+}
+
+.status-read {
+    border-left-color: #FFFFFF !important;
+    border-left-width: 10px !important;
+}
+
+.blurb-info {
+    display: flex;
+    flex-direction: column;
+    text-align: end;
+    line-height: 1.286;
+
+    > p {
+        margin: 0;
+    }
+}
+
+.blurb-controls {
+    display: flex;
+}
+
+.work.index.group {
+    div.blurb-with-toggles {
+        .blurb-toggle {
+            padding: 0.3em 0.75em;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            line-height: 2.572;
+            top: 0.8px;
+            clip-path: inset(-3px -3px -1.5px -3px);
+        }
+        [role="article"] {
+            margin-top: 0;
+            clip-path: inset(0 -3px -3px -3px);
+        }
+    }
+}
