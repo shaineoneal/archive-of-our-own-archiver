@@ -1,9 +1,7 @@
 import { SessionUserStore, SyncUserStore } from "@/utils/zustand";
 import {
     addWorkToSheet,
-    createMessageHandlers,
     exchangeRefreshForAccessToken, getStore, getValidAccessToken, isAccessTokenValid,
-    MessageName,
     querySpreadsheet, removeStore,
     setStore,
     StoreMethod,
@@ -17,7 +15,7 @@ import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 
 let syncUser = SyncUserStore.getState().user;
 
-export async function handleTokenExchange<T>(refreshToken: string): Promise<MessageResponse<T>> {
+export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
     const {setAccessToken} = SyncUserStore.getState().actions;
     try {
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
@@ -26,14 +24,14 @@ export async function handleTokenExchange<T>(refreshToken: string): Promise<Mess
             setAccessToken(newAccessToken);
             await setAccessTokenCookie(newAccessToken);
             log('newAccessToken set');
-            return {response: true as unknown as T};
+            return true as unknown as T;
         } else {
             log('Error exchanging refresh token for access token');
-            return {response: false as unknown as T};
+            return false as unknown as T;
         }
     } catch (error) {
         log('Error exchanging refresh token for access token', error);
-        return {response: false as unknown as T};
+        return false as unknown as T;
     }
 }
 
