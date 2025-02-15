@@ -20,9 +20,9 @@ export default defineBackground(() => {
             log('access level set');
         });
 
-    onMessage('checkLogin', async () => {
+    onMessage('CheckLogin', async () => {
         // Called when the popup is opened
-        log('checkLogin message received');
+        log('CheckLogin message received');
         const {setAccessToken} = SyncUserStore.getState().actions;
         let syncUser = SyncUserStore.getState().user;
 
@@ -55,7 +55,7 @@ export default defineBackground(() => {
             return false;
         }
     });
-    onMessage('querySpreadSheet', async (msg) => {
+    onMessage('QuerySpreadSheet', async (msg) => {
         let syncUser = SyncUserStore.getState().user;
         log('syncUser', syncUser);
         const {setAccessToken} = SyncUserStore.getState().actions;
@@ -101,7 +101,7 @@ export default defineBackground(() => {
             throw new Error(error);
         }
     });
-    onMessage('addWorkToSpreadsheet', async (msg) => {
+    onMessage('AddWorkToSpreadsheet', async (msg) => {
         let sessionUser = SyncUserStore.getState().user;
         
              log('payload', msg);
