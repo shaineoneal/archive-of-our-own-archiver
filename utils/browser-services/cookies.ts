@@ -11,7 +11,7 @@ export async function setAccessTokenCookie(value: string) {
 
     //document.cookie = `accessToken=${value}; expires=${expirationDate.getTime() + 3600}; domain=archiveofourown.org; path=/`;
     // Set the access token cookie with a 30-second expiration
-chrome.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', value, expirationDate: expirationDate.getTime() })
+browser.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', value, expirationDate: expirationDate.getTime() })
 .then(cookie => console.log('cookie set: ', cookie));
 }
 
