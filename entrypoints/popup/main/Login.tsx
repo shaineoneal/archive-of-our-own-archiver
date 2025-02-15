@@ -1,6 +1,7 @@
-import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '../../../utils/chrome-services';
-import { log } from '../../../utils/logger';
-import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
+import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '../../../utils/browser-services';
+import { log } from '@/utils';
+import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
+import { sendMessage } from '@/utils/browser-services/messaging';
 
 
 /**
@@ -37,8 +38,17 @@ export const Login = () => {
                 const { access_token, refresh_token } = await requestAuthorization(flowResp);
             
                 //TODO: if no refresh token, fix it
+
+                // If the response has a refresh token, store the async login
+                // then send a message to the content script to update the login status
                 if (refresh_token) {
                     userStoreLogin( access_token, refresh_token );
+                    const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
+                    if(tabs) {
+                        tabs.forEach(tab => {
+                            sendMessage('loggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
+                        });
+                    }
                 } else {
                     userStoreLogin( access_token, undefined );
                     log("No refresh token found, revoking tokens");
