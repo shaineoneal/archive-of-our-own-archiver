@@ -51,7 +51,7 @@ export interface AuthFlowResponse {
 /**
  * Represents the response of an authentication request.
  * 
- * @property {string} access_token - Short lived token used to access Google APIs.
+ * @property {string} accessToken - Short lived token used to access Google APIs.
  * @property {number} expires_in - The number of seconds the access token is valid for.
  * @property {string} refresh_token - (optional) A long-lived token used to obtain new access tokens.
  * @property {string} scope - The scope of the access token.
