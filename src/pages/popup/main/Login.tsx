@@ -1,5 +1,5 @@
-import { chromeLaunchWebAuthFlow, requestAuthorization, revokeTokens, createSpreadsheet } from '../../../utils/chrome-services';
-import log from '../../../utils/logger';
+import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '../../../utils/chrome-services';
+import { log } from '../../../utils/logger';
 import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
 
 
@@ -27,29 +27,32 @@ export const Login = () => {
     const handleLogin = async () => {
         setLoader(true);    //show loader
 
-        // Launch the web authentication flow with interactive set to true
-        const flowResp = await chromeLaunchWebAuthFlow(true);
+        try {
 
-        // If the response has a URL and a code, request authorization
-        if (flowResp.url && flowResp.code) {
-            await requestAuthorization(flowResp).then(
-                async ({ access_token, refresh_token }) => {
-                    //TODO: if no refresh token, fix it
-                    if (refresh_token) {
-                        userStoreLogin( access_token, refresh_token );
-                    } else {
-                        userStoreLogin( access_token, undefined );
-                        log("No refresh token found, revoking tokens");
-                        await revokeTokens(access_token);
-                    }
-                    if (spreadsheetId === undefined){
-                        setSpreadsheetId(await createSpreadsheet(access_token));
-                    }
+            // Launch the web authentication flow with interactive set to true
+            const flowResp = await chromeLaunchWebAuthFlow(true);
+
+            // If the response has a URL and a code, request authorization
+            if (flowResp.url && flowResp.code) {
+                const { access_token, refresh_token } = await requestAuthorization(flowResp);
+            
+                //TODO: if no refresh token, fix it
+                if (refresh_token) {
+                    userStoreLogin( access_token, refresh_token );
+                } else {
+                    userStoreLogin( access_token, undefined );
+                    log("No refresh token found, revoking tokens");
+                    await revokeTokens(access_token);
                 }
-            );
+                if (!spreadsheetId){
+                    setSpreadsheetId(await createSpreadsheet(access_token));
+                }
+            }
+        } catch (error) {
+            log('Error in handleLogin: ', error);
+        } finally {
+            setLoader(false);   //hide loader
         }
-
-        setLoader(false);
     };
 
     return (

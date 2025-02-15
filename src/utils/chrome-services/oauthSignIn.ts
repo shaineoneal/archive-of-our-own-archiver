@@ -1,4 +1,4 @@
-import log from "../logger";
+import { log } from "../logger";
 import { HttpMethod, makeRequest } from './httpRequest';
 
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;

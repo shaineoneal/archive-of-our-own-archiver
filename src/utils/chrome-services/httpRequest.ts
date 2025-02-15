@@ -1,4 +1,4 @@
-import log from '../logger';
+import { log } from '../logger';
 
 /**
  * Represents the HTTP method for to use in the request.
