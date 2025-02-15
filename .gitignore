@@ -6,4 +6,4 @@ dist/**
 .vscode
 .vs
 /.output/
-.trunk/
+/.trunk
