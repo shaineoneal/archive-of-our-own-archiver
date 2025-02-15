@@ -46,7 +46,7 @@ export const Login = () => {
                     const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
                     if(tabs) {
                         tabs.forEach(tab => {
-                            sendMessage('loggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
+                            sendMessage('LoggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
                         });
                     }
                 } else {
