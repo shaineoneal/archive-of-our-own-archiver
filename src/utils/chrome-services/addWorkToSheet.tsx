@@ -1,7 +1,73 @@
 import { Ao3_BaseWork, BaseWork } from '../../pages/content-script';
-import log from '../logger';
+import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
+import { log } from '../logger';
 import { HttpMethod, makeRequest } from "./httpRequest";
 
+//TODO: currently hard coded for the first sheet, need to make it dynamic
+
+/**
+ * Represents a history entry.
+ */
+interface HistoryEntry {
+    action: string;
+    date: string;
+}
+
+/**
+ * Represents the request body for adding a work entry to the Google Sheets spreadsheet.
+ */
+interface RequestBody {
+    range: string;
+    majorDimension: string;
+    values: any[][];
+}
+
+/**
+ * Creates a history entry with the current date and action "added".
+ *
+ * @returns {HistoryEntry[]} - An array containing the history entry.
+ */
+const createHistoryEntry = (): HistoryEntry[] => {
+    const date = new Date();
+    const sheetDate = date.toLocaleString();
+    return [{
+        action: "added",
+        date: sheetDate,
+    }];
+};
+
+/**
+ * Creates the request body for adding a work entry to the Google Sheets spreadsheet.
+ *
+ * @param {Ao3_BaseWork} work - The work entry to be added.
+ * @param {HistoryEntry[]} history - The history entry.
+ * @param {User_BaseWork} defaultUserWork - The default user work entry.
+ * @returns {RequestBody} - The request body.
+ */
+const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultUserWork: User_BaseWork): RequestBody => ({
+    range: 'AccessWorks!A1',
+    majorDimension: 'ROWS',
+    values: [
+        [
+            '=ROW(INDIRECT("R[0]C[1]", FALSE))',
+            work.workId,
+            work.title,
+            work.authors.toString(),
+            work.fandoms.toString(),
+            work.relationships.toString(),
+            work.tags.toString(),
+            work.description,
+            work.wordCount,
+            work.chapterCount,
+            'read',     //TODO: change this to a variable
+            JSON.stringify(history),
+            defaultUserWork.personalTags?.toString() ?? '',
+            defaultUserWork.rating,
+            defaultUserWork.readCount,
+            defaultUserWork.skipReason?.toString() ?? ''
+        ]
+    ]
+});
 
 /**
  * Adds a work entry to a Google Sheets spreadsheet.
@@ -9,81 +75,47 @@ import { HttpMethod, makeRequest } from "./httpRequest";
  * @param {string} spreadsheetId - The URL of the Google Sheets spreadsheet.
  * @param {string} authToken - The authentication token for Google Sheets API.
  * @param {BaseWork} work - The work entry to be added to the spreadsheet.
- * @returns {Promise<boolean>} - A promise that resolves to true if the work entry was successfully added, otherwise throws an error.
+ * @returns {Promise<User_BaseWork>} - A promise that resolves to the added work entry.
  */
-//TODO: currently hard coded for the first sheet, need to make it dynamic
-export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<boolean> => {
+export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<User_BaseWork> => {
     log('addWorkToSheet', work);
     log('authToken', authToken);
     log('spreadsheetId', spreadsheetId);
 
-    const history = {
-        action: "added",
-        date: new Date().toLocaleString(),
-    }
+    // Create history entry and default user work
+    const history = createHistoryEntry();
+    const defaultUserWork = new User_BaseWork(work.workId);
 
+    // Make request to Google Sheets API
     const response = await makeRequest({
-        url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
+        url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/AccessWorks!A1:append?valueInputOption=USER_ENTERED&includeValuesInResponse=true`,
         method: HttpMethod.POST,
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
-        body: {
-            requests: [
-                {
-                    appendDimension: {
-                        sheetId: 0,
-                        dimension: 'ROWS',
-                        length: 1,
-                    }
-                },
-                {
-                    appendCells: {
-                        sheetId: 0,
-                        rows: [
-                            {
-                                values: [
-                                    { userEnteredValue: {formulaValue: '=ROW(INDIRECT("R[0]C[1]", FALSE))'}},                     //0
-                                    { userEnteredValue: {numberValue: work.workId}},                     //0
-                                    { userEnteredValue: {stringValue: work.title}},                      //1
-                                    { userEnteredValue: {stringValue: work.authors.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //2
-                                    { userEnteredValue: {stringValue: work.fandoms.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //3
-                                    { userEnteredValue: {stringValue: work.relationships.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //4
-                                    { userEnteredValue: {stringValue: work.tags.toString()},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //5
-                                    { userEnteredValue: {stringValue: work.description},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //6
-                                    {userEnteredValue: {numberValue: work.wordCount}},                   //7
-                                    {userEnteredValue: {numberValue: work.chapterCount}},
-                                    { userEnteredValue: {stringValue: "read"}},
-                                    { userEnteredValue: {stringValue: JSON.stringify(history)},
-                                        userEnteredFormat: {wrapStrategy: 'WRAP'} },                     //9
-                                ]
-                            },
-                        ],
-                        fields: '*',
-                    }
-                },
-                {
-                    autoResizeDimensions: {
-                        dimensions: {
-                            sheetId: 0,
-                            dimension: 'ROWS'
-                        }
-                    }
-                }
-            ],
-        }
+        body: createRequestBody(work, history, defaultUserWork)
     });
 
+    log('unparsed response', response);
     const parsedResponse = await response.json();
 
     log('addWorkToSheet', 'response', parsedResponse);
-    return response.ok;
-}
 
-    
+    // Handle potential authentication error
+    if (parsedResponse.error && parsedResponse.status === 'UNAUTHENTICATED') {
+        throw new Error('Error adding work to sheet: UNAUTHENTICATED');
+    }
+
+    // Return the added work entry
+    return new User_BaseWork(
+        parsedResponse.updates.updatedData.values[0][0],
+        parsedResponse.updates.updatedData.values[0][1],
+        parsedResponse.updates.updatedData.values[0][10],
+        parsedResponse.updates.updatedData.values[0][11],
+        [],
+        0,
+        1,
+        'read'
+    );
+};

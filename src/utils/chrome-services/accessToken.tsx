@@ -1,9 +1,49 @@
-import log from '../logger';
+import { log } from '../logger';
 import { HttpMethod, makeRequest } from './httpRequest';
 
 const { oauth2 } = chrome.runtime.getManifest();
 const client_secret = process.env.REACT_APP_CLIENT_SECRET;
-const redirectUri = chrome.identity.getRedirectURL();
+
+/**
+ * Makes a request to exchange the refresh token for an access token.
+ *
+ * @param {string} refreshT - The refresh token.
+ * @returns {Promise<Response>} - The response from the OAuth2 server.
+ */
+const requestAccessToken = (refreshT: string): Promise<Response> => {
+    if(!oauth2 || !client_secret) {
+        throw new Error('Invalid oauth2 configuration');
+    }
+    return makeRequest({
+        url: 'https://oauth2.googleapis.com/token',
+        method: HttpMethod.POST,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: {
+            client_id: oauth2.client_id,
+            client_secret: client_secret,
+            refresh_token: refreshT,
+            grant_type: 'refresh_token',
+        },
+    });
+};
+
+/**
+ * Parses the response from the OAuth2 server.
+ *
+ * @param {Response} response - The response from the OAuth2 server.
+ * @returns {Promise<string>} - The access token.
+ * @throws {Error} - Throws an error if the response is not ok or if there is an error parsing the response.
+ */
+const parseAccessTokenResponse = async (response: Response): Promise<string> => {
+    const parsedResponse = await response.json();
+    log('exchangeRefreshForAccessToken parsedResponse: ', parsedResponse);
+    if (!response.ok) {
+        throw new Error(parsedResponse.error);
+    }
+    return parsedResponse.access_token;
+};
 
 /**
  * Fetches a new access token using the OAuth2 refresh token.
@@ -25,27 +65,15 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         throw new Error('Error getting refresh token');
     }
 
-    const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com/token',
-        method: HttpMethod.POST,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: {
-            client_id: oauth2.client_id,
-            client_secret: client_secret,
-            refresh_token: refreshT,
-            grant_type: 'refresh_token',
-        },
-    });
-
+    const response = await requestAccessToken(refreshT);
     log('exchangeRefreshForAccessToken Response: ', response);
-    if (!response.ok) {
-        return undefined;
-    }
 
-    const parsedResponse = await response.json();
-    return parsedResponse.access_token;
+    try {
+        return await parseAccessTokenResponse(response);
+    } catch (error) {
+        log('Error parsing response: ', error);
+        throw new Error('Error exchanging refresh token for access token');
+    }
 }
 
 /**
@@ -53,26 +81,57 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
  *
  * @async
  * @param {string} token - The access token to validate.
- * @returns {Promise<string>} A promise that resolves with the token if it is valid.
- * @throws {Error} Throws an error if the token is invalid.
+ * @returns {Promise<boolean>} A promise that resolves with true if the token is valid, otherwise false.
+ * @throws {Error} Throws an error if there is an issue with the request.
  */
-export async function isAccessTokenValid(token: string): Promise<string> {
+export async function isAccessTokenValid(token: string): Promise<boolean> {
+    log('isAccessTokenValid token: ', token);
+
     if (token === '') {
-        throw new Error('Token is invalid');
+        return false;
     }
 
-    const response = await makeRequest({
-        url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-        method: HttpMethod.GET,
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+    try {
+        const response = await makeRequest({
+            url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
+            method: HttpMethod.GET,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            log('isAccessTokenValid data: ', data);
+            return data.aud === oauth2!.client_id;
         }
-    });
+    } catch (error) {
+        throw new Error('Error validating token');
+    }
+    return false;
+}
 
-    if (response.ok) {
-        return token;
+/**
+ * Retrieves a valid access token, either by validating the current one or exchanging the refresh token.
+ *
+ * @async
+ * @param {string} accessToken - The current access token.
+ * @param {string} refreshToken - The refresh token to exchange for a new access token if the current one is invalid.
+ * @returns {Promise<string>} A promise that resolves with a valid access token.
+ * @throws {Error} Throws an error if unable to retrieve a valid access token.
+ */
+export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
+    log('Checking access token validity:', accessToken);
+    if (await isAccessTokenValid(accessToken)) {
+        log('Access token is valid');
+        return accessToken;
     } else {
-        throw new Error('Token is invalid');
+        log('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
+        if (newAccessToken) {
+            log('New access token obtained:', newAccessToken);
+            return newAccessToken;
+        } else {
+            throw new Error('Unable to retrieve a valid access token');
+        }
     }
 }

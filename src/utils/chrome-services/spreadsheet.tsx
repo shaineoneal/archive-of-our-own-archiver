@@ -1,5 +1,4 @@
-import log from '../logger';
-import {HttpMethod, makeRequest} from "./httpRequest";
+import { log } from '../logger';
 
 export async function createSpreadsheet(token: string) {
 
@@ -181,10 +180,10 @@ const sheetLayout = {
     ],
     sheets: {
         properties: {
-            title: 'Access Works',
+            title: 'AccessWorks',
             sheetId: 0,
             gridProperties: {
-                rowCount: 1,
+                rowCount: 2,
                 columnCount: 16,
                 columnGroupControlAfter: true,
             }
@@ -332,6 +331,26 @@ const sheetLayout = {
                             },
                         ],
                     },
+                    {
+                        values: [
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                        ]
+                    }
                 ],
             },
             { startColumn: 1, columnMetadata: { pixelSize: 100 } }, //work ID
