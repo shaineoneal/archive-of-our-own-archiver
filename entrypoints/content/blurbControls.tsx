@@ -41,14 +41,11 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): vo
         const workStyles = getComputedStyle(workEl);
 
         if(workStyles.cssText !== '') {
-            log('workStyles: ', workStyles);
             infoBox.style.cssText = workStyles.cssText;
         } else {
-            log('workStyles2: ', workStyles);
             const cssText = Array.from(workStyles).reduce(
                 (css, prop) => `${css}${prop}: ${workStyles.getPropertyValue(prop)};`,
             )
-            log('cssText: ', cssText);
             infoBox.style.cssText = cssText;
         }
         infoBox.style.cssText = JSON.stringify(getComputedStyle(workEl));
@@ -69,17 +66,23 @@ export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): vo
  */
 export function addWorkControl(workWrap: Element): HTMLElement {
     const innerToggle = document.createElement('a');
+    const work = workWrap.querySelector("li[id*='work_']") as Element;
+    const workId = work.id.split('_')[1];
     innerToggle.textContent = 'Add Work';
     innerToggle.className = 'toggle';
 
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('addWork clicked!: ', workWrap);
+        log('addWork clicked!: ', work);
 
-        const workBlurb = Ao3_BaseWork.createWork(workWrap);
+        const workBlurb = Ao3_BaseWork.createWork(work);
         log('workBlurb: ', workBlurb);
 
+        sendMessage('addWorkToSpreadsheet', workBlurb).then((response: User_BaseWork) => {
+            log('content script response: ', response);
+            changeBlurbStyle(WorkStatus.Read, workWrap);
+        });
         //sendMessage(
         //    MessageName.AddWorkToSheet,
         //    { work: workBlurb },
@@ -140,20 +143,13 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
  */
 export function addControls(workWrap: Element): Node {
 
-    const work = workWrap.querySelector('.work') as Element;
+    const work = workWrap.querySelector("li[id*='work_']") as Element;
+    log('work: ', work);
     const workId = work.id.split('_')[1];
 
-    const controls = document.createElement('div');
-    controls.className = 'blurb-controls';
-    chrome.storage.session.get(workId, (result) => {
-        if (!result[workId]) {
-            controls.appendChild(addWorkControl(workWrap));
-        } else {
-            log(`Entry found for workId: ${workId}`, result[workId]);
-            controls.appendChild(incrementReadCountControl(workWrap));
-            controls.appendChild(removeWorkControl(workWrap));
-        }
-    });
+    const controls = document.createElement('ul');
+    controls.className = 'blurb-controls actions';
+    try {
         browser.storage.session.get(workId, (result) => {
             if (result && result[workId]) {
                 log(`Entry found for workId: ${workId}`, result[workId]);
@@ -163,6 +159,9 @@ export function addControls(workWrap: Element): Node {
                 controls.appendChild(addWorkControl(workWrap));
             }
         });
+    } catch (error) {
+        log('Error getting workId from session storage: ', error);
+    }
 
     return controls as Node;
 }

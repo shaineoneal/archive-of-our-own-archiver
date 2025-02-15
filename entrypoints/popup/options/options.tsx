@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import '../../styles.css';
+import '../../styles.scss';
 import { log } from '@/utils';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';

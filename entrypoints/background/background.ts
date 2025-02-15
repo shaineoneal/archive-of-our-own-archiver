@@ -7,14 +7,13 @@ import {
     querySpreadsheet, removeStore,
     setStore,
     StoreMethod,
-} from "../../utils/browser-services";
+} from "@/utils/browser-services";
 import { compareArrays } from "@/utils/compareArrays.ts";
 import { User_BaseWork } from "@/entrypoints/content";
 import { MessageResponse } from "@/utils/types/MessageResponse"; // Ensure this import is present
 import { removeWorkFromSheet } from "@/utils/browser-services/removeWorkFromSheet.ts";
 import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
 import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
-import { log } from "@/utils/logger.ts";
 
 let syncUser = SyncUserStore.getState().user;
 
