@@ -1,7 +1,6 @@
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
-// @ts-ignore
 import { addBlurbControls } from './blurbControls.tsx';
 import { changeBlurbStyle } from './changeBlurbStyle.tsx';
 import { WorkStatus } from "@/utils/types/data.ts";
@@ -41,9 +40,11 @@ export async function standardBlurbsPage() {
     //    log('Error querying spreadsheet: ', resp.error);
     //    return;
     //}
-    else { await injectWorkStatuses(worksOnPage, resp);
-    log('Injected work statuses.');
-    addBlurbControls(worksOnPage, resp);}
+    else {
+        await injectWorkStatuses(worksOnPage, resp);
+        log('Injected work statuses.');
+        addBlurbControls(worksOnPage, resp);
+    }
     //sendMessage(
     //    MessageName.QuerySpreadsheet,
     //    { list: searchList },
@@ -80,7 +81,7 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
                 const workId = (worksOnPage[index] as Element).id.split('_')[1]
                 browser.storage.session.get(workId, (result) => {
                     log('session result: ', result);
-                    if (result[workId].status === WorkStatus.Read) {
+                    if (result[workId] && result[workId].status === WorkStatus.Read) {
                         changeBlurbStyle(WorkStatus.Read, (worksOnPage[index].parentNode!));
                     }
                 });

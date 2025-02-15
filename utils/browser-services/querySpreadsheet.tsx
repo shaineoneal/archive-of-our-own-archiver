@@ -13,7 +13,7 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
         }
     })
 
-    return parseResponse(response);
+    return await parseResponse(response);
 }
 
 function createEncodedQuery(searchList: number[]): string {

@@ -4,6 +4,7 @@ $disabled-background-color: rgb(118, 118, 118);
 $font-family: Roboto, system-ui, sans-serif;
 $loader-color: black;
 $loader-border-color: var(--color);
+$read-status-color: #5998d6;
 
 h1 {
     text-align: center;
@@ -174,7 +175,6 @@ a.no-underline {
 }
 
 .status-read {
-    border-left-color: #FFFFFF !important;
     border-left-width: 10px !important;
 }
 
@@ -189,13 +189,10 @@ a.no-underline {
     }
 }
 
-.blurb-controls {
-    display: flex;
-}
 
 .work.index.group {
     div.blurb-with-toggles {
-        .blurb-toggle {
+        li.blurb-toggle {
             padding: 0.3em 0.75em;
             margin: 0;
             display: flex;
@@ -204,6 +201,27 @@ a.no-underline {
             line-height: 2.572;
             top: 0.8px;
             clip-path: inset(-3px -3px -1.5px -3px);
+
+            div.blurb-info {
+                display: flex;
+                flex-direction: column;
+                text-align: end;
+                line-height: 1.286;
+
+                > p {
+                    margin: 0;
+                    position: static;
+                }
+
+            }
+
+            .blurb-controls {
+                position: static;
+            }
+
+            &::after {
+                 position: absolute;
+             }
         }
         [role="article"] {
             margin-top: 0;
