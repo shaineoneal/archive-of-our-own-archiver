@@ -19,7 +19,7 @@ export const enum StoreMethod {
  * @returns The result of the storage operation.
  */
 function handleStore(method: StoreMethod, action: 'set' | 'get' | 'remove', key: string, value?: any): any {
-    const storage = (chrome.storage as any)[method.toLowerCase()];
+    const storage = (browser.storage as any)[method.toLowerCase()];
     const callback = (data?: any) => {
         log(`${method} ${action}: `, key, data || value);
         return data;
