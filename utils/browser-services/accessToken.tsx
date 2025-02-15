@@ -1,5 +1,7 @@
 import { log } from '@/utils/logger.ts';
 import { HttpMethod, makeRequest } from './httpRequest.ts';
+import { SyncUserStore } from "@/utils/zustand";
+import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
@@ -135,5 +137,25 @@ export async function getValidAccessToken(accessToken: string, refreshToken: str
         } else {
             throw new Error('Unable to retrieve a valid access token');
         }
+    }
+}
+
+export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
+    const {setAccessToken} = SyncUserStore.getState().actions;
+    try {
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
+        log('newAccessToken', newAccessToken);
+        if (newAccessToken) {
+            setAccessToken(newAccessToken);
+            await setAccessTokenCookie(newAccessToken);
+            log('newAccessToken set');
+            return true as unknown as T;
+        } else {
+            log('Error exchanging refresh token for access token');
+            return false as unknown as T;
+        }
+    } catch (error) {
+        log('Error exchanging refresh token for access token', error);
+        return false as unknown as T;
     }
 }
