@@ -154,6 +154,15 @@ export function addControls(workWrap: Element): Node {
             controls.appendChild(removeWorkControl(workWrap));
         }
     });
+        browser.storage.session.get(workId, (result) => {
+            if (result && result[workId]) {
+                log(`Entry found for workId: ${workId}`, result[workId]);
+                controls.appendChild(incrementReadCountControl(workWrap));
+                controls.appendChild(removeWorkControl(workWrap));
+            } else {
+                controls.appendChild(addWorkControl(workWrap));
+            }
+        });
 
     return controls as Node;
 }
