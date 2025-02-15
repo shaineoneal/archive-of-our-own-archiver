@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { PopupBody } from './main/popup_body.tsx';
 import { useUser } from '@/utils/zustand';
 import { OptionsIcon } from './main/optionsIcon.tsx';
-import '../styles.css';
+import '../styles.scss';
 
 
 

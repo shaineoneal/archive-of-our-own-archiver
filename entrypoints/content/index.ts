@@ -12,6 +12,5 @@ export default defineContentScript({
         console.log('content script running');
         chrome.runtime.onMessage.addListener(messageListener);
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        contentScriptMain();
     },
 });
