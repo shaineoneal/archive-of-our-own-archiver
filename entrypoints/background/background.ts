@@ -40,7 +40,7 @@ export function main() {
     /* createMessageHandlers({
          // Called when the popup is opened
          [MessageName.CheckLogin]: async (): Promise<MessageResponse<boolean>> => {
-             log('checkLogin message received');
+             log('CheckLogin message received');
              const {setAccessToken} = SyncUserStore.getState().actions;
              log('syncUser', syncUser);
              if (syncUser.isLoggedIn && syncUser.refreshToken) {
