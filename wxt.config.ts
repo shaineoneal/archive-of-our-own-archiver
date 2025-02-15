@@ -13,7 +13,7 @@ export default defineConfig({
                 'https://www.googleapis.com/auth/userinfo.profile']
         },
         key: '***REMOVED***',
-        permissions: ['webRequest', 'identity', 'storage', 'scripting', 'identity.email', 'activeTab'],
+        permissions: ['webRequest', 'identity', 'storage', 'scripting', 'identity.email', 'activeTab', 'cookies'],
         host_permissions: ['*://*.archiveofourown.org/*', 'https://docs.google.com/spreadsheets/*', '*://*.google.com/'],
         options_ui: {
             page: "options.html",
