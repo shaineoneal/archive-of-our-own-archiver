@@ -15,26 +15,6 @@ import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 
 let syncUser = SyncUserStore.getState().user;
 
-export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
-    const {setAccessToken} = SyncUserStore.getState().actions;
-    try {
-        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
-        log('newAccessToken', newAccessToken);
-        if (newAccessToken) {
-            setAccessToken(newAccessToken);
-            await setAccessTokenCookie(newAccessToken);
-            log('newAccessToken set');
-            return true as unknown as T;
-        } else {
-            log('Error exchanging refresh token for access token');
-            return false as unknown as T;
-        }
-    } catch (error) {
-        log('Error exchanging refresh token for access token', error);
-        return false as unknown as T;
-    }
-}
-
 export function main() {
 
     /* createMessageHandlers({
