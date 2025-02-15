@@ -19,7 +19,7 @@ const STATUS_CLASSES = {
  */
 export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
     const wrapEl = workWrap as Element;
-    const work = wrapEl.querySelector('.work');
+    const work = wrapEl.querySelector("li[id*='work_']");
     const workEl = work as Element;
     const toggleEl = wrapEl.querySelector('.blurb-toggle') as Element;
 
