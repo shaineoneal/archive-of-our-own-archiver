@@ -78,7 +78,7 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
             log('workRef: ', workRef)
             if (workRef) {
                 const workId = (worksOnPage[index] as Element).id.split('_')[1]
-                chrome.storage.session.get(workId, (result) => {
+                browser.storage.session.get(workId, (result) => {
                     log('session result: ', result);
                     if (result[workId].status === WorkStatus.Read) {
                         changeBlurbStyle(WorkStatus.Read, (worksOnPage[index].parentNode!));
