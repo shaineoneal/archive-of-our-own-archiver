@@ -5,8 +5,6 @@ import { useUser } from '@/utils/zustand';
 import { OptionsIcon } from './main/optionsIcon.tsx';
 import '../styles.scss';
 
-
-
 /**
  * The popup component.
  * This component will display either a login or the GoToSheet component based on the user's login status.
@@ -25,7 +23,6 @@ const Popup = () => {
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
     }, [user]);
-
 
     return (
         <>

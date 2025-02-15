@@ -30,7 +30,7 @@ export async function standardBlurbsPage() {
 
 
     const resp = await sendMessage('querySpreadSheet', searchList);
-    log('querySpreadSheet response: ', resp);
+    log('QuerySpreadSheet response: ', resp);
     if (resp.length == 0) {
         log('No work statuses to inject.')
         addBlurbControls(worksOnPage, []);
