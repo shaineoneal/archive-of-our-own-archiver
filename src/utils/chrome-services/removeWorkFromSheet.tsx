@@ -1,5 +1,4 @@
-import { Ao3_BaseWork, BaseWork } from '../../pages/content-script';
-import log from '../logger';
+import { log } from "../logger";
 import { HttpMethod, makeRequest } from "./httpRequest";
 
 
@@ -42,8 +41,10 @@ export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string
         }
     });
 
+    log('unparsed response', response);
     const parsedResponse = await response.json();
 
     log('removeWorkFromSheet', 'response', parsedResponse);
+    // If the response is ok, return void, otherwise return false
     return response.ok;
 }
