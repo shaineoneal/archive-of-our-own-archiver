@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '../../../utils/chrome-services';
-import { GoToSheet, Login } from './';
-import log from '../../../utils/logger';
+import { log } from '../../../utils/logger';
 import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
+import { GoToSheet, Login } from './';
 
 
 /**
@@ -18,40 +18,58 @@ import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
  */
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
-    const user = useUser();
-    const { setAccessToken, setIsLoggedIn } = useActions();
+    let user = useUser();
+    const { setAccessToken, setIsLoggedIn, logout } = useActions();
 
     useEffect(() => {
         (async () => {
-            if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
+            if (user.refreshToken && !user.accessToken) {
+                log('User has a refresh token but no access token');
+
+                try {
+                    // If the user has a refresh token but no access token, exchange the refresh token for an access token
+                    const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                    if (!newAccessToken) {
+                        logout();
+                        return;
+                    }
+                    setAccessToken(newAccessToken);
+                } catch (e) {
+                    log('Error exchanging refresh token for access token', e);
+                    logout();
+                    return;
+                } finally {
+                    setLoader(false);
+                }
+
+            } else if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
                 // If the user is not logged in, set the loader to false and return
                 setLoader(false);
                 return;
             }
-
-            try {
-                // Check if the access token is valid
-                await isAccessTokenValid(user.accessToken);
-            } catch (error) {
-                // If there is an error, exchange the refresh token for an access token
+            // Check if the access token is valid
+            if (user.accessToken && !await isAccessTokenValid(user.accessToken)) {
+                log('Access token is invalid');
                 if (user.refreshToken) {
-                    const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
-                    if (newAccessToken === undefined) {
-                        // If the new access token is undefined, log them out
-                        setAccessToken(undefined);
-                        setIsLoggedIn(false);
-                    }
-                    if (newAccessToken !== user.accessToken) {
-                        // If the new access token is different from the current one, update the access token
+                    try {
+                        // If the access token is invalid, exchange the refresh token for a new access token
+                        const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                        if (!newAccessToken) {
+                            logout();
+                            return;
+                        }
                         setAccessToken(newAccessToken);
+                    } catch (e) {
+                        log('Error exchanging refresh token for access token', e);
+                        logout();
+                        return;
                     }
+
                 } else {
-                    log('User does not have a refresh token');
-                    // If the user does not have a refresh token, log them out
-                    setAccessToken(undefined);
+                    logout();
+                    return;
                 }
-            }
-            // Set the loader to false
+            } else log ('Access token is valid');
             setLoader(false);
         })();
     }, [user]);

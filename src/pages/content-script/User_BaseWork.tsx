@@ -3,20 +3,30 @@ import { Ao3_BaseWork } from "./Ao3_BaseWork";
 import { BaseWork } from "./BaseWork";
 import { querySpreadsheet } from "../../utils/chrome-services";
 
+const defaultHistory: [HistoryEntry] = [{
+    action: 'Added',
+    date: new Date().toLocaleString()
+}];
+
+interface HistoryEntry {
+    action: string;
+    date: string;
+}
+
 export class User_BaseWork extends BaseWork {
     index: number;
     status: WorkStatus;
-    history: string;        //TODO: change to array of updates
+    history: [HistoryEntry];
     personalTags?: string[];
     rating: number;
     readCount: number;
     skipReason?: string;
 
-    constructor(index: number, workId: number, status: WorkStatus, history: string, personalTags: string[], rating: number, readCount: number, skipReason: string) {
+    constructor(workId: number, index?: number, status?: WorkStatus, history?: [HistoryEntry], personalTags?: string[], rating?: number, readCount?: number, skipReason?: string) {
         super(workId);
         this.index = index ?? 0;
         this.status = status ?? WORK_STATUSES["read"];
-        this.history = history ?? '';
+        this.history = history ?? defaultHistory;
         this.personalTags = personalTags ?? [];
         this.rating = rating ?? 0;
         this.readCount = readCount ?? 1;
@@ -28,7 +38,7 @@ export class User_BaseWork extends BaseWork {
             0,
             workId,
             WORK_STATUSES["read"],
-            '',
+            defaultHistory,
             [],
             0,
             0,

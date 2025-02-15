@@ -1,4 +1,4 @@
-import log from './logger';
+import { log } from './logger';
 /**
  * Compares two arrays and returns a boolean array indicating which elements in the search list are found in the response.
  *
@@ -19,7 +19,6 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
 
     searchList.forEach((searchItem) => {
         response.forEach((responseItem) => {
-            log('searchItem', searchItem, 'responseItem', responseItem.c[1].v);
             if (searchItem === responseItem.c[1].v) {
                 boolArray[searchList.indexOf(searchItem)] = true;
                 response.splice(response.indexOf(responseItem), 1);
