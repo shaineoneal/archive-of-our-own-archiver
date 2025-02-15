@@ -3,6 +3,7 @@ import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
+import { SyncUserStore } from "@/utils/zustand";
 
 // Interface for message structure
 interface Message {
@@ -85,27 +86,9 @@ function disconnectContentScript(): void {
 }
 
 // Main function to initialize the content script
-export function main(): void {
+export async function main() {
     log('log: content_script.tsx loaded');
     const resp = await sendMessage('checkLogin', undefined);
-    //initializePort();
-    //sendMessage(
-    //    MessageName.CheckLogin,
-    //    {},
-    //    (response: MessageResponse<boolean>) => {
-    //        if (response.error) {
-    //            log('checkLogin error: ', response.error);
-    //        } else {
-    //            log('checkLogin response: ', response.response);
-    //            if (response.response) {
-    //                log('user is logged in');
-    //                pageTypeDetect();
-    //            } else {
-    //                log('user is not logged in');
-    //            }
-    //        }
-    //    }
-    //);
     if(resp) {
         log('user is logged in');
         pageTypeDetect();
@@ -116,7 +99,17 @@ export function main(): void {
 
 // Add event listeners
 chrome.runtime.onMessage.addListener(messageListener);
-document.addEventListener('visibilitychange', handleVisibilityChange);
-
+//document.addEventListener('visibilitychange', handleVisibilityChange);
+const { userStoreLogin } = SyncUserStore.getState().actions;
+// sent from popup/login.tsx
+onMessage('loggedIn', (data) => {
+    log('logged in message received', data);
+    if (data.data.accessToken && data.data.refreshToken) {
+        log('storing tokens');
+        //userStoreLogin(data.data.accessToken, data.data.refreshToken);
+    }
+    //log('userStoreLogin done', SyncUserStore.getState().user);
+    pageTypeDetect();
+});
 // Execute the main function
 main();
