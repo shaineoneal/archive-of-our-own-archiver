@@ -1,9 +1,8 @@
 import { create, useStore } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 import { getStore, removeStore, setStore, StoreMethod } from "../chrome-services";
-import { omit } from "remeda";
-import log from "../logger";
-import {useStoreWithEqualityFn} from "zustand/traditional";
+import { omit } from "lodash";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
@@ -56,10 +55,7 @@ export const SyncUserStore = create<UserStoreType>()(
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
                 userStoreLogin: async ( accessToken, refreshToken ) => {
-                    const { setAccessToken, setRefreshToken } = get().actions;
-                    set({ user: { ...get().user, isLoggedIn: true } });
-                    setAccessToken(accessToken);
-                    setRefreshToken(refreshToken);
+                    set({ user: { ...get().user, isLoggedIn: true, accessToken: accessToken, refreshToken: refreshToken } });
                 },
                 logout: () => {
                     set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined, isLoggedIn: false } });
@@ -126,7 +122,6 @@ export type ExtractState<S> = S extends {
     }
     ? T
     : never;
-    type Params<U> = Parameters<typeof useStore<typeof SyncUserStore, U>>;
 
 const userSelector = (state: ExtractState<typeof SyncUserStore>) => state.user;
 const actionsSelector = (state: ExtractState<typeof SyncUserStore>) => state.actions;

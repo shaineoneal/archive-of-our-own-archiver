@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { useUser } from '../../../utils/zustand';
+import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import { NewSheet, Logout } from './';
-import { createRoot } from 'react-dom/client';
 import '../../../styles.css';
-import log from '../../../utils/logger';
+import { log } from '../../../utils/logger';
+import { SyncUserStore, useActions } from '../../../utils/zustand';
+import { Logout, NewSheet } from './';
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
@@ -15,8 +15,14 @@ export function openOptionsPage() {
  * @returns the Options component
  */
 const Options =  () => {
-    let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${useUser().spreadsheetId}`;
 
+    let { setSpreadsheetId } = useActions();
+    let { spreadsheetId } = SyncUserStore.getState().user;
+    let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+
+    useEffect(() => {
+        spreadsheetId = SyncUserStore.getState().user.spreadsheetId;
+    }, [spreadsheetId]);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(\/|$)/;
@@ -25,7 +31,8 @@ const Options =  () => {
         log('match: ', match);
         if(match && match[1]) {
             const spreadsheetId = match[1];
-            log('spreadsheetId: ', spreadsheetId);
+            log('new spreadsheetId: ', spreadsheetId);
+            setSpreadsheetId(spreadsheetId);
             //TODO: set spreadsheetId
         } else {
             //TODO: handle invalid url

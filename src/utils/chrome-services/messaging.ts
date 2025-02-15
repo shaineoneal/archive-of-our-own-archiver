@@ -1,20 +1,32 @@
-import { Ao3_BaseWork, BaseWork } from "../../pages/content-script";
-import log from "../logger";
+import { Ao3_BaseWork } from "../../pages/content-script";
+import { User_BaseWork } from "../../pages/content-script/User_BaseWork";
+import { log } from "../logger";
+import { MessageResponse } from "../types/MessageResponse";
 
 let port: chrome.runtime.Port | null = null;
 
-// Initializes the port in the content script
+/**
+ * Initializes the persistent port for communication with the background script.
+ * If the port is already initialized, it does nothing.
+ */
 export const initializePort = () => {
     console.log("Initializing port...");
     if (!port) {
         port = chrome.runtime.connect({ name: "persistent-port" });
 
         port.onDisconnect.addListener(() => {
-            console.log("Port disconnected. Reinitializing...");
+            log("Port disconnected.");
             port = null;
         });
     }
 };
+
+export const closePort = () => {
+    if (port) {
+        port.disconnect();
+        port = null;
+    }
+}
 
 /**
  * Enum of message names.
@@ -27,6 +39,8 @@ export enum MessageName {
     GetAccessToken = 'getAccessToken',
     QuerySpreadsheet = 'querySpreadsheet',
     RemoveWorkFromSheet = 'removeWorkFromSheet',
+    RefreshAccessToken = 'refreshAccessToken',
+    UpdateWorkInSheet = 'updateWorkInSheet',
 }
 
 /**
@@ -52,31 +66,39 @@ interface Messages extends Partial<Record<MessageName, Message>> {
         payload: {
             work: Ao3_BaseWork;
         };
-        response: boolean;
+        response: MessageResponse<User_BaseWork>;
     };
     [MessageName.CheckLogin]: {
         payload: {};
-        response: {
-            status: boolean;
-        };
+        response: MessageResponse<boolean>;
     }
     [MessageName.GetAccessToken]: {
         payload: {
             reason: string;
         };
-        response: string;
+        response: MessageResponse<string>;
     };
     [MessageName.QuerySpreadsheet]: {
         payload: {
             list: number[];
         };
-        response: boolean[];
+        response: MessageResponse<boolean[]>;
     };
     [MessageName.RemoveWorkFromSheet]: {
         payload: {
             workId: number;
         };
-        response: false | void;
+        response: MessageResponse<boolean>;
+    };
+    [MessageName.RefreshAccessToken]: {
+        payload: {};
+        response: MessageResponse<string>;
+    };
+    [MessageName.UpdateWorkInSheet]: {
+        payload: {
+            work: User_BaseWork;
+        };
+        response: MessageResponse<boolean>;
     };
 }
 
@@ -101,7 +123,7 @@ type MessagePayload<T extends MessageTypes> = Messages[T]['payload']
  * Used to infer the type of the response parameter in sendMessage and receiveMessage.
  * @param T - The message name.
  */
-type MessageResponse<T extends MessageTypes> = Messages[T]['response']
+type MessageResponseType<T extends MessageTypes> = Messages[T]['response']
 
 /**
  * Type representing the callback of a message.
@@ -109,7 +131,7 @@ type MessageResponse<T extends MessageTypes> = Messages[T]['response']
  * Used to infer the type of the callback parameter in sendMessage and receiveMessage.
  * @param T - The message name.
  */
-type MessageCallback<T extends MessageTypes> = (response: MessageResponse<T>) => void;
+type MessageCallback<T extends MessageTypes> = (response: MessageResponseType<T>) => void;
 
 /**
  * Sends a message to the background script.
@@ -119,7 +141,7 @@ type MessageCallback<T extends MessageTypes> = (response: MessageResponse<T>) =>
  * @param payload - The data to send in the message.
  * @param callback - A function that processes the response.
  */
-export const  sendMessage = <T extends MessageTypes>(
+export const sendMessage = <T extends MessageTypes>(
     name: T,
     payload: MessagePayload<T>,
     callback: MessageCallback<T>,
@@ -128,20 +150,18 @@ export const  sendMessage = <T extends MessageTypes>(
         console.error('Port not initialized');
         return;
     }
-    port.postMessage( { name, payload } );
+    port.postMessage({ name, payload });
 
-    //Listen for a single response
-    const onResponse = (response: MessageResponse<T>) => {
+    // Listen for a single response
+    const onResponse = (response: MessageResponseType<T>) => {
         callback(response);
         port?.onMessage.removeListener(onResponse);
     }
     port.onMessage.addListener(onResponse);
 };
 
-
-
 export const createMessageHandlers = (handlers: {
-    [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponse<K>>;
+    [K in MessageTypes]?: (payload: MessagePayload<K>) => Promise<MessageResponseType<K>>;
 }): void => {
     chrome.runtime.onConnect.addListener((port) => {
         port.onMessage.addListener(async (message) => {
@@ -155,7 +175,7 @@ export const createMessageHandlers = (handlers: {
 
             try {
                 const response = await handler(payload);
-                port.postMessage( response );
+                port.postMessage(response);
             } catch (error) {
                 port.postMessage({ error });
             }

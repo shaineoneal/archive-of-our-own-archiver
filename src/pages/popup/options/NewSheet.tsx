@@ -1,7 +1,5 @@
 import { createSpreadsheet } from '../../../utils/chrome-services';
-import { useActions, useLoaderStore, useUser } from '../../../utils/zustand';
-import { useEffect } from "react";
-import log from "../../../utils/logger";
+import { SyncUserStore, useActions, useLoaderStore } from '../../../utils/zustand';
 
 /**
  * Component for creating a new Google Sheet.
@@ -13,23 +11,26 @@ import log from "../../../utils/logger";
  */
 export const NewSheet = () => {
     const { loader, setLoader } = useLoaderStore();
-    const { accessToken, spreadsheetId } = useUser();
+    let { accessToken, spreadsheetId } = SyncUserStore.getState().user;
     const setSpreadsheetId = useActions().setSpreadsheetId;
 
     if (accessToken === undefined) {
         return null;
     }
 
+
     /**
      * Handles the creation of a new Google Sheet.
      * Sets the loader state to true while the spreadsheet is being created.
      * Stores the spreadsheet URL in Chrome's sync storage.
+     * updates the url in the options page.
      */
     const handleNewSheet = async () => {
         setLoader(true);
         const id = await createSpreadsheet(accessToken)
         if (id) {
             setSpreadsheetId(id);
+
         }
         setLoader(false);
     };
