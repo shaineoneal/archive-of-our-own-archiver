@@ -79,7 +79,7 @@ export function addWorkControl(workWrap: Element): HTMLElement {
         const workBlurb = Ao3_BaseWork.createWork(work);
         log('workBlurb: ', workBlurb);
 
-        sendMessage('addWorkToSpreadsheet', workBlurb).then((response: User_BaseWork) => {
+        sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: User_BaseWork) => {
             log('content script response: ', response);
             changeBlurbStyle(WorkStatus.Read, workWrap);
         });
