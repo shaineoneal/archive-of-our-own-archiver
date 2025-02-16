@@ -102,7 +102,7 @@ chrome.runtime.onMessage.addListener(messageListener);
 //document.addEventListener('visibilitychange', handleVisibilityChange);
 const { userStoreLogin } = SyncUserStore.getState().actions;
 // sent from popup/login.tsx
-onMessage('loggedIn', (data) => {
+onMessage('LoggedIn', (data) => {
     log('logged in message received', data);
     if (data.data.accessToken && data.data.refreshToken) {
         log('storing tokens');
