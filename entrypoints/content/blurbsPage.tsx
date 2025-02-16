@@ -29,7 +29,7 @@ export async function standardBlurbsPage() {
 
 
 
-    const resp = await sendMessage('querySpreadSheet', searchList);
+    const resp = await sendMessage('QuerySpreadSheet', searchList);
     log('QuerySpreadSheet response: ', resp);
     if (resp.length == 0) {
         log('No work statuses to inject.')
