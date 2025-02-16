@@ -180,7 +180,7 @@ export function addInfo(work: Element): Node {
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
-    chrome.storage.session.get(workId, (result) => {
+    browser.storage.session.get(workId, (result) => {
         log('result from session store: ', result);
         const userWork = result[workId];
         log('userWork: ', userWork);
@@ -232,7 +232,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
         const aWork = Ao3_BaseWork.createWork(workWrap);
         const workId = `${aWork.workId}`;
 
-        chrome.storage.session.get(workId, (result) => {
+        browser.storage.session.get(workId, (result) => {
             if (!result[workId]) {
                 return;
             }
