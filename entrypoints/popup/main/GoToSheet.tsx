@@ -6,7 +6,7 @@
  */
 export const GoToSheet = (props: { spreadsheetId: string }) => {
     const handleGoToSheet = () => {
-        chrome.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0` });
+        browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0` });
     };
 
     return (
