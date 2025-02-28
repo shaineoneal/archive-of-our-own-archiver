@@ -1,4 +1,3 @@
-import { log } from "@/utils/logger.ts";
 import { HttpMethod, makeRequest } from "./httpRequest.ts";
 
 /**
@@ -11,7 +10,7 @@ import { HttpMethod, makeRequest } from "./httpRequest.ts";
  * @see {@link https://www.xiegerts.com/post/chrome-extension-google-oauth-refresh-token/}
  */
 export async function revokeTokens(accessToken: string): Promise<void> {
-    log('revokeTokens accessToken', accessToken);
+    console.log('revokeTokens accessToken', accessToken);
 
     await makeRequest({
         url: `https://oauth2.googleapis.com/revoke?token=${accessToken}`,

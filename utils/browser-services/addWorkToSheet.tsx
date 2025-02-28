@@ -1,6 +1,5 @@
 import { Ao3_BaseWork, BaseWork } from '@/entrypoints/content';
 import { User_BaseWork } from "@/entrypoints/content/User_BaseWork.tsx";
-import { log } from '@/utils/logger.ts';
 import { HttpMethod, makeRequest } from "./httpRequest.ts";
 
 //TODO: currently hard coded for the first sheet, need to make it dynamic
@@ -78,9 +77,9 @@ const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultU
  * @returns {Promise<User_BaseWork>} - A promise that resolves to the added work entry.
  */
 export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<User_BaseWork> => {
-    log('addWorkToSheet', work);
-    log('authToken', authToken);
-    log('spreadsheetId', spreadsheetId);
+    console.log('addWorkToSheet', work);
+    console.log('authToken', authToken);
+    console.log('spreadsheetId', spreadsheetId);
 
     // Create history entry and default user work
     const history = createHistoryEntry();
@@ -97,10 +96,10 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
         body: createRequestBody(work, history, defaultUserWork)
     });
 
-    log('unparsed response', response);
+    console.log('unparsed response', response);
     const parsedResponse = await response.json();
 
-    log('addWorkToSheet', 'response', parsedResponse);
+    console.log('addWorkToSheet', 'response', parsedResponse);
 
     // Handle potential authentication error
     if (parsedResponse.error && parsedResponse.status === 'UNAUTHENTICATED') {

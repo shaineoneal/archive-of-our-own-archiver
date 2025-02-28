@@ -1,9 +1,8 @@
-import { User_BaseWork } from "../../entrypoints/content/User_BaseWork.tsx";
-import { log } from '@/utils/logger.ts';
+import { User_BaseWork } from "@/entrypoints/content";
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 
 export const updateWorkInSheet = async (spreadsheetId: string, accessToken: string, work: User_BaseWork): Promise<boolean> => {
-    log('updateWorkInSheet', work);
+    console.log('updateWorkInSheet', work);
 
     const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchUpdate`,
@@ -31,7 +30,7 @@ export const updateWorkInSheet = async (spreadsheetId: string, accessToken: stri
         }
     });
 
-    log('updateWorkInSheet response', response);
+    console.log('updateWorkInSheet response', response);
 
     return true;
 }
