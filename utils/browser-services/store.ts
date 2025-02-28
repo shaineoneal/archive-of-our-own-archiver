@@ -1,5 +1,3 @@
-import { log } from '@/utils/logger.ts';
-
 /**
  * Enum representing the storage methods.
  */
@@ -21,7 +19,7 @@ export const enum StoreMethod {
 function handleStore(method: StoreMethod, action: 'set' | 'get' | 'remove', key: string, value?: any): any {
     const storage = (browser.storage as any)[method.toLowerCase()];
     const callback = (data?: any) => {
-        log(`${method} ${action}: `, key, data || value);
+        console.log(`${method} ${action}: `, key, data || value);
         return data;
     };
 

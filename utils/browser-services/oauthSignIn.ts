@@ -1,4 +1,3 @@
-import { log } from "@/utils/logger.ts";
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
@@ -15,9 +14,9 @@ const redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#authorization-code-flow | Google Identity API - Authorization code flow}
  */
 const createAuthUrl = (): string => {
-    log('redirectUri: ', redirectUri);
-    log('oauth2: ', client_id);
-    log('scopes: ', scopes);
+    console.log('redirectUri: ', redirectUri);
+    console.log('oauth2: ', client_id);
+    console.log('scopes: ', scopes);
     if (!client_id || !scopes) {
         throw new Error('Invalid oauth2 configuration');
     }
@@ -31,7 +30,7 @@ const createAuthUrl = (): string => {
         scope: scopes
     });
 
-    log('Auth URL Params: ', authParams.toString());
+    console.log('Auth URL Params: ', authParams.toString());
 
     return `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 }
@@ -85,7 +84,7 @@ export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlow
         chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: interactive }, (async (responseUrl: string | undefined) => {
 
             if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
-                log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
+                console.log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
                 reject(chrome.runtime.lastError);
             }
             else {
@@ -93,7 +92,7 @@ export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlow
 
                 const params = Object.fromEntries((url.searchParams).entries());
 
-                log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
+                console.log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
                 const response: AuthFlowResponse = {
                     url: responseUrl,
@@ -117,9 +116,9 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
     return new Promise((resolve, reject) => {
 
         if (!client_id || !scopes || !client_secret) {
-            log('requestAuth oauth2: ', client_id);
+            console.log('requestAuth oauth2: ', client_id);
             if (!client_secret) {
-                log('requestAuth client_secret: ', client_secret);
+                console.log('requestAuth client_secret: ', client_secret);
             }
         }
 
@@ -139,7 +138,7 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
             },
         }).then(async (response) => {
             const parsedResponse = await response.json();
-            log('requestAuthorization Response: ', parsedResponse);
+            console.log('requestAuthorization Response: ', parsedResponse);
             resolve(parsedResponse);
             
         }).catch((error: any) => {

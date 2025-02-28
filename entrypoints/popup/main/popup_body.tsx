@@ -24,7 +24,7 @@ export const PopupBody = () => {
     useEffect(() => {
         (async () => {
             if (user.refreshToken && !user.accessToken) {
-                log('User has a refresh token but no access token');
+                console.log('User has a refresh token but no access token');
 
                 try {
                     // If the user has a refresh token but no access token, exchange the refresh token for an access token
@@ -35,7 +35,7 @@ export const PopupBody = () => {
                     }
                     setAccessToken(newAccessToken);
                 } catch (e) {
-                    log('Error exchanging refresh token for access token', e);
+                    console.log('Error exchanging refresh token for access token', e);
                     logout();
                     return;
                 } finally {
@@ -49,7 +49,7 @@ export const PopupBody = () => {
             }
             // Check if the access token is valid
             if (user.accessToken && !await isAccessTokenValid(user.accessToken)) {
-                log('Access token is invalid');
+                console.log('Access token is invalid');
                 if (user.refreshToken) {
                     try {
                         // If the access token is invalid, exchange the refresh token for a new access token
@@ -60,7 +60,7 @@ export const PopupBody = () => {
                         }
                         setAccessToken(newAccessToken);
                     } catch (e) {
-                        log('Error exchanging refresh token for access token', e);
+                        console.log('Error exchanging refresh token for access token', e);
                         logout();
                         return;
                     }

@@ -1,5 +1,4 @@
-import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '../../../utils/browser-services';
-import { log } from '@/utils';
+import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '@/utils/browser-services';
 import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { sendMessage } from '@/utils/browser-services/messaging';
 
@@ -51,7 +50,7 @@ export const Login = () => {
                     }
                 } else {
                     userStoreLogin( access_token, undefined );
-                    log("No refresh token found, revoking tokens");
+                    console.log("No refresh token found, revoking tokens");
                     await revokeTokens(access_token);
                 }
                 if (!spreadsheetId){
@@ -59,7 +58,7 @@ export const Login = () => {
                 }
             }
         } catch (error) {
-            log('Error in handleLogin: ', error);
+            console.log('Error in handleLogin: ', error);
         } finally {
             setLoader(false);   //hide loader
         }
