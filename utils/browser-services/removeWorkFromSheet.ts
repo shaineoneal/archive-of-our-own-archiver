@@ -1,4 +1,3 @@
-import { log } from "@/utils/logger.ts";
 import { HttpMethod, makeRequest } from "./httpRequest.ts";
 
 
@@ -6,7 +5,7 @@ export const removeWorkFromSheet = async (spreadsheetId: string, accessT: string
 
     
     const resp = await deleteWork(spreadsheetId, accessT, workId);
-    log('removeWorkFromSheet', JSON.stringify(resp));
+    console.log('removeWorkFromSheet', JSON.stringify(resp));
     return resp;
 }
 const createFilterView = async (spreadsheetId: string, accessT: string, workId: number) => {
@@ -53,8 +52,8 @@ const createFilterView = async (spreadsheetId: string, accessT: string, workId: 
 
     const parsedResponse = await response.json();
 
-    log('removeWorkFromSheet', 'response', parsedResponse);
-    //log('replies', parsedResponse.replies);
+    console.log('removeWorkFromSheet', 'response', parsedResponse);
+    //console.log('replies', parsedResponse.replies);
     return !!parsedResponse.updatedSpreadsheet.sheets[0].data[0].rowData[1];
 
 }
@@ -82,8 +81,8 @@ const deleteWork = async (spreadsheetId: string, accessT: string, workIndex: num
             ],
         }
     });
-    log('deleteWork', response);
-    log('deleteWork', await response.json());
+    console.log('deleteWork', response);
+    console.log('deleteWork', await response.json());
     
 
     return response.ok;
