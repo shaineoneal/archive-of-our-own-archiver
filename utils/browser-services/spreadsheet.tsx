@@ -1,5 +1,3 @@
-import { log } from '@/utils/logger.ts';
-
 export async function createSpreadsheet(token: string) {
 
     const url = 'https://sheets.googleapis.com/v4/spreadsheets';
@@ -16,15 +14,15 @@ export async function createSpreadsheet(token: string) {
 
     return fetch(url, options)      //TODO: change to makeRequest
         .then((response) => {
-            log('Response status:', response.status);
+            console.log('Response status:', response.status);
             return response.json();
         })
         .then((data) => {
-            log('Success:', data);
+            console.log('Success:', data);
             return data.spreadsheetId;
         })
         .catch((error) => {
-            log('Error creating spreadsheet:', error);
+            console.log('Error creating spreadsheet:', error);
             throw error;
         });
 }

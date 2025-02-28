@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { revokeTokens } from "@/utils/browser-services";
-import { log } from '@/utils';
 import { useActions, useUser } from '@/utils/zustand';
 
 export const Logout = () => {
@@ -9,10 +8,10 @@ export const Logout = () => {
     const { logout } = useActions();
 
     const handleLogout = async () => {
-        log("handleLogout");
+        console.log("handleLogout");
         //setStyle("visited");
         if (accessToken !== undefined) {
-            log("revokeTokens");
+            console.log("revokeTokens");
             //TODO: FIX THIS
             logout();
             await revokeTokens(accessToken);

@@ -1,4 +1,3 @@
-import { log } from './logger.ts';
 /**
  * Compares two arrays and returns a boolean array indicating which elements in the search list are found in the response.
  *
@@ -10,11 +9,11 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
 
     let boolArray: boolean[] = new Array(searchList.length).fill(false);
 
-    log('searchList', searchList);
-    log('searchList type', typeof searchList[1]);
-    log('response', response);
+    console.log('searchList', searchList);
+    console.log('searchList type', typeof searchList[1]);
+    console.log('response', response);
     if(response.length > 1) {
-        log('response type', typeof response[1].c[1].v);
+        console.log('response type', typeof response[1].c[1].v);
     }
 
     searchList.forEach((searchItem) => {
