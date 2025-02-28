@@ -1,4 +1,3 @@
-import { log } from '@/utils/logger.ts';
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 import { SyncUserStore } from "@/utils/zustand";
 import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
@@ -40,7 +39,7 @@ const requestAccessToken = (refreshT: string): Promise<Response> => {
  */
 const parseAccessTokenResponse = async (response: Response): Promise<string> => {
     const parsedResponse = await response.json();
-    log('exchangeRefreshForAccessToken parsedResponse: ', parsedResponse);
+    console.log('exchangeRefreshForAccessToken parsedResponse: ', parsedResponse);
     if (!response.ok) {
         throw new Error(parsedResponse.error);
     }
@@ -70,12 +69,12 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
 
 
     const response = await requestAccessToken(refreshT);
-    log('exchangeRefreshForAccessToken Response: ', response);
+    console.log('exchangeRefreshForAccessToken Response: ', response);
 
     try {
         return await parseAccessTokenResponse(response);
     } catch (error) {
-        log('Error parsing response: ', error);
+        console.log('Error parsing response: ', error);
         throw new Error('Error exchanging refresh token for access token');
     }
 }
@@ -89,7 +88,7 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
  * @throws {Error} Throws an error if there is an issue with the request.
  */
 export async function isAccessTokenValid(token: string): Promise<boolean> {
-    log('isAccessTokenValid token: ', token);
+    console.log('isAccessTokenValid token: ', token);
 
     if (token === '') {
         return false;
@@ -105,7 +104,7 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
         });
         if (response.ok) {
             const data = await response.json();
-            log('isAccessTokenValid data: ', data);
+            console.log('isAccessTokenValid data: ', data);
             return data.aud === client_id;
         }
     } catch (error) {
@@ -124,15 +123,15 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
  * @throws {Error} Throws an error if unable to retrieve a valid access token.
  */
 export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
-    log('Checking access token validity:', accessToken);
+    console.log('Checking access token validity:', accessToken);
     if (await isAccessTokenValid(accessToken)) {
-        log('Access token is valid');
+        console.log('Access token is valid');
         return accessToken;
     } else {
-        log('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
+        console.log('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         if (newAccessToken) {
-            log('New access token obtained:', newAccessToken);
+            console.log('New access token obtained:', newAccessToken);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');
@@ -144,18 +143,18 @@ export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
     const {setAccessToken} = SyncUserStore.getState().actions;
     try {
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
-        log('newAccessToken', newAccessToken);
+        console.log('newAccessToken', newAccessToken);
         if (newAccessToken) {
             setAccessToken(newAccessToken);
             await setAccessTokenCookie(newAccessToken);
-            log('newAccessToken set');
+            console.log('newAccessToken set');
             return true as unknown as T;
         } else {
-            log('Error exchanging refresh token for access token');
+            console.log('Error exchanging refresh token for access token');
             return false as unknown as T;
         }
     } catch (error) {
-        log('Error exchanging refresh token for access token', error);
+        console.log('Error exchanging refresh token for access token', error);
         return false as unknown as T;
     }
 }

@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
 import '../../styles.scss';
-import { log } from '@/utils';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
 export function openOptionsPage() {
@@ -28,10 +27,10 @@ const Options =  () => {
         const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(\/|$)/;
 
         const match = event.target.value.match(regex);
-        log('match: ', match);
+        console.log('match: ', match);
         if(match && match[1]) {
             const spreadsheetId = match[1];
-            log('new spreadsheetId: ', spreadsheetId);
+            console.log('new spreadsheetId: ', spreadsheetId);
             setSpreadsheetId(spreadsheetId);
             //TODO: set spreadsheetId
         } else {
@@ -42,7 +41,7 @@ const Options =  () => {
 
     //TODO: evaluate if this is needed
     //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    //    log('heard message: ', message);
+    //    console.log('heard message: ', message);
     //    if (message.message === 'spreadsheetUrlChanged') {
     //        setSpreadsheetUrl(message.newUrl);
     //        setLoader(false);

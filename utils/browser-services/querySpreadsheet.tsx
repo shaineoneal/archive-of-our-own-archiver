@@ -1,4 +1,3 @@
-import { log } from '@/utils/logger.ts';
 import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest.ts";
 
 export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]) {
@@ -29,7 +28,7 @@ function createEncodedQuery(searchList: number[]): string {
 }
 
 async function parseResponse(response: HttpResponse): Promise<any> {
-    log('parseResponse', 'response', response);
+    console.log('parseResponse', 'response', response);
     let data = await response.text();
     return JSON.parse(data.substring(47, data.length - 2));
 }
