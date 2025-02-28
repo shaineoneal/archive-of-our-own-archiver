@@ -1,6 +1,5 @@
 import { Ao3_BaseWork } from './Ao3_BaseWork.ts';
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
-import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { changeBlurbStyle } from "./changeBlurbStyle.tsx";
 import { User_BaseWork } from "./User_BaseWork.tsx";
@@ -74,13 +73,13 @@ export function addWorkControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('addWork clicked!: ', work);
+        console.log('addWork clicked!: ', work);
 
         const workBlurb = Ao3_BaseWork.createWork(work);
-        log('workBlurb: ', workBlurb);
+        console.log('workBlurb: ', workBlurb);
 
         sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: User_BaseWork) => {
-            log('content script response: ', response);
+            console.log('content script response: ', response);
             changeBlurbStyle(WorkStatus.Read, workWrap);
         });
         //sendMessage(
@@ -88,9 +87,9 @@ export function addWorkControl(workWrap: Element): HTMLElement {
         //    { work: workBlurb },
         //    (response: MessageResponse<User_BaseWork>) => {
         //        if (response.error) {
-        //            log('addWork error: ', response.error);
+        //            console.log('addWork error: ', response.error);
         //        } else {
-        //            log('content script response: ', response.response);
+        //            console.log('content script response: ', response.response);
         //            changeBlurbStyle(WorkStatus.Read, workWrap);
 //
         //        }   //else popup login
@@ -114,19 +113,19 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('removeWork clicked!: ', workWrap);
+        console.log('removeWork clicked!: ', workWrap);
 
         const workBlurb = Ao3_BaseWork.createWork(workWrap);
-        log('workBlurb.workId: ', workBlurb);
+        console.log('workBlurb.workId: ', workBlurb);
 
         //sendMessage(
         //    MessageName.RemoveWorkFromSheet,
         //    { workId: workBlurb.workId },
         //    (response: MessageResponse<boolean>) => {
         //        if (response.error) {
-        //            log('removeWork error: ', response.error);
+        //            console.log('removeWork error: ', response.error);
         //        } else {
-        //            log('content script response: ', response.response);
+        //            console.log('content script response: ', response.response);
         //            changeBlurbStyle(WorkStatus.Default, workWrap);
         //        }
         //    }
@@ -144,7 +143,7 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
 export function addControls(workWrap: Element): Node {
 
     const work = workWrap.querySelector("li[id*='work_']") as Element;
-    log('work: ', work);
+    console.log('work: ', work);
     const workId = work.id.split('_')[1];
 
     const controls = document.createElement('ul');
@@ -152,7 +151,7 @@ export function addControls(workWrap: Element): Node {
     try {
         browser.storage.session.get(workId, (result) => {
             if (result && result[workId]) {
-                log(`Entry found for workId: ${workId}`, result[workId]);
+                console.log(`Entry found for workId: ${workId}`, result[workId]);
                 controls.appendChild(incrementReadCountControl(workWrap));
                 controls.appendChild(removeWorkControl(workWrap));
             } else {
@@ -160,7 +159,7 @@ export function addControls(workWrap: Element): Node {
             }
         });
     } catch (error) {
-        log('Error getting workId from session storage: ', error);
+        console.log('Error getting workId from session storage: ', error);
     }
 
     return controls as Node;
@@ -172,18 +171,18 @@ export function addControls(workWrap: Element): Node {
  * @returns The info element
  */
 export function addInfo(work: Element): Node {
-    log('adding info to work: ', work);
+    console.log('adding info to work: ', work);
 
     const workId = work.id.split('_')[1];
-    log('workId: ', workId);
+    console.log('workId: ', workId);
 
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
     browser.storage.session.get(workId, (result) => {
-        log('result from session store: ', result);
+        console.log('result from session store: ', result);
         const userWork = result[workId];
-        log('userWork: ', userWork);
+        console.log('userWork: ', userWork);
 
         const history = userWork.history
             ? typeof userWork.history === 'string'
@@ -227,7 +226,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        log('incrementReadCount clicked!: ', workWrap);
+        console.log('incrementReadCount clicked!: ', workWrap);
 
         const aWork = Ao3_BaseWork.createWork(workWrap);
         const workId = `${aWork.workId}`;
@@ -237,7 +236,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 return;
             }
             const uWork = result[aWork.workId];
-            log('uWork: ', uWork);
+            console.log('uWork: ', uWork);
 
             uWork.readCount += 1;
             const history = uWork.history
@@ -249,7 +248,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 action: "reread",
                 date: new Date().toLocaleString(),
             });
-            log('hist', history);
+            console.log('hist', history);
 
             const work = new User_BaseWork(
                 aWork.workId,
@@ -267,9 +266,9 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
             //    { work: work },
             //    (response: MessageResponse<boolean>) => {
             //        if (response.error) {
-            //            log('incrementReadCount error: ', response.error);
+            //            console.log('incrementReadCount error: ', response.error);
             //        } else {
-            //            log('content script response: ', response.response);
+            //            console.log('content script response: ', response.response);
             //            changeBlurbStyle(WorkStatus.Read, workWrap);
             //        }
             //    }

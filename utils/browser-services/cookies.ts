@@ -1,13 +1,10 @@
-import { log } from "@/utils/logger.ts";
-
-
 export async function setAccessTokenCookie(value: string) {
-    //log('setting cookie: ', value);
+    //console.log('setting cookie: ', value);
 // get current date
     let currentDate = new Date();
     const expirationDate = new Date(currentDate.getTime() + 3600000);
-    log('currentDate: ', currentDate);
-    log('expirationDate: ', expirationDate);
+    console.log('currentDate: ', currentDate);
+    console.log('expirationDate: ', expirationDate);
 
     //document.cookie = `accessToken=${value}; expires=${expirationDate.getTime() + 3600}; domain=archiveofourown.org; path=/`;
     // Set the access token cookie with a 30-second expiration
@@ -17,6 +14,6 @@ browser.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', v
 
 export async function getAccessTokenCookie(): Promise<string | undefined> {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-    log('cookies found: ', cookies);
+    console.log('cookies found: ', cookies);
     return cookies.find(cookie => cookie[0] === 'accessToken')?.[1];
 }

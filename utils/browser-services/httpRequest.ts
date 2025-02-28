@@ -1,5 +1,3 @@
-import { log } from '@/utils/logger.ts';
-
 /**
  * Represents the HTTP method for to use in the request.
  */
@@ -63,7 +61,7 @@ export async function makeRequest(request: HttpRequest): Promise<HttpResponse> {
         body: JSON.stringify(request.body)
     };
 
-    log('makeRequest options: ', options);
+    console.log('makeRequest options: ', options);
 
     return await fetch(request.url, options);
 }
