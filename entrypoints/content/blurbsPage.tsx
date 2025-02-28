@@ -1,5 +1,4 @@
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
-import { log } from '@/utils/logger.ts';
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { addBlurbControls } from './blurbControls.tsx';
 import { changeBlurbStyle } from './changeBlurbStyle.tsx';
@@ -9,7 +8,7 @@ export async function standardBlurbsPage() {
     // check if page already has work statuses
     const workStatuses = document.querySelectorAll('.blurb-with-toggles') as NodeList;
     if (workStatuses.length > 0) {
-        log('Work statuses already injected.')
+        console.log('Work statuses already injected.')
         return;
     }
 
@@ -25,42 +24,42 @@ export async function standardBlurbsPage() {
         }
     });
 
-    log('searchList: ', searchList);
+    console.log('searchList: ', searchList);
 
 
 
     const resp = await sendMessage('QuerySpreadSheet', searchList);
-    log('QuerySpreadSheet response: ', resp);
+    console.log('QuerySpreadSheet response: ', resp);
     if (resp.length == 0) {
-        log('No work statuses to inject.')
+        console.log('No work statuses to inject.')
         addBlurbControls(worksOnPage, []);
         return;
     }
     //if (resp.error) {
-    //    log('Error querying spreadsheet: ', resp.error);
+    //    console.log('Error querying spreadsheet: ', resp.error);
     //    return;
     //}
     else {
         await injectWorkStatuses(worksOnPage, resp);
-        log('Injected work statuses.');
+        console.log('Injected work statuses.');
         addBlurbControls(worksOnPage, resp);
     }
     //sendMessage(
     //    MessageName.QuerySpreadsheet,
     //    { list: searchList },
     //    async (response: MessageResponse<boolean[]>) => {
-    //        log('QuerySpreadsheet response: ', response)
+    //        console.log('QuerySpreadsheet response: ', response)
     //        if (response === null) {
-    //            log('No work statuses to inject.')
+    //            console.log('No work statuses to inject.')
     //            addBlurbControls(worksOnPage, []);
     //            return;
     //        }
     //        if (response.error) {
-    //            log('Error querying spreadsheet: ', response.error);
+    //            console.log('Error querying spreadsheet: ', response.error);
     //            return;
     //        }
     //        await injectWorkStatuses(worksOnPage, response.response);
-    //        log('Injected work statuses.');
+    //        console.log('Injected work statuses.');
     //        addBlurbControls(worksOnPage, response.response);
     //    }
     //)
@@ -76,11 +75,11 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
         return Error;
     } else {
         response.forEach((workRef: boolean, index: number) => {
-            log('workRef: ', workRef)
+            console.log('workRef: ', workRef)
             if (workRef) {
                 const workId = (worksOnPage[index] as Element).id.split('_')[1]
                 browser.storage.session.get(workId, (result) => {
-                    log('session result: ', result);
+                    console.log('session result: ', result);
                     if (result[workId] && result[workId].status === WorkStatus.Read) {
                         changeBlurbStyle(WorkStatus.Read, (worksOnPage[index].parentNode!));
                     }

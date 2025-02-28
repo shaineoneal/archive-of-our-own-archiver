@@ -6,11 +6,11 @@ import {
 } from "@/utils/browser-services";
 
 export default defineBackground(() => {
-    log('background script running');
+    console.log('background script running');
 
     browser.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
         .then(() => {
-            log('access level set');
+            console.log('access level set');
         });
 
     onMessage('CheckLogin', handleCheckLogin);

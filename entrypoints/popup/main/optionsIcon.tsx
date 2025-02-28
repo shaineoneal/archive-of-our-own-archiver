@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
 import { IconContext } from 'react-icons';
 import { BsFillGearFill } from 'react-icons/bs';
-import { log } from '../../../utils/logger';
-import { useUser } from '../../../utils/zustand';
+import { useUser } from '@/utils/zustand';
 
 /**
  * OptionsIcon component renders an icon that links to the options page.
@@ -28,7 +27,7 @@ export const OptionsIcon = () => {
     const accessT = useUser().accessToken;
 
     useEffect(() => {
-       log('optionsIcon useEffect');
+       console.log('optionsIcon useEffect');
     }, [accessT]);
 
     return (
