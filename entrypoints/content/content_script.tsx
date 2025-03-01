@@ -86,11 +86,8 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main() {
-    console.log('log: content_script.tsx loaded');
-    const resp = await sendMessage('checkLogin', undefined);
-    if(resp) {
-        console.log('user is logged in');
-        pageTypeDetect();
+    const user = await getUserData();
+    console.log('log: content_script.tsx loaded', user);
     if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
         log('IsAccessTokenValid response', resp);
