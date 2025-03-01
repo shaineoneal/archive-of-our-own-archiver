@@ -91,6 +91,15 @@ export async function main() {
     if(resp) {
         console.log('user is logged in');
         pageTypeDetect();
+    if(user.accessToken) {
+        const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
+        log('IsAccessTokenValid response', resp);
+        if (resp) {
+            console.log('user is logged in');
+            pageTypeDetect();
+        } else {
+            console.log('user is not logged in, access token is invalid');
+        }
     } else {
         console.log('user is not logged in');
     }
