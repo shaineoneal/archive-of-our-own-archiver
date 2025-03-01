@@ -91,6 +91,7 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
     console.log('isAccessTokenValid token: ', token);
 
     if (token === '') {
+        console.log('Token is empty');
         return false;
     }
 
@@ -101,14 +102,16 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
                 'Content-Type': 'application/json',
             }
         });
-        if (response.ok) {
+        if (response) {
             const data = await response.json();
             console.log('isAccessTokenValid data: ', data);
             return data.aud === client_id;
         }
     } catch (error) {
+        console.log('Error validating token: ', error);
         throw new Error('Error validating token');
     }
+
     return false;
 }
 
