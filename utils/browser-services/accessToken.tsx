@@ -95,9 +95,8 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
     }
 
     try {
-        const response = await makeRequest({
-            url: 'https://oauth2.googleapis.com/tokeninfo?access_token=' + token,
-            method: HttpMethod.GET,
+        const response = await fetch('https://oauth2.googleapis.com/tokeninfo?access_token=' + token, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
