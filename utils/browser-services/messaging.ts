@@ -15,8 +15,8 @@ import {
 
 interface ProtocolMap {
     AddWorkToSpreadsheet(work: Ao3_BaseWork): User_BaseWork;
-    LoggedIn(data: { accessToken: string, refreshToken: string }): void;
     IsAccessTokenValid(accessToken: string): boolean;
+    LoggedIn(data: UserDataType): void;
     QuerySpreadSheet(searchList: number[]): boolean[];
 }
 
