@@ -7,20 +7,17 @@ import { omit } from "lodash";
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
 const DEFAULT_USER: UserDataType = {
-    isLoggedIn: false,
     accessToken: undefined,
     refreshToken: undefined
 }
 
-type UserDataType = {
-    isLoggedIn: boolean;
+export type UserDataType = {
     accessToken?: string;
     refreshToken?: string;
     spreadsheetId?: string;
 }
 
 type UserActionsType = {
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
     setAccessToken: (accessT?: string) => void;
     setRefreshToken: (refreshT?: string) => void;
     setSpreadsheetId: (spreadsheetId?: string) => void;
@@ -42,9 +39,6 @@ export const SyncUserStore = create<UserStoreType>()(
             user: DEFAULT_USER,
 
             actions: {
-                setIsLoggedIn: (isLoggedIn: boolean) => {
-                    set({ user: { ...get().user, isLoggedIn: isLoggedIn } });
-                },
                 setAccessToken: (accessT?: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
                 },
