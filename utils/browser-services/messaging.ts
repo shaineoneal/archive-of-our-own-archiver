@@ -15,8 +15,8 @@ import {
 
 interface ProtocolMap {
     AddWorkToSpreadsheet(work: Ao3_BaseWork): User_BaseWork;
-    CheckLogin(): boolean;
     LoggedIn(data: { accessToken: string, refreshToken: string }): void;
+    IsAccessTokenValid(accessToken: string): boolean;
     QuerySpreadSheet(searchList: number[]): boolean[];
 }
 
@@ -46,30 +46,9 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): P
         throw new Error('no spreadsheetId or accessToken');
     }
 }
-export async function handleCheckLogin(): Promise<boolean> {
-    const { setAccessToken } = SyncUserStore.getState().actions;
-    let syncUser = SyncUserStore.getState().user;
 
-    if (syncUser.isLoggedIn && syncUser.refreshToken) {
-        try {
-            if (syncUser.accessToken === undefined) {
-                return await handleTokenExchange<boolean>(syncUser.refreshToken);
-            }
-            const isValid = await isAccessTokenValid(syncUser.accessToken);
-            if (isValid) {
-                setAccessToken(syncUser.accessToken);
-                await setAccessTokenCookie(syncUser.accessToken);
-                return true;
-            } else {
-                return await handleTokenExchange<boolean>(syncUser.refreshToken);
-            }
-        } catch (error) {
-            console.error(error);
-            return false;
-        }
-    } else {
-        return false;
-    }
+export async function handleIsAccessTokenValid(msg: { data: string }): Promise<boolean> {
+    return await isAccessTokenValid(msg.data);
 }
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {

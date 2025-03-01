@@ -1,6 +1,6 @@
 import {
     handleAddWorkToSpreadsheet,
-    handleCheckLogin,
+    handleIsAccessTokenValid,
     handleQuerySpreadSheet,
     onMessage
 } from "@/utils/browser-services";
@@ -13,7 +13,7 @@ export default defineBackground(() => {
             console.log('access level set');
         });
 
-    onMessage('CheckLogin', handleCheckLogin);
     onMessage('QuerySpreadSheet', handleQuerySpreadSheet);
     onMessage('AddWorkToSpreadsheet', handleAddWorkToSpreadsheet);
+    onMessage('IsAccessTokenValid', handleIsAccessTokenValid);
 });
