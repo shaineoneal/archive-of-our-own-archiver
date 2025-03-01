@@ -19,7 +19,7 @@ import { GoToSheet, Login } from './';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     let user = useUser();
-    const { setAccessToken, setIsLoggedIn, logout } = useActions();
+    const { setAccessToken, logout } = useActions();
 
     useEffect(() => {
         (async () => {
