@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/utils/browser-services';
 import { log } from '@/utils';
-import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
+import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
 
 
@@ -19,10 +19,16 @@ import { GoToSheet, Login } from './';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     let user = useUser();
+    const setUser = SyncUserStore.getState().actions.userStoreLogin;
     const { setAccessToken, logout } = useActions();
 
     useEffect(() => {
         (async () => {
+            const newUser = await SyncUserStore.getState().actions.getUser()
+            console.log(newUser);
+            setUser(newUser.accessToken!, newUser.refreshToken!, newUser.spreadsheetId!);
+            user = newUser;
+
             if (user.refreshToken && !user.accessToken) {
                 console.log('User has a refresh token but no access token');
 
@@ -48,6 +54,8 @@ export const PopupBody = () => {
                 return;
             }
             // Check if the access token is valid
+            const validity = await isAccessTokenValid(user.accessToken!);
+            console.log('User access token', validity);
             if (user.accessToken && !await isAccessTokenValid(user.accessToken)) {
                 console.log('Access token is invalid');
                 if (user.refreshToken) {
@@ -72,7 +80,7 @@ export const PopupBody = () => {
             } else log ('Access token is valid');
             setLoader(false);
         })();
-    }, [user]);
+    }, []);
 
     return loader ? <div className="loader" /> 
         : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <Login />
