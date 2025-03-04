@@ -16,4 +16,5 @@ export default defineBackground(() => {
     onMessage('QuerySpreadSheet', handleQuerySpreadSheet);
     onMessage('AddWorkToSpreadsheet', handleAddWorkToSpreadsheet);
     onMessage('IsAccessTokenValid', handleIsAccessTokenValid);
+    onMessage('GetValidAccessToken', handleGetValidAccessToken);
 });
