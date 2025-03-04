@@ -1,6 +1,6 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import { Ao3_BaseWork, User_BaseWork } from "@/entrypoints/content";
-import { SyncUserStore } from "@/utils/zustand";
+import { SyncUserStore, UserDataType } from "@/utils/zustand";
 import {
     isAccessTokenValid,
     querySpreadsheet,
@@ -9,12 +9,13 @@ import {
     getValidAccessToken,
     setStore,
     StoreMethod,
-    handleTokenExchange
+    handleTokenExchange, exchangeRefreshForAccessToken
 } from "@/utils/browser-services";
 
 
 interface ProtocolMap {
     AddWorkToSpreadsheet(work: Ao3_BaseWork): User_BaseWork;
+    GetValidAccessToken(): string;
     IsAccessTokenValid(accessToken: string): boolean;
     LoggedIn(data: UserDataType): void;
     QuerySpreadSheet(searchList: number[]): boolean[];
@@ -47,6 +48,21 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): P
     }
 }
 
+export async function handleGetValidAccessToken(): Promise<string> {
+    const user = await SyncUserStore.getState().actions.getUser();
+    if(await isAccessTokenValid(user.accessToken)) {
+        return user.accessToken;
+    } else {
+        const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+        if (newAccessToken) {
+            SyncUserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
+            return newAccessToken;
+        } else {
+            throw new Error('Unable to retrieve a valid access token');
+        }
+    }
+}
+
 export async function handleIsAccessTokenValid(msg: { data: string }): Promise<boolean> {
     return await isAccessTokenValid(msg.data);
 }
@@ -55,12 +71,13 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     const { setAccessToken, getUser } = SyncUserStore.getState().actions;
     let syncUser = await getUser();
 
-    if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
+
+    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, msg.data);
+        const response = await querySpreadsheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
         let responseArray: boolean[] = [];
         if (response.table.rows && response.table.rows.length > 0) {
             for (let row of response.table.rows) {
