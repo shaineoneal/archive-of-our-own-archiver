@@ -57,7 +57,7 @@ const parseAccessTokenResponse = async (response: Response): Promise<string> => 
  * @group accessToken-
  * @see {@link https://www.xiegerts.com/post/chrome-extension-google-oauth-refresh-token/ | Handling Google OAuth Refresh Tokens in a Chrome Extension}
 */
-export async function exchangeRefreshForAccessToken(refreshT: string): Promise<string | undefined> {
+export async function exchangeRefreshForAccessToken(refreshT: string): Promise<string> {
     if (!client_id || !client_secret) {
         throw new Error('Invalid oauth2 configuration');
     }

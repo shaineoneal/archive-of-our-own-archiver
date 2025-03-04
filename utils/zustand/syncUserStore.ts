@@ -8,13 +8,14 @@ import { browser } from "wxt/browser";
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
 const DEFAULT_USER: UserDataType = {
-    accessToken: undefined,
-    refreshToken: undefined
+    accessToken: '',
+    refreshToken: '',
+    spreadsheetId: ''
 }
 
 export type UserDataType = {
-    accessToken?: string;
-    refreshToken?: string;
+    accessToken: string;
+    refreshToken: string;
     spreadsheetId?: string;
 }
 
@@ -44,7 +45,7 @@ export const SyncUserStore = create<UserStoreType>()(
                 getUser: async () => {
                     const userStore = await browser.storage.sync.get('user-store');
                     const user = userStore['user-store'] as any;
-                    return user.user;
+                    return user.user || DEFAULT_USER;
                 },
                 setAccessToken: (accessT: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
@@ -56,10 +57,21 @@ export const SyncUserStore = create<UserStoreType>()(
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
                 userStoreLogin: async ( accessToken, refreshToken, spreadsheetId ) => {
-                    set({ user: { ...get().user, accessToken: accessToken, refreshToken: refreshToken, spreadsheetId: spreadsheetId } });
+                    if (!spreadsheetId) {
+                        set({user: {...get().user, accessToken: accessToken, refreshToken: refreshToken}});
+                    } else {
+                        set({
+                            user: {
+                                ...get().user,
+                                accessToken: accessToken,
+                                refreshToken: refreshToken,
+                                spreadsheetId: spreadsheetId
+                            }
+                        });
+                    }
                 },
                 logout: () => {
-                    set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined } });
+                    set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
                 }
             }
         }),
@@ -114,7 +126,7 @@ export const SessionUserStore = create<UserStoreType>() (
                 setRefreshToken(refreshToken);
             },
             logout: () => {
-                set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined } });
+                set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
             }
         }
     })
