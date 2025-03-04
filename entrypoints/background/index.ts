@@ -1,5 +1,5 @@
 import {
-    handleAddWorkToSpreadsheet,
+    handleAddWorkToSpreadsheet, handleGetValidAccessToken,
     handleIsAccessTokenValid,
     handleQuerySpreadSheet,
     onMessage
@@ -8,10 +8,12 @@ import {
 export default defineBackground(() => {
     console.log('background script running');
 
-    browser.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
-        .then(() => {
-            console.log('access level set');
-        });
+    if (import.meta.env.BROWSER === 'chrome') {
+        chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS'})
+            .then(() => {
+                console.log('access level set');
+            });
+    }
 
     onMessage('QuerySpreadSheet', handleQuerySpreadSheet);
     onMessage('AddWorkToSpreadsheet', handleAddWorkToSpreadsheet);
