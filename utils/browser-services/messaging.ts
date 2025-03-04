@@ -23,7 +23,7 @@ interface ProtocolMap {
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): Promise<User_BaseWork> {
-    let sessionUser = SyncUserStore.getState().user;
+    let sessionUser = await SyncUserStore.getState().actions.getUser();
 
     if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
         try {
@@ -52,8 +52,8 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 }
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
-    let syncUser = SyncUserStore.getState().user;
-    const { setAccessToken } = SyncUserStore.getState().actions;
+    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
+    let syncUser = await getUser();
 
     if (syncUser.spreadsheetId === undefined || syncUser.accessToken === undefined) {
         throw new Error('no spreadsheetId or accessToken');
