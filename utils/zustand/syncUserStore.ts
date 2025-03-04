@@ -3,6 +3,7 @@ import { persist, StorageValue } from "zustand/middleware";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { getStore, removeStore, setStore, StoreMethod } from "../browser-services";
 import { omit } from "lodash";
+import { browser } from "wxt/browser";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
@@ -18,10 +19,11 @@ export type UserDataType = {
 }
 
 type UserActionsType = {
-    setAccessToken: (accessT?: string) => void;
-    setRefreshToken: (refreshT?: string) => void;
-    setSpreadsheetId: (spreadsheetId?: string) => void;
-    userStoreLogin: (accessToken?: string, refreshToken?: string) => void;
+    getUser: () => Promise<UserDataType>;
+    setAccessToken: (accessT: string) => void;
+    setRefreshToken: (refreshT: string) => void;
+    setSpreadsheetId: (spreadsheetId: string) => void;
+    userStoreLogin: (accessToken: string, refreshToken: string, spreadsheetId?: string) => void;
     logout: () => void;
 }
 
@@ -39,20 +41,25 @@ export const SyncUserStore = create<UserStoreType>()(
             user: DEFAULT_USER,
 
             actions: {
-                setAccessToken: (accessT?: string) => {
+                getUser: async () => {
+                    const userStore = await browser.storage.sync.get('user-store');
+                    const user = userStore['user-store'] as any;
+                    return user.user;
+                },
+                setAccessToken: (accessT: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
                 },
-                setRefreshToken: (refreshT?: string) => {
+                setRefreshToken: (refreshT: string) => {
                     set({ user: { ...get().user, refreshToken: refreshT } });
                 },
-                setSpreadsheetId: (spreadsheetId?: string) => {
+                setSpreadsheetId: (spreadsheetId: string) => {
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
-                userStoreLogin: async ( accessToken, refreshToken ) => {
-                    set({ user: { ...get().user, isLoggedIn: true, accessToken: accessToken, refreshToken: refreshToken } });
+                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId ) => {
+                    set({ user: { ...get().user, accessToken: accessToken, refreshToken: refreshToken, spreadsheetId: spreadsheetId } });
                 },
                 logout: () => {
-                    set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined, isLoggedIn: false } });
+                    set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined } });
                 }
             }
         }),
@@ -86,26 +93,28 @@ export const SessionUserStore = create<UserStoreType>() (
     (set, get): UserStoreType => ({
         user: DEFAULT_USER,
         actions: {
-            setIsLoggedIn: (isLoggedIn: boolean) => {
-                set({ user: { ...get().user, isLoggedIn: isLoggedIn } });
+            getUser: async () => {
+                const userStore = await browser.storage.session.get('user-store');
+                const user = userStore['user-store'] as any;
+                return user.user;
             },
-            setAccessToken: (accessT?: string) => {
+            setAccessToken: (accessT: string) => {
                 set({ user: { ...get().user, accessToken: accessT } });
             },
-            setRefreshToken: (refreshT?: string) => {
+            setRefreshToken: (refreshT: string) => {
                 set({ user: { ...get().user, refreshToken: refreshT } });
             },
-            setSpreadsheetId: (spreadsheetId?: string) => {
+            setSpreadsheetId: (spreadsheetId: string) => {
                 set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
             },
             userStoreLogin: async ( accessToken, refreshToken ) => {
                 const { setAccessToken, setRefreshToken } = get().actions;
-                set({ user: { ...get().user, isLoggedIn: true } });
+                set({ user: { ...get().user } });
                 setAccessToken(accessToken);
                 setRefreshToken(refreshToken);
             },
             logout: () => {
-                set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined, isLoggedIn: false } });
+                set({ user: { ...get().user, accessToken: undefined, refreshToken: undefined } });
             }
         }
     })
