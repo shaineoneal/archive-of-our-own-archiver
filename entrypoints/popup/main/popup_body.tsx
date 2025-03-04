@@ -42,7 +42,7 @@ export const PopupBody = () => {
                     setLoader(false);
                 }
 
-            } else if (user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined) {
+            } else if (user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '') {
                 // If the user is not logged in, set the loader to false and return
                 setLoader(false);
                 return;
@@ -75,7 +75,7 @@ export const PopupBody = () => {
     }, [user]);
 
     return loader ? <div className="loader" /> 
-        : ( user.accessToken === undefined || user.spreadsheetId === undefined || user.refreshToken === undefined ) ? <Login /> 
+        : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <Login />
             : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
 };
 
