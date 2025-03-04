@@ -41,7 +41,13 @@ export const Login = () => {
                 // If the response has a refresh token, store the async login
                 // then send a message to the content script to update the login status
                 if (refresh_token) {
-                    userStoreLogin( access_token, refresh_token );
+                    if (!spreadsheetId){
+                        const newSheet = await createSpreadsheet(access_token);
+                        userStoreLogin( access_token, refresh_token, newSheet );
+                    } else {
+                        userStoreLogin( access_token, refresh_token );
+                    }
+
                     const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
                     if(tabs) {
                         tabs.forEach(tab => {
@@ -49,13 +55,10 @@ export const Login = () => {
                         });
                     }
                 } else {
-                    userStoreLogin( access_token, undefined );
                     console.log("No refresh token found, revoking tokens");
                     await revokeTokens(access_token);
                 }
-                if (!spreadsheetId){
-                    setSpreadsheetId(await createSpreadsheet(access_token));
-                }
+
             }
         } catch (error) {
             console.log('Error in handleLogin: ', error);
