@@ -13,15 +13,15 @@ export default defineConfig({
                 'https://www.googleapis.com/auth/userinfo.profile']
         },
         key: '***REMOVED***',
-        permissions: ['webRequest', 'identity', 'storage', 'scripting', 'identity.email', 'activeTab', 'cookies'],
+        permissions: ['webRequest', 'identity', 'storage', 'scripting', 'activeTab', 'cookies'],
         host_permissions: ['*://*.archiveofourown.org/*', 'https://docs.google.com/spreadsheets/*', '*://*.google.com/'],
         options_ui: {
-            page: "options.html",
+            page: "@/entrypoints/options.html",
             open_in_tab: false
         },
         action: {
             default_icon: 'icons/icon-16.png',
-            default_popup: 'entrypoints/popup/index.html'
+            default_popup: 'entrypoints/popup/index.html',
         },
         browser_action: {
             default_icon: 'icons/icon-16.png',
@@ -30,6 +30,12 @@ export default defineConfig({
         web_accessible_resources: [{
             resources: ['js/content_script.css'],
             matches: ['*://*.archiveofourown.org/*']
-        }]
+        }],
+        browser_specific_settings: {
+            gecko: {
+                id: 'shaineoneal@gmail.com',
+                strict_min_version: '42.0'
+            }
+        }
     }
 });
