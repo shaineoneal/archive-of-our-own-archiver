@@ -125,4 +125,4 @@ onMessage('LoggedIn', (data) => {
 main();
 
 //listener for updates to the user store
-browser.storage.session.onChanged.addListener(main);
+browser.storage.local.onChanged.addListener(main)
