@@ -74,7 +74,8 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
     if(response === null) {
         return Error;
     } else {
-        response.forEach((workRef: boolean, index: number) => {
+        for (const workRef of response) {
+            const index: number = response.indexOf(workRef);
             console.log('workRef: ', workRef)
             if (workRef) {
                 const workId = (worksOnPage[index] as Element).id.split('_')[1]
@@ -85,6 +86,6 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
                     changeBlurbStyle(WorkStatus.Read, (worksOnPage[index].parentNode!));
                 }
             }
-        });
+        }
     }
 }
