@@ -9,7 +9,12 @@ import {
     getValidAccessToken,
     setStore,
     StoreMethod,
-    handleTokenExchange, exchangeRefreshForAccessToken
+    handleTokenExchange,
+    exchangeRefreshForAccessToken,
+    chromeLaunchWebAuthFlow,
+    requestAuthorization,
+    createSpreadsheet,
+    revokeTokens
 } from "@/utils/browser-services";
 
 
@@ -18,6 +23,7 @@ interface ProtocolMap {
     GetValidAccessToken(): string;
     IsAccessTokenValid(accessToken: string): boolean;
     LoggedIn(data: UserDataType): void;
+    Login(): void;
     QuerySpreadSheet(searchList: number[]): boolean[];
 }
 
@@ -49,6 +55,7 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): P
 }
 
 export async function handleGetValidAccessToken(): Promise<string> {
+    console.log("GetValidAccessToken");
     const user = await SyncUserStore.getState().actions.getUser();
     if(await isAccessTokenValid(user.accessToken)) {
         return user.accessToken;
@@ -60,6 +67,47 @@ export async function handleGetValidAccessToken(): Promise<string> {
         } else {
             throw new Error('Unable to retrieve a valid access token');
         }
+    }
+}
+
+export async function handleLogin(): Promise<void> {
+    const {getUser, userStoreLogin} = SyncUserStore.getState().actions;
+    const user = await getUser();
+    try {
+        // Launch the web authentication flow with interactive set to true
+        const flowResp = await chromeLaunchWebAuthFlow(true);
+
+        // If the response has a URL and a code, request authorization
+        if (flowResp.url && flowResp.code) {
+            console.log('Flow response: ', flowResp);
+            const {access_token, refresh_token} = await requestAuthorization(flowResp);
+
+            //TODO: if no refresh token, fix it
+
+            // If the response has a refresh token, store the async login
+            // then send a message to the content script to update the login status
+            if (refresh_token) {
+                if (!user.spreadsheetId) {
+                    const newSheet = await createSpreadsheet(access_token);
+                    userStoreLogin(access_token, refresh_token, newSheet);
+                } else {
+                    userStoreLogin(access_token, refresh_token);
+                }
+
+                const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
+                if (tabs) {
+                    tabs.forEach(tab => {
+                        sendMessage('LoggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
+                    });
+                }
+            } else {
+                console.log("No refresh token found, revoking tokens");
+                await revokeTokens(access_token);
+            }
+
+        }
+    } catch (error) {
+        console.log('Error in handleLogin: ', error);
     }
 }
 
