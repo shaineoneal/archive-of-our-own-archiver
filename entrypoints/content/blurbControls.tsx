@@ -149,7 +149,7 @@ export function addControls(workWrap: Element): Node {
     const controls = document.createElement('ul');
     controls.className = 'blurb-controls actions';
     try {
-        browser.storage.session.get(workId, (result) => {
+        browser.storage.local.get(workId, (result) => {
             if (result && result[workId]) {
                 console.log(`Entry found for workId: ${workId}`, result[workId]);
                 controls.appendChild(incrementReadCountControl(workWrap));
@@ -159,7 +159,7 @@ export function addControls(workWrap: Element): Node {
             }
         });
     } catch (error) {
-        console.log('Error getting workId from session storage: ', error);
+        console.log('Error getting workId from local storage: ', error);
     }
 
     return controls as Node;
@@ -179,8 +179,8 @@ export function addInfo(work: Element): Node {
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
-    browser.storage.session.get(workId, (result) => {
-        console.log('result from session store: ', result);
+    browser.storage.local.get(workId, (result) => {
+        console.log('result from local store: ', result);
         const userWork = result[workId];
         console.log('userWork: ', userWork);
 
@@ -231,7 +231,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
         const aWork = Ao3_BaseWork.createWork(workWrap);
         const workId = `${aWork.workId}`;
 
-        browser.storage.session.get(workId, (result) => {
+        browser.storage.local.get(workId, (result) => {
             if (!result[workId]) {
                 return;
             }
