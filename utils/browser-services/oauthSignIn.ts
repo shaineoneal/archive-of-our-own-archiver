@@ -1,10 +1,11 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
+import { browser } from "wxt/browser";
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const scopes = import.meta.env.WXT_API_SCOPES;
-const redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
+let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
 
 /**
  * Creates the URL for the OAuth authorization flow.
@@ -79,30 +80,41 @@ export interface AuthRequestResponse {
  * {@link AuthFlowResponse} object.
  * 
  */
-export function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
-    return new Promise((resolve, reject) => {
-        chrome.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: interactive }, (async (responseUrl: string | undefined) => {
+export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
+    let authUrl = '';
+    if (import.meta.env.BROWSER !== 'chrome') {
+        redirectUri = browser.identity.getRedirectURL();
+        authUrl = redirectUri
+        console.log('RedirectUri: ', redirectUri);
+    } else {
+        authUrl = createAuthUrl()
+    }
+console.log('other RedirectUri: ', redirectUri);
+    try {
+        const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
 
-            if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
-                console.log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
-                reject(chrome.runtime.lastError);
-            }
-            else {
-                const url = new URL(responseUrl);
+        console.log('launchWebAuthFlow Response: ', responseUrl);
+        if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
+            console.log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
+            throw new Error();
+        } else {
+            const url = new URL(responseUrl);
 
-                const params = Object.fromEntries((url.searchParams).entries());
+            const params = Object.fromEntries((url.searchParams).entries());
 
-                console.log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
+            console.log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
-                const response: AuthFlowResponse = {
-                    url: responseUrl,
-                    code: params.code
-                };
-                resolve(response);
-            }
+            const response: AuthFlowResponse = {
+                url: responseUrl,
+                code: params.code
+            };
+            return response;
+        }
+    } catch (error) {
+        console.log('chromeLaunchWebAuthFlow Error: ', error);
+        throw new Error('Error launching web authentication flow');
+    }
 
-        }));
-    });
 }
 
 /**
@@ -146,4 +158,4 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
         });
         
     });
-} 
+}
