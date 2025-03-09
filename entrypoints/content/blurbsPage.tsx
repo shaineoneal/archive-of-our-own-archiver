@@ -40,9 +40,9 @@ export async function standardBlurbsPage() {
     //    return;
     //}
     else {
+        addBlurbControls(worksOnPage, resp);
         await injectWorkStatuses(worksOnPage, resp);
         console.log('Injected work statuses.');
-        addBlurbControls(worksOnPage, resp);
     }
     //sendMessage(
     //    MessageName.QuerySpreadsheet,
