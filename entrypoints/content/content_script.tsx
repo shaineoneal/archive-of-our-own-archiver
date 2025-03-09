@@ -108,7 +108,7 @@ export async function main() {
 }
 
 // Add event listeners
-chrome.runtime.onMessage.addListener(messageListener);
+//browser.runtime.onMessage.addListener(messageListener);
 //document.addEventListener('visibilitychange', handleVisibilityChange);
 const { userStoreLogin } = SyncUserStore.getState().actions;
 // sent from popup/login.tsx
