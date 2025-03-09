@@ -28,38 +28,7 @@ export const Login = () => {
         setLoader(true);    //show loader
 
         try {
-
-            // Launch the web authentication flow with interactive set to true
-            const flowResp = await chromeLaunchWebAuthFlow(true);
-
-            // If the response has a URL and a code, request authorization
-            if (flowResp.url && flowResp.code) {
-                const { access_token, refresh_token } = await requestAuthorization(flowResp);
-            
-                //TODO: if no refresh token, fix it
-
-                // If the response has a refresh token, store the async login
-                // then send a message to the content script to update the login status
-                if (refresh_token) {
-                    if (!spreadsheetId){
-                        const newSheet = await createSpreadsheet(access_token);
-                        userStoreLogin( access_token, refresh_token, newSheet );
-                    } else {
-                        userStoreLogin( access_token, refresh_token );
-                    }
-
-                    const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
-                    if(tabs) {
-                        tabs.forEach(tab => {
-                            sendMessage('LoggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
-                        });
-                    }
-                } else {
-                    console.log("No refresh token found, revoking tokens");
-                    await revokeTokens(access_token);
-                }
-
-            }
+            await sendMessage('Login', undefined);
         } catch (error) {
             console.log('Error in handleLogin: ', error);
         } finally {

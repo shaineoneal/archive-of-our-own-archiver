@@ -1,6 +1,6 @@
 import {
     handleAddWorkToSpreadsheet, handleGetValidAccessToken,
-    handleIsAccessTokenValid,
+    handleIsAccessTokenValid, handleLogin,
     handleQuerySpreadSheet,
     onMessage
 } from "@/utils/browser-services";
@@ -12,4 +12,5 @@ export default defineBackground(() => {
     onMessage('AddWorkToSpreadsheet', handleAddWorkToSpreadsheet);
     onMessage('IsAccessTokenValid', handleIsAccessTokenValid);
     onMessage('GetValidAccessToken', handleGetValidAccessToken);
+    onMessage('Login', handleLogin);
 });
