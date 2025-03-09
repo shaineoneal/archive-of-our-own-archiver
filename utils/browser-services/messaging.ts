@@ -29,7 +29,7 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): P
     if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
         try {
             const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, msg.data);
-            setStore(`${msg.data.workId}`, work, StoreMethod.SESSION);
+            setStore(`${msg.data.workId}`, work, StoreMethod.LOCAL);
             return work;
         } catch (error) {
             console.error('error adding work to sheet', error);
@@ -90,7 +90,7 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
                 let readCount = row.c[6] ? row.c[6].v : 1;
                 let skipReason = row.c[7] ? row.c[7].v : undefined;
                 let work = { workId, index, status, history, personalTags, rating, readCount, skipReason };
-                setStore(`${workId}`, work, StoreMethod.SESSION);
+                setStore(`${workId}`, work, StoreMethod.LOCAL);
             }
             responseArray = compareArrays(msg.data, response.table.rows);
         }
