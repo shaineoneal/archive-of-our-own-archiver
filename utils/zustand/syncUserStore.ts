@@ -56,7 +56,7 @@ export const SyncUserStore = create<UserStoreType>()(
                 setSpreadsheetId: (spreadsheetId: string) => {
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
-                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId ) => {
+                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId? ) => {
                     if (!spreadsheetId) {
                         set({user: {...get().user, accessToken: accessToken, refreshToken: refreshToken}});
                     } else {
