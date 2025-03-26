@@ -13,7 +13,7 @@ const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
  */
 const requestAccessToken = (refreshT: string): Promise<Response> => {
     if(!client_id || !client_secret) {
-        throw new Error('Invalid oauth2 configuration');
+        throw new Error('Invalid oauth2 configuration in requestAccessToken');
     }
     return makeRequest({
         url: 'https://oauth2.googleapis.com/token',
