@@ -10,7 +10,6 @@ export default defineContentScript({
     runAt: "document_end",
     async main() {
         console.log('content script running');
-        browser.runtime.onMessage.addListener(messageListener);
         document.addEventListener('visibilitychange', handleVisibilityChange);
     },
 });
