@@ -149,7 +149,7 @@ export function addControls(workWrap: Element): Node {
     const controls = document.createElement('ul');
     controls.className = 'blurb-controls actions';
     try {
-        browser.storage.local.get(workId, (result) => {
+        browser.storage.local.get(workId).then((result) => {
             if (result && result[workId]) {
                 console.log(`Entry found for workId: ${workId}`, result[workId]);
                 controls.appendChild(incrementReadCountControl(workWrap));
@@ -179,9 +179,9 @@ export function addInfo(work: Element): Node {
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
-    browser.storage.local.get(workId, (result) => {
+    browser.storage.local.get(workId).then((result) => {
         console.log('result from local store: ', result);
-        const userWork = result[workId];
+        const userWork = result[workId] as any;
         console.log('userWork: ', userWork);
 
         const history = userWork.history
@@ -229,13 +229,14 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
         console.log('incrementReadCount clicked!: ', workWrap);
 
         const aWork = Ao3_BaseWork.createWork(workWrap);
+        console.log('aWork: ', aWork);
         const workId = `${aWork.workId}`;
 
-        browser.storage.local.get(workId, (result) => {
+        browser.storage.local.get(workId).then((result) => {
             if (!result[workId]) {
                 return;
             }
-            const uWork = result[aWork.workId];
+            const uWork = result[aWork.workId] as any;
             console.log('uWork: ', uWork);
 
             uWork.readCount += 1;
@@ -261,18 +262,10 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 uWork.skipReason
             );
 
-            //sendMessage(
-            //    MessageName.UpdateWorkInSheet,
-            //    { work: work },
-            //    (response: MessageResponse<boolean>) => {
-            //        if (response.error) {
-            //            console.log('incrementReadCount error: ', response.error);
-            //        } else {
-            //            console.log('content script response: ', response.response);
-            //            changeBlurbStyle(WorkStatus.Read, workWrap);
-            //        }
-            //    }
-            //);
+            sendMessage('UpdateWorkInSpreadsheet', work).then((response: boolean) => {
+                console.log('content script response: ', response);
+                changeBlurbStyle(WorkStatus.Read, workWrap);
+            });
         });
     });
 
