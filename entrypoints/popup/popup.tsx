@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupBody } from './main/popup_body.tsx';
-import { useUser } from '@/utils/zustand';
+import { UserDataType, useUser } from '@/utils/zustand';
 import { OptionsIcon } from './main/optionsIcon.tsx';
 import '../styles.scss';
 
@@ -17,8 +17,8 @@ import '../styles.scss';
  * @returns the Popup component
  */
 const Popup = () => {
-
-    const user = useUser();
+    // create new react state for user
+    const [user, setUser] = useState<UserDataType>(useUser());
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
