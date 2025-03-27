@@ -79,7 +79,7 @@ export class Ao3_BaseWork extends BaseWork {
             workId = parseInt(workNode.id.split('_')[1]);
         }
         else {
-            const workIdNode = workNode.querySelector(`.work`);
+            const workIdNode = workNode.querySelector(`.status-read`);
             if (!workIdNode) {
                 throw new Error(`Work not found on page`);
             }
