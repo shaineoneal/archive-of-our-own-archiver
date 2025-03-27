@@ -34,7 +34,7 @@ export default defineConfig({
         browser_specific_settings: {
             gecko: {
                 id: 'shaineoneal@gmail.com',
-                strict_min_version: '42.0'
+                strict_min_version: '58.0'
             }
         }
     }
