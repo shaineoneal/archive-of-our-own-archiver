@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/utils/browser-services';
+import { exchangeRefreshForAccessToken, isAccessTokenValid, onMessage } from '@/utils/browser-services';
 import { log } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
@@ -62,6 +62,7 @@ export const PopupBody = () => {
                     try {
                         // If the access token is invalid, exchange the refresh token for a new access token
                         const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+                        console.log('Access token is invalid', newAccessToken);
                         if (!newAccessToken) {
                             logout();
                             return;
@@ -88,3 +89,12 @@ export const PopupBody = () => {
 };
 
 export default PopupBody;
+
+//listen for messages from the background script
+onMessage('LoggedIn', () => {
+    console.log('User is logged in');
+    SyncUserStore.getState().actions.getUser().then((user) => {
+            SyncUserStore.getState().actions.userStoreLogin(user.accessToken, user.refreshToken, user.spreadsheetId);
+        }
+    )
+})
