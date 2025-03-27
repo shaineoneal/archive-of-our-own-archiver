@@ -16,6 +16,7 @@ import {
     createSpreadsheet,
     revokeTokens
 } from "@/utils/browser-services";
+import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
 
 
 interface ProtocolMap {
@@ -25,6 +26,7 @@ interface ProtocolMap {
     LoggedIn(data: UserDataType): void;
     Login(): void;
     QuerySpreadSheet(searchList: number[]): boolean[];
+    UpdateWorkInSpreadsheet(work: User_BaseWork): boolean;
 }
 
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
@@ -90,9 +92,12 @@ export async function handleLogin(): Promise<void> {
                 if (!user.spreadsheetId) {
                     const newSheet = await createSpreadsheet(access_token);
                     userStoreLogin(access_token, refresh_token, newSheet);
+                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
                 } else {
                     userStoreLogin(access_token, refresh_token);
+                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token});
                 }
+
 
                 const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
                 if (tabs) {
@@ -146,4 +151,24 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     } catch (error: any) {
         throw new Error(error);
     }
+}
+
+export async function handleUpdateWorkInSpreadsheet(msg: { data: User_BaseWork }): Promise<boolean> {
+    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
+    let syncUser = await getUser();
+
+    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
+        throw new Error('no spreadsheetId or accessToken');
+    }
+
+    try {
+        const response = await updateWorkInSheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
+        if (response) {
+            setStore(`${msg.data.workId}`, msg.data, StoreMethod.LOCAL);
+            return response;
+        }
+    } catch (error: any) {
+        throw new Error(error);
+    }
+    return false;
 }
