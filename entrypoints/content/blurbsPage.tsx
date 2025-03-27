@@ -74,16 +74,15 @@ async function injectWorkStatuses(worksOnPage: NodeList, response: boolean[]) {
     if(response === null) {
         return Error;
     } else {
-        for (const workRef of response) {
-            const index: number = response.indexOf(workRef);
-            console.log('workRef: ', workRef)
-            if (workRef) {
-                const workId = (worksOnPage[index] as Element).id.split('_')[1]
+        for (let i = 0; i < response.length; i++) {
+            console.log('index: ', i);
+            if (response[i]) {
+                const workId = (worksOnPage[i] as Element).id.split('_')[1]
                 console.log('workId: ', workId)
                 const resp = await browser.storage.local.get(workId);
                 console.log('local result: ', resp);
                 if (resp[workId] && resp[workId].status === WorkStatus.Read) {
-                    changeBlurbStyle(WorkStatus.Read, (worksOnPage[index].parentNode!));
+                    changeBlurbStyle(WorkStatus.Read, (worksOnPage[i].parentNode!));
                 }
             }
         }
