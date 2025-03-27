@@ -4,7 +4,7 @@ import { browser } from "wxt/browser";
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
-const scopes = import.meta.env.WXT_API_SCOPES;
+const scopes = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile'
 let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
 
 /**
@@ -82,14 +82,22 @@ export interface AuthRequestResponse {
  */
 export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
     let authUrl = '';
-    if (import.meta.env.BROWSER !== 'chrome') {
-        redirectUri = browser.identity.getRedirectURL();
-        authUrl = redirectUri
-        console.log('RedirectUri: ', redirectUri);
+    if (import.meta.env.BROWSER === 'chrome') {
+        try {
+            redirectUri = browser.identity.getRedirectURL();
+            if (redirectUri) {
+                authUrl = redirectUri
+            }
+            console.log('RedirectUri: ', redirectUri);
+        } catch (error) {
+            console.log('chromeLaunchWebAuthFlow Error: ', error);
+        }
+    } else if (import.meta.env.BROWSER === 'edge') {
     } else {
+        console.log('current browser: ', import.meta.env.BROWSER);
         authUrl = createAuthUrl()
     }
-console.log('other RedirectUri: ', redirectUri);
+    console.log('other RedirectUri: ', redirectUri);
     try {
         const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
 
