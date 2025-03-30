@@ -82,19 +82,6 @@ export function addWorkControl(workWrap: Element): HTMLElement {
             console.log('content script response: ', response);
             changeBlurbStyle(WorkStatus.Read, workWrap);
         });
-        //sendMessage(
-        //    MessageName.AddWorkToSheet,
-        //    { work: workBlurb },
-        //    (response: MessageResponse<User_BaseWork>) => {
-        //        if (response.error) {
-        //            console.log('addWork error: ', response.error);
-        //        } else {
-        //            console.log('content script response: ', response.response);
-        //            changeBlurbStyle(WorkStatus.Read, workWrap);
-//
-        //        }   //else popup login
-        //    }
-        //);
     });
 
     return innerToggle;
