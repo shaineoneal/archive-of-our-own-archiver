@@ -66,8 +66,6 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
         throw new Error('Error getting refresh token');
     }
 
-
-
     const response = await requestAccessToken(refreshT);
     console.log('exchangeRefreshForAccessToken Response: ', response);
 
