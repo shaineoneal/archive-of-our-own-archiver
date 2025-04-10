@@ -2,8 +2,7 @@
 import { handleVisibilityChange, main as contentScriptMain, messageListener } from "./content_script";
 
 export * from "./Ao3_BaseWork.ts"
-export * from "./BaseWork.ts";
-export * from "./User_BaseWork.tsx";
+export * from "./Work.tsx";
 
 export default defineContentScript({
     matches: ["*://*.archiveofourown.org/*"],
