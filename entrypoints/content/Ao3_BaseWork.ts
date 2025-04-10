@@ -1,6 +1,6 @@
-import { BaseWork } from "./BaseWork.ts";
+import { Work } from "./Work.tsx";
 
-export class Ao3_BaseWork extends BaseWork {
+export class Ao3_BaseWork extends Work {
     title: string;
     authors: string[];
     fandoms: string[];
