@@ -22,52 +22,6 @@ export class Ao3_BaseWork extends Work {
         this.chapterCount = chapterCount;
     }
 
-    getWork(workId: number): Ao3_BaseWork {
-        const workNode = document.querySelector(`#work_${workId}`);
-
-        if (!workNode) {
-            throw new Error(`Work ${workId} not found on page`);
-        }
-        const title = workNode.querySelector('.heading > a')!.textContent;
-
-        const authorNodes = workNode.querySelectorAll("[rel='author']");
-        const authors = Array.from(authorNodes).map(
-            (authorNode) => authorNode.textContent
-        );
-
-        const fandomNodes = workNode.querySelectorAll('.fandoms > a');
-        const fandoms = Array.from(fandomNodes).map(
-            (fandomNode) => fandomNode.textContent
-        );
-
-        const relationships = ['placeholder'];
-
-        const tags = ['placeholder'];
-
-        const description = 'longer placeholder';
-
-        const wordCount = workNode.querySelector('dd.words')!.textContent;
-
-        let chapterCount =
-            workNode.querySelector('dd.chapters > a')?.textContent;
-        if (!chapterCount) {
-            //one-shot
-            chapterCount = '1';
-        }
-
-        return new Ao3_BaseWork(
-            workId,
-            title!,
-            authors as string[],
-            fandoms as string[],
-            relationships,
-            tags,
-            description,
-            parseInt(wordCount!.replace(/,/g, '')),
-            parseInt(chapterCount!.replace(/,/g, ''))
-        );
-    }
-
     static createWork(workNode: Element | null) {
         if (!workNode) {
             throw new Error(`Work not found on page`);
