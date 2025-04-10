@@ -140,38 +140,43 @@ const sheetLayout = {
         },
         {
             namedRangeId: '13',
-            name: 'personalTags',
+            name: 'chapters',
             range: {
                 sheetId: 0,
                 startColumnIndex: 12,
                 endColumnIndex: 13
             }
-        },
-        {
+        },{
             namedRangeId: '14',
-            name: 'rating',
+            name: 'personalTags',
             range: {
                 sheetId: 0,
                 startColumnIndex: 13,
                 endColumnIndex: 14
             }
-        },
-        {
+        },{
             namedRangeId: '15',
-            name: 'readCount',
+            name: 'rating',
             range: {
                 sheetId: 0,
                 startColumnIndex: 14,
                 endColumnIndex: 15
             }
-        },
-        {
+        },{
             namedRangeId: '16',
-            name: 'skipReason',
+            name: 'readCount',
             range: {
                 sheetId: 0,
                 startColumnIndex: 15,
                 endColumnIndex: 16
+            }
+        },{
+            namedRangeId: '17',
+            name: 'skipReason',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 16,
+                endColumnIndex: 17
             }
         }
 
@@ -182,7 +187,7 @@ const sheetLayout = {
             sheetId: 0,
             gridProperties: {
                 rowCount: 2,
-                columnCount: 16,
+                columnCount: 17,
                 columnGroupControlAfter: true,
             }
         },
@@ -297,6 +302,14 @@ const sheetLayout = {
                             },
                             {
                                 userEnteredValue: {
+                                    stringValue: 'Chapters',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
+                            {
+                                userEnteredValue: {
                                     stringValue: 'Personal Tags',
                                 },
                                 userEnteredFormat: {
@@ -347,6 +360,7 @@ const sheetLayout = {
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                         ]
                     }
                 ],
@@ -362,10 +376,11 @@ const sheetLayout = {
             { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
             { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
             { startColumn: 11, columnMetadata: { pixelSize: 300 } }, //history
-            { startColumn: 12, columnMetadata: { pixelSize: 200 } }, //personal tags
-            { startColumn: 13, columnMetadata: { pixelSize: 100 } }, //rating
-            { startColumn: 14, columnMetadata: { pixelSize: 100 } }, //read count
-            { startColumn: 15, columnMetadata: { pixelSize: 200 } }, //skip reason
+            { startColumn: 12, columnMetadata: { pixelSize: 200 } }, //chapters
+            { startColumn: 13, columnMetadata: { pixelSize: 200 } }, //personal tags
+            { startColumn: 14, columnMetadata: { pixelSize: 100 } }, //rating
+            { startColumn: 15, columnMetadata: { pixelSize: 100 } }, //read count
+            { startColumn: 16, columnMetadata: { pixelSize: 200 } }, //skip reason
         ],
     },
 };
