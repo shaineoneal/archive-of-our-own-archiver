@@ -12,7 +12,7 @@ import { SyncUserStore, useActions, useLoaderStore } from '@/utils/zustand';
 export const NewSheet = () => {
     const { loader, setLoader } = useLoaderStore();
     let { accessToken, spreadsheetId } = SyncUserStore.getState().user;
-    const setSpreadsheetId = useActions().setSpreadsheetId;
+    const setSpreadsheetId = SyncUserStore.getState().actions.setSpreadsheetId;
 
     if (accessToken === undefined) {
         return null;
@@ -30,7 +30,6 @@ export const NewSheet = () => {
         const id = await createSpreadsheet(accessToken)
         if (id) {
             setSpreadsheetId(id);
-
         }
         setLoader(false);
     };
