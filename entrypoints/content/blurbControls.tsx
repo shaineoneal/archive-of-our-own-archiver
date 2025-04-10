@@ -139,7 +139,7 @@ export function addControls(workWrap: Element): Node {
     const controls = document.createElement('ul');
     controls.className = 'blurb-controls actions';
     try {
-        browser.storage.local.get(workId).then((result) => {
+        browser.storage.local.get(workId, (result) => {
             if (result && result[workId]) {
                 controls.appendChild(incrementReadCountControl(workWrap));
                 controls.appendChild(removeWorkControl(workWrap));
@@ -168,9 +168,9 @@ export function addInfo(work: Element): Node {
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
-    browser.storage.local.get(workId).then((result) => {
+    browser.storage.local.get(workId, (result) => {
         console.log('result from local store: ', result);
-        const userWork = result[workId] as any;
+        const userWork = result[workId];
         console.log('userWork: ', userWork);
 
         const history = userWork.history
@@ -220,7 +220,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
         const aWork = Work.fromBlurb(workWrap);
         const workId = `${aWork.workId}`;
 
-        browser.storage.local.get(workId).then((result) => {
+        browser.storage.local.get(workId, (result) => {
             if (!result[workId]) {
                 return;
             }
@@ -253,10 +253,18 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 },
             );
 
-            sendMessage('UpdateWorkInSpreadsheet', work).then((response: boolean) => {
-                console.log('content script response: ', response);
-                changeBlurbStyle(WorkStatus.Read, workWrap);
-            });
+            //sendMessage(
+            //    MessageName.UpdateWorkInSheet,
+            //    { work: work },
+            //    (response: MessageResponse<boolean>) => {
+            //        if (response.error) {
+            //            console.log('incrementReadCount error: ', response.error);
+            //        } else {
+            //            console.log('content script response: ', response.response);
+            //            changeBlurbStyle(WorkStatus.Read, workWrap);
+            //        }
+            //    }
+            //);
         });
     });
 
