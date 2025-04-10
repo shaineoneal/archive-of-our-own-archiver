@@ -141,7 +141,6 @@ export function addControls(workWrap: Element): Node {
     try {
         browser.storage.local.get(workId).then((result) => {
             if (result && result[workId]) {
-                console.log(`Entry found for workId: ${workId}`, result[workId]);
                 controls.appendChild(incrementReadCountControl(workWrap));
                 controls.appendChild(removeWorkControl(workWrap));
             } else {
