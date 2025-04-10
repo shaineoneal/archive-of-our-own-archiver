@@ -3,6 +3,7 @@ import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { SessionUserStore, SyncUserStore, useUser } from "@/utils/zustand";
+import { insideWorkPage } from "@/entrypoints/content/insideWorkPage.tsx";
 
 // Interface for message structure
 interface Message {
@@ -28,35 +29,14 @@ function handleUserChanged(sendResponse: (response: any) => void): void {
 export async function handleVisibilityChange(): Promise<void> {
     if (document.visibilityState === 'visible') {
         console.log('tab is now visible');
-        //initializePort();
         const resp = await sendMessage('GetValidAccessToken', undefined)
-        console.log(resp);
+        // see if page already loaded
+        pageTypeDetect();
     } else {
         console.log('tab is now hidden, closing port');
         //closePort();
         disconnectContentScript();
     }
-}
-
-// Check if the access token cookie is present
-function checkAccessToken(): void {
-
-}
-
-// Request to refresh the access token
-function refreshAccessToken(): void {
-    //sendMessage(
-    //    MessageName.RefreshAccessToken,
-    //    {},
-    //    (response: MessageResponse<string>) => {
-    //        if (response.error) {
-    //            console.log('refreshAccessToken error: ', response.error);
-    //        } else {
-    //            console.log('refreshAccessToken response: ', response.response);
-    //            pageTypeDetect();
-    //        }
-    //    }
-    //);
 }
 
 // Detect the type of page and handle accordingly
@@ -67,6 +47,9 @@ function pageTypeDetect(): void {
         });
     } else if (document.querySelector('.work.meta.group')) {
         console.log('Work Page');
+        insideWorkPage().then(() => {
+            console.log('insideWorkPage done');
+        });
     } else {
         console.log('PANIK: Unknown page');
     }
@@ -84,13 +67,15 @@ export async function main() {
     console.log('log: content_script.tsx loaded', user);
     try {
         const resp = await sendMessage('GetValidAccessToken', undefined);
-        console.log(resp);
+
         if(resp) {
             console.log('user is logged in');
             pageTypeDetect();
         }
     } catch (e) {
         console.log('error getting valid access token', e);
+        //TODO: handle error
+        // maybe re-call webAuthFlow non-interactively
     }
     /*if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
@@ -110,7 +95,7 @@ export async function main() {
 // Add event listeners
 //browser.runtime.onMessage.addListener(messageListener);
 //document.addEventListener('visibilitychange', handleVisibilityChange);
-const { userStoreLogin } = SyncUserStore.getState().actions;
+
 // sent from popup/login.tsx
 onMessage('LoggedIn', (data) => {
     console.log('logged in message received', data);
