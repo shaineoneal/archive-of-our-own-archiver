@@ -89,12 +89,3 @@ export const PopupBody = () => {
 };
 
 export default PopupBody;
-
-//listen for messages from the background script
-onMessage('LoggedIn', () => {
-    console.log('User is logged in');
-    SyncUserStore.getState().actions.getUser().then((user) => {
-            SyncUserStore.getState().actions.userStoreLogin(user.accessToken, user.refreshToken, user.spreadsheetId);
-        }
-    )
-})
