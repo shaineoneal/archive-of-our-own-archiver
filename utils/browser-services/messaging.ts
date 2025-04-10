@@ -1,5 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { Ao3_BaseWork, User_BaseWork } from "@/entrypoints/content";
+import { Ao3_BaseWork, Work } from "@/entrypoints/content";
 import { SyncUserStore, UserDataType } from "@/utils/zustand";
 import {
     isAccessTokenValid,
@@ -20,24 +20,24 @@ import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.ts
 
 
 interface ProtocolMap {
-    AddWorkToSpreadsheet(work: Ao3_BaseWork): User_BaseWork;
+    AddWorkToSpreadsheet(work: Work): Work;
     GetValidAccessToken(): string;
     IsAccessTokenValid(accessToken: string): boolean;
     LoggedIn(data: UserDataType): void;
     Login(): void;
     QuerySpreadSheet(searchList: number[]): boolean[];
-    UpdateWorkInSpreadsheet(work: User_BaseWork): boolean;
+    UpdateWorkInSpreadsheet(work: Work): boolean;
 }
 
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
-export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): Promise<User_BaseWork> {
+export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
     let sessionUser = await SyncUserStore.getState().actions.getUser();
 
     if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
         try {
             const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, msg.data);
-            setStore(`${msg.data.workId}`, work, StoreMethod.LOCAL);
+            setStore(`${msg.data.workId}`, work.info, StoreMethod.LOCAL);
             return work;
         } catch (error) {
             console.error('error adding work to sheet', error);
@@ -46,7 +46,7 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Ao3_BaseWork }): P
                 if (accessT) {
                     sessionUser.accessToken = accessT;
                     setStore('user', sessionUser, StoreMethod.SYNC);
-                    return await handleTokenExchange<User_BaseWork>(sessionUser.refreshToken);
+                    return await handleTokenExchange<Work>(sessionUser.refreshToken);
                 }
             }
             throw new Error('access token expired or invalid, and there was an error exchanging the refresh token');
@@ -134,16 +134,10 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
         let responseArray: boolean[] = [];
         if (response.table.rows && response.table.rows.length > 0) {
             for (let row of response.table.rows) {
-                let index = row.c[0].v ? row.c[0].v : 0;
-                let workId = row.c[1].v ? row.c[1].v : '';
-                let status = row.c[2] ? row.c[2].v : 'read';
-                let history = row.c[3] ? row.c[3].v : '';
-                let personalTags = row.c[4] ? row.c[4].v.split(',') : [];
-                let rating = row.c[5] ? row.c[5].v : 0;
-                let readCount = row.c[6] ? row.c[6].v : 1;
-                let skipReason = row.c[7] ? row.c[7].v : undefined;
-                let work = { workId, index, status, history, personalTags, rating, readCount, skipReason };
-                setStore(`${workId}`, work, StoreMethod.LOCAL);
+                console.log('row', row);
+                const work = Work.fromSheet(row)
+                console.log('work', work);
+                setStore(`${work.workId}`, work.info, StoreMethod.LOCAL);
             }
             responseArray = compareArrays(msg.data, response.table.rows);
         }
@@ -153,7 +147,7 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     }
 }
 
-export async function handleUpdateWorkInSpreadsheet(msg: { data: User_BaseWork }): Promise<boolean> {
+export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
     const { setAccessToken, getUser } = SyncUserStore.getState().actions;
     let syncUser = await getUser();
 

@@ -1,8 +1,7 @@
-import { Ao3_BaseWork } from './Ao3_BaseWork.ts';
+import { Work } from './Work.tsx';
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { changeBlurbStyle } from "./changeBlurbStyle.tsx";
-import { User_BaseWork } from "./User_BaseWork.tsx";
 import { wrap } from "@/utils";
 import '@/entrypoints/styles.scss';
 import { WorkStatus } from "@/utils/types/data.ts";
@@ -75,11 +74,15 @@ export function addWorkControl(workWrap: Element): HTMLElement {
 
         console.log('addWork clicked!: ', work);
 
-        const workBlurb = Ao3_BaseWork.createWork(work);
+        const workBlurb = Work.fromBlurb(work);
         console.log('workBlurb: ', workBlurb);
 
-        sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: User_BaseWork) => {
+        sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: Work) => {
             console.log('content script response: ', response);
+            if(response) {
+                console.log('addWork error: ', response);
+                return;
+            }
             changeBlurbStyle(WorkStatus.Read, workWrap);
         });
     });
@@ -102,7 +105,7 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
 
         console.log('removeWork clicked!: ', workWrap);
 
-        const workBlurb = Ao3_BaseWork.createWork(workWrap);
+        const workBlurb = Work.fromBlurb(workWrap);
         console.log('workBlurb.workId: ', workBlurb);
 
         //sendMessage(
@@ -215,15 +218,14 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
 
         console.log('incrementReadCount clicked!: ', workWrap);
 
-        const aWork = Ao3_BaseWork.createWork(workWrap);
-        console.log('aWork: ', aWork);
+        const aWork = Work.fromBlurb(workWrap);
         const workId = `${aWork.workId}`;
 
         browser.storage.local.get(workId).then((result) => {
             if (!result[workId]) {
                 return;
             }
-            const uWork = result[aWork.workId] as any;
+            const uWork = result[aWork.workId];
             console.log('uWork: ', uWork);
 
             uWork.readCount += 1;
@@ -238,15 +240,18 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
             });
             console.log('hist', history);
 
-            const work = new User_BaseWork(
+            const work = new Work(
                 aWork.workId,
-                uWork.index,
-                uWork.status,
-                history,
-                uWork.personalTags,
-                uWork.rating,
-                uWork.readCount,
-                uWork.skipReason
+                {
+                    title: uWork.title,
+                    authors: uWork.authors,
+                    fandoms: uWork.fandoms,
+                    relationships: uWork.relationships,
+                    tags: uWork.tags,
+                    description: uWork.description,
+                    wordCount: uWork.wordCount,
+                    chapterCount: uWork.chapterCount,
+                },
             );
 
             sendMessage('UpdateWorkInSpreadsheet', work).then((response: boolean) => {
