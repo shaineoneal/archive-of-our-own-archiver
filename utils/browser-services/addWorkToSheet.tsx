@@ -1,5 +1,4 @@
-import { Ao3_BaseWork, BaseWork } from '@/entrypoints/content';
-import { User_BaseWork } from "@/entrypoints/content/User_BaseWork.tsx";
+import { Ao3_BaseWork, Work } from '@/entrypoints/content';
 import { HttpMethod, makeRequest } from "./httpRequest.ts";
 
 //TODO: currently hard coded for the first sheet, need to make it dynamic
@@ -40,30 +39,31 @@ const createHistoryEntry = (): HistoryEntry[] => {
  *
  * @param {Ao3_BaseWork} work - The work entry to be added.
  * @param {HistoryEntry[]} history - The history entry.
- * @param {User_BaseWork} defaultUserWork - The default user work entry.
+ * @param {Work} defaultUserWork - The default user work entry.
  * @returns {RequestBody} - The request body.
  */
-const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultUserWork: User_BaseWork): RequestBody => ({
+const createRequestBody = (work: Work, history: HistoryEntry[]): RequestBody => ({
     range: 'AccessWorks!A1',
     majorDimension: 'ROWS',
     values: [
         [
             '=ROW(INDIRECT("R[0]C[1]", FALSE))',
             work.workId,
-            work.title,
-            work.authors.toString(),
-            work.fandoms.toString(),
-            work.relationships.toString(),
-            work.tags.toString(),
-            work.description,
-            work.wordCount,
-            work.chapterCount,
+            work.info?.title ?? '',
+            work.info?.authors?.toString() ?? '',
+            work.info?.fandoms?.toString() ?? '',
+            work.info?.relationships?.toString() ?? '',
+            work.info?.tags?.toString() ?? '',
+            work.info?.description,
+            work.info?.wordCount,
+            work.info?.chapterCount,
             'read',     //TODO: change this to a variable
             JSON.stringify(history),
-            defaultUserWork.personalTags?.toString() ?? '',
-            defaultUserWork.rating,
-            defaultUserWork.readCount,
-            defaultUserWork.skipReason?.toString() ?? ''
+            JSON.stringify(work.info?.chapters ?? []),
+            work.info?.personalTags?.toString() ?? '',
+            work.info?.rating,
+            work.info?.readCount ?? 1,
+            work.info?.skipReason?.toString() ?? ''
         ]
     ]
 });
@@ -73,17 +73,17 @@ const createRequestBody = (work: Ao3_BaseWork, history: HistoryEntry[], defaultU
  *
  * @param {string} spreadsheetId - The URL of the Google Sheets spreadsheet.
  * @param {string} authToken - The authentication token for Google Sheets API.
- * @param {BaseWork} work - The work entry to be added to the spreadsheet.
- * @returns {Promise<User_BaseWork>} - A promise that resolves to the added work entry.
+ * @param {Work} work - The work entry to be added to the spreadsheet.
+ * @returns {Promise<Work>} - A promise that resolves to the added work entry.
  */
-export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Ao3_BaseWork): Promise<User_BaseWork> => {
+export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Work): Promise<Work> => {
     console.log('addWorkToSheet', work);
     console.log('authToken', authToken);
     console.log('spreadsheetId', spreadsheetId);
 
     // Create history entry and default user work
     const history = createHistoryEntry();
-    const defaultUserWork = new User_BaseWork(work.workId);
+    const defaultUserWork = new Work(work.workId);
 
     // Make request to Google Sheets API
     const response = await makeRequest({
@@ -93,7 +93,7 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
             'Content-Type': 'application/json',
             Authorization: `Bearer ${authToken}`,
         },
-        body: createRequestBody(work, history, defaultUserWork)
+        body: createRequestBody(work, history)
     });
 
     console.log('unparsed response', response);
@@ -107,14 +107,25 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
     }
 
     // Return the added work entry
-    return new User_BaseWork(
-        parsedResponse.updates.updatedData.values[0][0],
+    return new Work(
         parsedResponse.updates.updatedData.values[0][1],
-        parsedResponse.updates.updatedData.values[0][10],
-        parsedResponse.updates.updatedData.values[0][11],
-        [],
-        0,
-        1,
-        'read'
+        {
+            index: parsedResponse.updates.updatedData.values[0][0],
+            title: parsedResponse.updates.updatedData.values[0][2],
+            authors: parsedResponse.updates.updatedData.values[0][3],
+            fandoms: parsedResponse.updates.updatedData.values[0][4],
+            relationships: parsedResponse.updates.updatedData.values[0][5],
+            tags: parsedResponse.updates.updatedData.values[0][6],
+            description: parsedResponse.updates.updatedData.values[0][7],
+            wordCount: parsedResponse.updates.updatedData.values[0][8],
+            chapterCount: parsedResponse.updates.updatedData.values[0][9],
+            status: parsedResponse.updates.updatedData.values[0][10],
+            history: parsedResponse.updates.updatedData.values[0][11],
+            chapters: parsedResponse.updates.updatedData.values[0][12],
+            personalTags: parsedResponse.updates.updatedData.values[0][13],
+            rating: parsedResponse.updates.updatedData.values[0][14],
+            readCount: parsedResponse.updates.updatedData.values[0][15],
+            skipReason: parsedResponse.updates.updatedData.values[0][16]
+        }
     );
 };
