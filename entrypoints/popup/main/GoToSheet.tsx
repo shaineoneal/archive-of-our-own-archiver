@@ -1,3 +1,5 @@
+import { Button } from '@mantine/core'
+import '@mantine/core/styles.css'
 
 /**
  * Component that displays a button to go to the user's sheet.
@@ -11,9 +13,9 @@ export const GoToSheet = (props: { spreadsheetId: string }) => {
 
     return (
         <div className="loggedIn">
-            <button id="sheet-button" onClick={handleGoToSheet}>
+            <Button id="sheet-button" onClick={handleGoToSheet} variant="filled">
                 View your sheet
-            </button>
+            </Button>
         </div>
     );
 };

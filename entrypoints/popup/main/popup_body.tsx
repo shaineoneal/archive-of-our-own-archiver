@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid, onMessage } from '@/utils/browser-services';
-import { log } from '@/utils';
+import { isInPopup, log } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
 
@@ -21,6 +21,9 @@ export const PopupBody = () => {
     let user = useUser();
     const setUser = SyncUserStore.getState().actions.userStoreLogin;
     const { setAccessToken, logout } = useActions();
+
+    const resp = isInPopup();
+    console.log('isInPopup: ', resp);
 
     useEffect(() => {
         (async () => {

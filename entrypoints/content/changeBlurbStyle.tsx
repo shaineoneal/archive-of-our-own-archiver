@@ -49,6 +49,7 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             toggleEl.appendChild(addInfo(workEl));
             break;
         default:
+            // remove status class
             (Object.keys(STATUS_CLASSES) as Array<keyof typeof STATUS_CLASSES>).forEach((status) => {
                 workEl.classList.remove(STATUS_CLASSES[status]);
             });
