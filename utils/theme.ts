@@ -1,78 +1,28 @@
-import { Card, Container, createTheme, Paper, rem, Select } from "@mantine/core";
-import type { MantineThemeOverride } from "@mantine/core";
+import { createTheme } from '@mantine/core';
 
-const CONTAINER_SIZES: Record<string, string> = {
-    xxs: rem("200px"),
-    xs: rem("300px"),
-    sm: rem("400px"),
-    md: rem("500px"),
-    lg: rem("600px"),
-    xl: rem("1400px"),
-    xxl: rem("1600px"),
-};
-
-export const mantineTheme: MantineThemeOverride = createTheme({
-    /** Put your mantine theme override here */
-    fontSizes: {
-        xs: rem("12px"),
-        sm: rem("14px"),
-        md: rem("16px"),
-        lg: rem("18px"),
-        xl: rem("20px"),
-        "2xl": rem("24px"),
-        "3xl": rem("30px"),
-        "4xl": rem("36px"),
-        "5xl": rem("48px"),
+export const theme = createTheme({
+    colors: {
+        light: [
+            "#f86a68",
+            "#f9403b",
+            "#f92b20",
+            "#fa2113",
+            "#DF1708",
+            "#c70f04",
+            "#a00",
+            "#900",
+            "#800",
+            "#700",
+        ]
     },
-    spacing: {
-        "3xs": rem("4px"),
-        "2xs": rem("8px"),
-        xs: rem("10px"),
-        sm: rem("12px"),
-        md: rem("16px"),
-        lg: rem("20px"),
-        xl: rem("24px"),
-        "2xl": rem("28px"),
-        "3xl": rem("32px"),
-    },
-    primaryColor: "blue",
+    primaryColor: 'light',
     components: {
-        /** Put your mantine component override here */
-        Container: Container.extend({
-            vars: (_, { size, fluid }) => ({
+        Container: {
+            styles: () => ({
                 root: {
-                    "--container-size": fluid
-                        ? "100%"
-                        : size !== undefined && size in CONTAINER_SIZES
-                            ? CONTAINER_SIZES[size]
-                            : rem(size),
+                    width: '350px',
                 },
             }),
-        }),
-        Paper: Paper.extend({
-            defaultProps: {
-                p: "md",
-                shadow: "xl",
-                radius: "md",
-                withBorder: true,
-            },
-        }),
-
-        Card: Card.extend({
-            defaultProps: {
-                p: "xl",
-                shadow: "xl",
-                radius: "var(--mantine-radius-default)",
-                withBorder: true,
-            },
-        }),
-        Select: Select.extend({
-            defaultProps: {
-                checkIconPosition: "right",
-            },
-        }),
-    },
-    other: {
-        style: "mantine",
-    },
-});
+        }
+    }
+})

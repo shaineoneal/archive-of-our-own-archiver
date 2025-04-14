@@ -2,6 +2,9 @@
     "extends": "./.wxt/tsconfig.json",
     "compilerOptions": {
         "jsx": "react-jsx",
-        "allowImportingTsExtensions": true
+        "allowImportingTsExtensions": true,
+        "plugins": [{
+            "name": "typescript-plugin-css-modules",
+        }]
     }
 }

@@ -63,8 +63,8 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main() {
-    const user = await SyncUserStore.getState().actions.getUser()
-    console.log('log: content_script.tsx loaded', user);
+    //const user = await SyncUserStore.getState().actions.getUser()
+    //console.log('log: content_script.tsx loaded', user);
     try {
         const resp = await sendMessage('GetValidAccessToken', undefined);
 
@@ -111,3 +111,4 @@ main();
 
 //listener for updates to the user store
 browser.storage.local.onChanged.addListener(main)
+

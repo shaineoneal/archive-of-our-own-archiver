@@ -1,16 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupBody } from './main/popup_body.tsx';
 import { UserDataType, useUser } from '@/utils/zustand';
-import { OptionsIcon } from './main/optionsIcon.tsx';
-import { createTheme, MantineColorsTuple, MantineProvider, Container, AppShell, Flex, ActionIcon } from "@mantine/core";
+import { OptionsIcon } from '../../components/optionsIcon.tsx';
+import {
+    createTheme,
+    MantineColorsTuple,
+    MantineProvider,
+    Container,
+    AppShell,
+    Flex,
+    ActionIcon,
+    Title, ThemeIcon, LoadingOverlay
+} from "@mantine/core";
 import { isInPopup } from '@/utils';
-import classes from '@/styles/popup/Header.module.scss';
-import popupStyles from '@/styles/popup/popup.module.scss';
-import '@mantine/core/styles.css'
-import { mantineTheme } from "@/utils/theme.ts";
-import { ThemeToggle } from "@/entrypoints/popup/components/ThemeToggle.tsx";
 
+//import classes from '@/styles/popup/Header.module.scss';
+//import popupStyles from '@/styles/popup/popup.module.scss';
+
+import { ThemeToggle } from "@/components/ThemeToggle.tsx";
+
+import { theme } from "@/utils/theme.ts";
+import "@mantine/core/styles.css"
+import { PopupHeader } from "@/components/PopupHeader.tsx";
+import { useToggle } from "@mantine/hooks";
 /**
  * The popup component.
  * This component will display either a login or the GoToSheet component based on the user's login status.
@@ -31,24 +44,10 @@ const Popup = () => {
     }, [user]);
 
     return (
-        <AppShell className={popupStyles.popup}>
-            <AppShell.Header className={classes.header}>
-                <Flex
-                    align="flex"
-                    className={classes.inner}
-                >
-                    <ActionIcon className="logo">
-                        <img src="icons/icon-32.png" alt="extension-icon" />
-                    </ActionIcon>
-                    <div className="title">AO3E: Rewritten</div>
-                    <OptionsIcon />
-                    <ThemeToggle />
-                </Flex>
-            </AppShell.Header>
-            <AppShell.Main>
+        <Container w="350px" p='var(--mantine-spacing-sm)'>
+                <PopupHeader />
                 <PopupBody />
-            </AppShell.Main>
-        </AppShell>
+        </Container>
     );
 };
 
@@ -64,7 +63,7 @@ if(popupLocation) {
 }
 
 root.render(
-    <MantineProvider theme={mantineTheme}>
+    <MantineProvider theme={theme}>
         <Popup />
     </MantineProvider>
 );

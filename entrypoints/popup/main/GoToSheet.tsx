@@ -1,4 +1,4 @@
-import { Button } from '@mantine/core'
+import { Button, Center } from '@mantine/core'
 import '@mantine/core/styles.css'
 
 /**
@@ -12,10 +12,10 @@ export const GoToSheet = (props: { spreadsheetId: string }) => {
     };
 
     return (
-        <div className="loggedIn">
-            <Button id="sheet-button" onClick={handleGoToSheet} variant="filled">
+        <Center>
+            <Button justify="center" id="sheet-button" onClick={handleGoToSheet} variant="filled">
                 View your sheet
             </Button>
-        </div>
+        </Center>
     );
 };
