@@ -80,8 +80,6 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main() {
-    const user = await SyncUserStore.getState().actions.getUser()
-    console.log('log: content_script.tsx loaded', user);
     try {
         const resp = await sendMessage('GetValidAccessToken', undefined);
         console.log(resp);
