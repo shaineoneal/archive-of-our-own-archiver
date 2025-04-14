@@ -3,7 +3,8 @@ import { exchangeRefreshForAccessToken, isAccessTokenValid, onMessage } from '@/
 import { isInPopup, log } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
-
+import '@mantine/core/styles.css';
+import { Loader } from "@mantine/core";
 
 /**
  * The popup body component.
@@ -86,7 +87,7 @@ export const PopupBody = () => {
         })();
     }, []);
 
-    return loader ? <div className="loader" /> 
+    return loader ? <Loader />
         : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <Login />
             : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
 };

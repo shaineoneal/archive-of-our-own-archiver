@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { IconContext } from 'react-icons';
-import { BiArrowBack } from 'react-icons/bi';
+import { IconArrowLeft } from "@tabler/icons-react";
 import '../../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
+import { CloseButton, Container, Flex, MantineProvider, Paper } from "@mantine/core";
+import '@mantine/core/styles.css';
+import { theme } from "@/utils/theme.ts";
+
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
@@ -49,35 +52,38 @@ const Options =  () => {
     //});
 
     return (
-        <>
-            <header>
-                <div className="flex-container">
-                    <IconContext.Provider value={{className: 'back-icon'}}>
-                        <a href="popup.html">
-                            <BiArrowBack/>
-                        </a>
-                    </IconContext.Provider>
-                    <div className="title">AO3E Rewritten&apos;s Options</div>
-                </div>
-            </header>
+        <Container w="350px" p='var(--mantine-spacing-sm)'>
+        <Flex>
+            <CloseButton >
+                <a href="popup.html">
+                    <IconArrowLeft/>
+                </a>
+            </ CloseButton>
+            <div className="title">AO3E Rewritten&apos;s Options</div>
+        </ Flex>
             <main>
-                <div className="options-container">
+                <Paper shadow="xs" p="md" mb="md" withBorder>
                     <div>Google Spreadsheets URL</div>
                     <input 
                         type="text" 
                         defaultValue={spreadsheetUrl}
                         onChange={onChange}
                     />
-                    <Logout/>
                     <NewSheet/>
-                </div>
+                </Paper>
+            <Paper shadow="xs" p="md" withBorder>
+                <Logout/>
+            </Paper>
+
             </main>
-        </>
+        </Container>
     );
 };
 
 export const root = createRoot(document.getElementById("root")!);
 
 root.render(
+    <MantineProvider theme={theme}>
     <Options />
+    </MantineProvider>
 );
