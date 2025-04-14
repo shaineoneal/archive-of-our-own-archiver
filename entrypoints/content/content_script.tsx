@@ -110,7 +110,6 @@ export async function main() {
 // Add event listeners
 //browser.runtime.onMessage.addListener(messageListener);
 //document.addEventListener('visibilitychange', handleVisibilityChange);
-const { userStoreLogin } = SyncUserStore.getState().actions;
 // sent from popup/login.tsx
 onMessage('LoggedIn', (data) => {
     console.log('logged in message received', data);
