@@ -7,6 +7,7 @@ import { Logout, NewSheet } from './';
 import { CloseButton, Container, Flex, MantineProvider, Paper } from "@mantine/core";
 import '@mantine/core/styles.css';
 import { theme } from "@/utils/theme.ts";
+import { PopupHeader } from "@/components/PopupHeader.tsx";
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -53,14 +54,7 @@ const Options =  () => {
 
     return (
         <Container w="350px" p='var(--mantine-spacing-sm)'>
-        <Flex>
-            <CloseButton >
-                <a href="popup.html">
-                    <IconArrowLeft/>
-                </a>
-            </ CloseButton>
-            <div className="title">AO3E Rewritten&apos;s Options</div>
-        </ Flex>
+        <PopupHeader/>
             <main>
                 <Paper shadow="xs" p="md" mb="md" withBorder>
                     <div>Google Spreadsheets URL</div>

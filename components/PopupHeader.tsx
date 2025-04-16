@@ -1,8 +1,27 @@
-import { Flex, Group, ThemeIcon, Title } from "@mantine/core";
+import { CloseButton, Flex, Group, ThemeIcon, Title } from "@mantine/core";
 import { OptionsIcon } from "@/components/optionsIcon.tsx";
 import classes from '@/components/modules/PopupHeader.module.css';
+import { IconArrowLeft } from "@tabler/icons-react";
+import React from "react";
 
 export function PopupHeader() {
+
+    const mainPage = document.querySelector('.main-popup-header');
+    console.log('page: ', mainPage);
+    if (!mainPage) {
+        return (
+            <Flex className={classes.header} >
+                <CloseButton
+                    className={classes.back}
+                    component="a"
+                    href="popup.html"
+                    icon={<IconArrowLeft />}
+                />
+                <div className="title">AO3E Rewritten&apos;s Options</div>
+                <ThemeToggle />
+            </Flex>
+        )
+    }
     return (
         <Flex className={classes.header} >
             <Group>
