@@ -8,3 +8,7 @@
     background: transparent;
     color: var(--mantine-color-bright);
 }
+
+.header .back {
+    stroke: var(--mantine-color-bright);
+}
