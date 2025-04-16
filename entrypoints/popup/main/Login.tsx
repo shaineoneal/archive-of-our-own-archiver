@@ -1,6 +1,7 @@
 import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '@/utils/browser-services';
 import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { sendMessage } from '@/utils/browser-services/messaging';
+import { Button, Center, Text } from "@mantine/core";
 
 
 /**
@@ -38,16 +39,17 @@ export const Login = () => {
 
     return (
         <>
-            <h1>Please log in to begin</h1>
-            <div className="login">
-                <button
+            <Text size="xl" fw={500} ta="center" p={15}>Please log in to begin</Text>
+            <Center>
+                <Button
                     id="login-button"
                     onClick={ handleLogin }
                     disabled={ loader }
+                    justify="center"
                 >
                     Login to Google
-                </button>
-            </div>
+                </Button>
+            </Center>
         </>
     );
 };
