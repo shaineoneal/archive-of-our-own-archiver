@@ -45,7 +45,6 @@ export const Login = () => {
                     id="login-button"
                     onClick={ handleLogin }
                     disabled={ loader }
-                    justify="center"
                 >
                     Login to Google
                 </Button>
