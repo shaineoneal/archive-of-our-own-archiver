@@ -1,6 +1,6 @@
 import { CloseButton, Flex, Group, ThemeIcon, Title } from "@mantine/core";
 import { OptionsIcon } from "@/components/optionsIcon.tsx";
-import classes from '@/components/modules/PopupHeader.module.css';
+import classes from '@/components/PopupHeader/PopupHeader.module.css';
 import { IconArrowLeft } from "@tabler/icons-react";
 import React from "react";
 
