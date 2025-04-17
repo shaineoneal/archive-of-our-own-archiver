@@ -7,7 +7,7 @@ import { Logout, NewSheet } from './';
 import { CloseButton, Container, Flex, MantineProvider, Paper } from "@mantine/core";
 import '@mantine/core/styles.css';
 import { theme } from "@/utils/theme.ts";
-import { PopupHeader } from "@/components/PopupHeader.tsx";
+import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();

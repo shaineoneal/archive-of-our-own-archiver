@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { IconSettingsFilled } from "@tabler/icons-react";
 import { useUser } from '@/utils/zustand';
 import { ActionIcon } from '@mantine/core';
-import classes from '@/components/modules/optionsIcon.module.css'
+import classes from '@/components/PopupHeader/PopupHeader.module.css'
 
 /**
  * OptionsIcon component renders an icon that links to the options page.
