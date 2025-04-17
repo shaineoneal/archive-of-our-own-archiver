@@ -15,14 +15,10 @@ export const theme = createTheme({
             "#700",
         ]
     },
+    headings: {
+        fontFamily: 'Georgia',
+    },
     primaryColor: 'light',
     components: {
-        Container: {
-            styles: () => ({
-                root: {
-                    width: '350px',
-                },
-            }),
-        }
     }
 })
