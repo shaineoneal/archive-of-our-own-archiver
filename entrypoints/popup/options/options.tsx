@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { root } from '@/entrypoints/popup/popup.tsx';
 import { SyncUserStore, useActions } from '@/utils/zustand';
-import { Logout, NewSheet } from './';
-import { CloseButton, Container, Flex, MantineProvider, Paper } from "@mantine/core";
+import { Logout } from './';
+import { NewSheet } from '@/components/NewSheet.tsx';
+import { Container, Flex, Input, MantineProvider, Paper, Title } from "@mantine/core";
 import '@mantine/core/styles.css';
 import { theme } from "@/utils/theme.ts";
 import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";

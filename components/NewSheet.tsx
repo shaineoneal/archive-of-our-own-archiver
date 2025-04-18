@@ -1,5 +1,5 @@
 import { createSpreadsheet } from '@/utils/browser-services';
-import { SyncUserStore, useActions, useLoaderStore } from '@/utils/zustand';
+import classes from '@/components/modules/NewSheetButton.module.css'
 
 /**
  * Component for creating a new Google Sheet.
@@ -35,13 +35,14 @@ export const NewSheet = () => {
     };
 
     return (
-        <div>
-            <button
-                id="new-sheet-button"
+        <Flex justify="end" align="center">
+            <Button
                 onClick={ handleNewSheet }
+                variant="subtle"
+                className={classes.newSheet}
             >
                 New Sheet
-            </button>
-        </div>
+            </Button>
+        </Flex>
     );
 };
