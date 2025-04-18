@@ -1,29 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupBody } from './main/popup_body.tsx';
-import { UserDataType, useUser } from '@/utils/zustand';
-import { OptionsIcon } from '../../components/optionsIcon.tsx';
-import {
-    createTheme,
-    MantineColorsTuple,
-    MantineProvider,
-    Container,
-    AppShell,
-    Flex,
-    ActionIcon,
-    Title, ThemeIcon, LoadingOverlay
-} from "@mantine/core";
+import { useLoaderStore, useUser } from '@/utils/zustand';
+import { Container, LoadingOverlay, MantineProvider } from "@mantine/core";
 import { isInPopup } from '@/utils';
-
-//import classes from '@/styles/popup/Header.module.scss';
-//import popupStyles from '@/styles/popup/popup.module.scss';
-
-import { ThemeToggle } from "@/components/ThemeToggle.tsx";
-
 import { theme } from "@/utils/theme.ts";
 import "@mantine/core/styles.css"
-import { PopupHeader } from "@/components/PopupHeader.tsx";
-import { useToggle } from "@mantine/hooks";
+import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";
+import { useMounted } from "@mantine/hooks";
+
 /**
  * The popup component.
  * This component will display either a login or the GoToSheet component based on the user's login status.
@@ -37,6 +22,11 @@ import { useToggle } from "@mantine/hooks";
  */
 const Popup = () => {
     // create new react state for user
+    const user = useUser();
+    const { loader } = useLoaderStore();
+    const mounted = useMounted();
+    console.log('mounted: ', mounted);
+    // Check if the popup is in a popup window
     const popupLocation = isInPopup()
 
     useEffect(() => {
@@ -44,14 +34,12 @@ const Popup = () => {
     }, [user]);
 
     return (
-        <Container w="350px" p='var(--mantine-spacing-sm)'>
-                <PopupHeader />
-                <PopupBody />
         <Container
             w={isInPopup() ? "350px" : "100%"}
             p='var(--mantine-spacing-sm)'
             className="main-popup-header"
         >
+            <LoadingOverlay visible={!mounted && !loader} overlayProps={{ radius: 'sm', blur: 2 }}/>
             <PopupHeader/>
             <PopupBody/>
         </Container>
@@ -62,6 +50,6 @@ export const root = createRoot(document.getElementById("root")!);
 
 root.render(
     <MantineProvider theme={theme}>
-        <Popup />
+        <Popup/>
     </MantineProvider>
 );
