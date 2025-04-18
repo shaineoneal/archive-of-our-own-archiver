@@ -37,7 +37,7 @@ import { useToggle } from "@mantine/hooks";
  */
 const Popup = () => {
     // create new react state for user
-    const [user, setUser] = useState<UserDataType>(useUser());
+    const popupLocation = isInPopup()
 
     useEffect(() => {
         //to ensure that the options icon reloads when the user logs in
@@ -47,20 +47,18 @@ const Popup = () => {
         <Container w="350px" p='var(--mantine-spacing-sm)'>
                 <PopupHeader />
                 <PopupBody />
+        <Container
+            w={isInPopup() ? "350px" : "100%"}
+            p='var(--mantine-spacing-sm)'
+            className="main-popup-header"
+        >
+            <PopupHeader/>
+            <PopupBody/>
         </Container>
     );
 };
 
 export const root = createRoot(document.getElementById("root")!);
-
-// Check if the popup is in a popup window
-const popupLocation = isInPopup()
-
-if(popupLocation) {
-    document.getElementById('root')?.classList.add('popup');
-} else {
-    document.getElementById('root')?.classList.add('tab');
-}
 
 root.render(
     <MantineProvider theme={theme}>
