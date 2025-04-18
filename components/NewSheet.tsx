@@ -1,4 +1,6 @@
 import { createSpreadsheet } from '@/utils/browser-services';
+import { SyncUserStore, useLoaderStore } from '@/utils/zustand';
+import { Button, Flex } from "@mantine/core";
 import classes from '@/components/modules/NewSheetButton.module.css'
 
 /**
@@ -10,8 +12,8 @@ import classes from '@/components/modules/NewSheetButton.module.css'
  * @returns the NewSheet component
  */
 export const NewSheet = () => {
-    const { loader, setLoader } = useLoaderStore();
-    let { accessToken, spreadsheetId } = SyncUserStore.getState().user;
+    const { setLoader } = useLoaderStore();
+    let { accessToken } = SyncUserStore.getState().user;
     const setSpreadsheetId = SyncUserStore.getState().actions.setSpreadsheetId;
 
     if (accessToken === undefined) {
@@ -37,7 +39,7 @@ export const NewSheet = () => {
     return (
         <Flex justify="end" align="center">
             <Button
-                onClick={ handleNewSheet }
+                onClick={handleNewSheet}
                 variant="subtle"
                 className={classes.newSheet}
             >
