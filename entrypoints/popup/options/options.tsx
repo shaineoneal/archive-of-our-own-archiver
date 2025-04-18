@@ -16,7 +16,7 @@ export function openOptionsPage() {
  * The main component for the options page.
  * @returns the Options component
  */
-const Options =  () => {
+const Options = () => {
 
     let { setSpreadsheetId } = useActions();
     let { spreadsheetId } = SyncUserStore.getState().user;
@@ -31,7 +31,7 @@ const Options =  () => {
 
         const match = event.target.value.match(regex);
         console.log('match: ', match);
-        if(match && match[1]) {
+        if (match && match[1]) {
             const spreadsheetId = match[1];
             console.log('new spreadsheetId: ', spreadsheetId);
             setSpreadsheetId(spreadsheetId);
@@ -53,20 +53,25 @@ const Options =  () => {
 
     return (
         <Container w="350px" p='var(--mantine-spacing-sm)'>
-        <PopupHeader/>
+            <PopupHeader/>
             <main>
                 <Paper shadow="xs" p="md" mb="md" withBorder>
-                    <div>Google Spreadsheets URL</div>
-                    <input 
-                        type="text" 
-                        defaultValue={spreadsheetUrl}
-                        onChange={onChange}
-                    />
-                    <NewSheet/>
+                    <Flex direction="column"
+                          justify="space-between"
+                          gap="xs"
+                    >
+                        <Title size="h4">Google Spreadsheets URL</Title>
+                        <Input
+                            type="text"
+                            defaultValue={spreadsheetUrl}
+                            onChange={onChange}
+                        />
+                        <NewSheet/>
+                    </Flex>
                 </Paper>
-            <Paper shadow="xs" p="md" withBorder>
-                <Logout/>
-            </Paper>
+                <Paper shadow="xs" p="md" withBorder>
+                    <Logout/>
+                </Paper>
 
             </main>
         </Container>
@@ -75,6 +80,6 @@ const Options =  () => {
 
 root.render(
     <MantineProvider theme={theme}>
-        <Options />
+        <Options/>
     </MantineProvider>
 );
