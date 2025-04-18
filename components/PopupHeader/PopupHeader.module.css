@@ -12,3 +12,8 @@
 .header .back {
     stroke: var(--mantine-color-bright);
 }
+.header .icon {
+    width: 28px;
+    height: 28px;
+    color: var(--mantine-color-text);
+}
