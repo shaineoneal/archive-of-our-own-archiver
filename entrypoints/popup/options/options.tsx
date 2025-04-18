@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import { IconArrowLeft } from "@tabler/icons-react";
 import { root } from '@/entrypoints/popup/popup.tsx';
-import '../../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
 import { CloseButton, Container, Flex, MantineProvider, Paper } from "@mantine/core";
