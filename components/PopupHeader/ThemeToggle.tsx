@@ -5,7 +5,7 @@ import classes from '@/components/PopupHeader/ToggleTheme.module.css'
 
 export function ThemeToggle() {
     const { setColorScheme } = useMantineColorScheme();
-    const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
+    const computedColorScheme = useComputedColorScheme('light', {getInitialValueInEffect: true});
 
     return (
         <Group justify="center">
@@ -15,8 +15,8 @@ export function ThemeToggle() {
                 size="lg"
                 aria-label={computedColorScheme === 'light' ? 'Light Mode' : 'Dark Mode'}
             >
-                <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
-                <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
+                <IconSun className={cx(classes.icon, classes.light)} stroke={1.5}/>
+                <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5}/>
             </ActionIcon>
         </Group>
     );
