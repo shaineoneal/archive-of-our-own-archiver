@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { createRoot } from 'react-dom/client';
 import { IconArrowLeft } from "@tabler/icons-react";
+import { root } from '@/entrypoints/popup/popup.tsx';
 import '../../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
@@ -74,10 +74,8 @@ const Options =  () => {
     );
 };
 
-export const root = createRoot(document.getElementById("root")!);
-
 root.render(
     <MantineProvider theme={theme}>
-    <Options />
+        <Options />
     </MantineProvider>
 );
