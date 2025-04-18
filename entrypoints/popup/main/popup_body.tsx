@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { exchangeRefreshForAccessToken, isAccessTokenValid, onMessage } from '@/utils/browser-services';
+import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/utils/browser-services';
 import { isInPopup, log } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
 import '@mantine/core/styles.css';
-import { Loader } from "@mantine/core";
 
 /**
  * The popup body component.
@@ -18,11 +17,10 @@ import { Loader } from "@mantine/core";
  * @returns the PopupBody component
  */
 export const PopupBody = () => {
-    const { loader, setLoader } = useLoaderStore();
+    const { setLoader } = useLoaderStore();
     let user = useUser();
     const setUser = SyncUserStore.getState().actions.userStoreLogin;
     const { setAccessToken, logout } = useActions();
-
     const resp = isInPopup();
     console.log('isInPopup: ', resp);
 
@@ -82,14 +80,11 @@ export const PopupBody = () => {
                     logout();
                     return;
                 }
-            } else log ('Access token is valid');
+            } else log('Access token is valid');
             setLoader(false);
         })();
     }, []);
 
-    return loader ? <Loader />
-        : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <Login />
-            : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
+    return (user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '') ? <Login/>
+        : <GoToSheet spreadsheetId={user.spreadsheetId as string}/>;
 };
-
-export default PopupBody;
