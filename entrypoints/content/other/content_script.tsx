@@ -1,4 +1,4 @@
-import { standardBlurbsPage } from './blurbsPage.tsx';
+import { standardBlurbsPage } from '../../../components/blurbsPage.tsx';
 import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
@@ -79,17 +79,6 @@ function disconnectContentScript(): void {
 }
 
 // Main function to initialize the content script
-export async function main() {
-    try {
-        const resp = await sendMessage('GetValidAccessToken', undefined);
-        console.log(resp);
-        if(resp) {
-            console.log('user is logged in');
-            pageTypeDetect();
-        }
-    } catch (e) {
-        console.log('error getting valid access token', e);
-    }
     /*if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
         log('IsAccessTokenValid response', resp);
@@ -119,7 +108,6 @@ onMessage('LoggedIn', (data) => {
     pageTypeDetect();
 });
 // Execute the main function
-main();
 
 //listener for updates to the user store
 browser.storage.local.onChanged.addListener(main)

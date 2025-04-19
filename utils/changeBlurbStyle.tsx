@@ -1,5 +1,5 @@
 import { WorkStatus } from "@/utils/types/data.ts";
-import { addControls, addInfo, addWorkControl, removeWorkControl } from "./blurbControls.tsx";
+import { addControls, addInfo, addWorkControl, removeWorkControl } from "../components/blurbControls.tsx";
 import { removeWorkFromSheet } from "@/utils/browser-services/removeWorkFromSheet.ts";
 
 const STATUS_CLASSES = {
