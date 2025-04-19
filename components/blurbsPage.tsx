@@ -1,7 +1,7 @@
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
 import { addBlurbControls } from './blurbControls.tsx';
-import { changeBlurbStyle } from './changeBlurbStyle.tsx';
+import { changeBlurbStyle } from '../utils/changeBlurbStyle.tsx';
 import { WorkStatus } from "@/utils/types/data.ts";
 
 export async function standardBlurbsPage() {
