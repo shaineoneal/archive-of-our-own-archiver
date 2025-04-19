@@ -12,11 +12,13 @@ export * from "../../utils/Work.tsx";
 export default defineContentScript({
     matches: ["*://*.archiveofourown.org/*"],
     runAt: "document_end",
+
     main(ctx) {
         console.log('content script running');
         const ui = createIntegratedUi(ctx, {
             position: 'inline',
             anchor: 'body',
+            append: "first",
             onMount: (container) => {
                 // Create a root on the UI container and render a component
                 const root = createRoot(container);
