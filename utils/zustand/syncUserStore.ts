@@ -45,7 +45,7 @@ export const SyncUserStore = create<UserStoreType>()(
                 getUser: async () => {
                     const userStore = await browser.storage.sync.get('user-store');
                     const user = userStore['user-store'] as any;
-                    return user.user || DEFAULT_USER;
+                    return user?.user ?? DEFAULT_USER;
                 },
                 setAccessToken: (accessT: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
@@ -57,17 +57,13 @@ export const SyncUserStore = create<UserStoreType>()(
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
                 userStoreLogin: async ( accessToken, refreshToken, spreadsheetId? ) => {
-                    if (!spreadsheetId || spreadsheetId === '') {
-                        set({user: {...get().user, accessToken: accessToken, refreshToken: refreshToken}});
-                    } else {
-                        set({
-                            user: {
-                                ...get().user,
-                                accessToken: accessToken,
-                                refreshToken: refreshToken,
-                                spreadsheetId: spreadsheetId
-                            }
-                        });
+                    const { setAccessToken, setRefreshToken, setSpreadsheetId } = get().actions;
+
+                    setAccessToken(accessToken); // Set accessToken to the one provided
+                    setRefreshToken(refreshToken); // Set refreshToken to the one provided
+
+                    if (spreadsheetId && spreadsheetId !== '') {
+                        setSpreadsheetId(spreadsheetId); // Set spreadsheetId to spreadsheetId provided
                     }
                 },
                 logout: () => {
