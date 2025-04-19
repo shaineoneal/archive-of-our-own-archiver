@@ -29,8 +29,8 @@ export async function handleVisibilityChange(): Promise<void> {
     if (document.visibilityState === 'visible') {
         console.log('tab is now visible');
         //initializePort();
-        const resp = await sendMessage('GetValidAccessToken', undefined)
-        console.log(resp);
+        //const resp = await sendMessage('GetValidAccessToken', undefined)
+        //console.log(resp);
     } else {
         console.log('tab is now hidden, closing port');
         //closePort();
@@ -79,6 +79,8 @@ function disconnectContentScript(): void {
 }
 
 // Main function to initialize the content script
+export async function main(ctx: any) {
+
     /*if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
         log('IsAccessTokenValid response', resp);
@@ -111,3 +113,13 @@ onMessage('LoggedIn', (data) => {
 
 //listener for updates to the user store
 browser.storage.local.onChanged.addListener(main)
+
+
+export function App() : JSX.Element {
+    return (
+        <div>
+            <h1>Content Script</h1>
+            <p>This is a content script.</p>
+        </div>
+    );
+}
