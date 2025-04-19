@@ -1,7 +1,7 @@
-import { Work } from './Work.tsx';
+import { Work } from '../utils/Work.tsx';
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
-import { changeBlurbStyle } from "./changeBlurbStyle.tsx";
+import { changeBlurbStyle } from "../utils/changeBlurbStyle.tsx";
 import { wrap } from "@/utils";
 import '@/entrypoints/styles.scss';
 import { WorkStatus } from "@/utils/types/data.ts";
