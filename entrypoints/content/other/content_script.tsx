@@ -80,8 +80,9 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main(ctx: any) {
+    const user = await SyncUserStore.getState().actions.getUser();
 
-    /*if(user.accessToken) {
+    if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
         log('IsAccessTokenValid response', resp);
         if (resp) {
@@ -93,7 +94,7 @@ export async function main(ctx: any) {
         }
     } else {
         console.log('user is not logged in');
-    }*/
+    }
 }
 
 //listener for updates to the user store
