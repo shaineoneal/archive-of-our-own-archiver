@@ -25,7 +25,7 @@ export const PopupBody = () => {
     useEffect(() => {
         (async () => {
             const newUser = await SyncUserStore.getState().actions.getUser()
-            console.log(newUser);
+            console.log('popupbody', newUser);
             setUser(newUser.accessToken!, newUser.refreshToken!, newUser.spreadsheetId!);
             user = newUser;
 
