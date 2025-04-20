@@ -16,7 +16,7 @@ const DEFAULT_USER: UserDataType = {
 export type UserDataType = {
     accessToken: string;
     refreshToken: string;
-    spreadsheetId?: string;
+    spreadsheetId: string;
 }
 
 type UserActionsType = {
@@ -24,7 +24,7 @@ type UserActionsType = {
     setAccessToken: (accessT: string) => void;
     setRefreshToken: (refreshT: string) => void;
     setSpreadsheetId: (spreadsheetId: string) => void;
-    userStoreLogin: (accessToken: string, refreshToken: string, spreadsheetId?: string) => void;
+    userStoreLogin: (accessToken: string, refreshToken: string, spreadsheetId: string) => void;
     logout: () => void;
 }
 
@@ -56,15 +56,8 @@ export const SyncUserStore = create<UserStoreType>()(
                 setSpreadsheetId: (spreadsheetId: string) => {
                     set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
                 },
-                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId? ) => {
-                    const { setAccessToken, setRefreshToken, setSpreadsheetId } = get().actions;
-
-                    setAccessToken(accessToken); // Set accessToken to the one provided
-                    setRefreshToken(refreshToken); // Set refreshToken to the one provided
-
-                    if (spreadsheetId && spreadsheetId !== '') {
-                        setSpreadsheetId(spreadsheetId); // Set spreadsheetId to spreadsheetId provided
-                    }
+                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId ) => {
+                    set({ user: { ...get().user, accessToken, refreshToken, spreadsheetId } });
                 },
                 logout: () => {
                     set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
