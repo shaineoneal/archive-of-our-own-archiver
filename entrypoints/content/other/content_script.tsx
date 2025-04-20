@@ -60,7 +60,7 @@ function refreshAccessToken(): void {
 }
 
 // Detect the type of page and handle accordingly
-function pageTypeDetect(): void {
+export function pageTypeDetect(): void {
     if (document.querySelector('.index.group.work')) {
         standardBlurbsPage().then(() => {
             console.log('standardBlurbsPage done');
@@ -95,21 +95,6 @@ export async function main(ctx: any) {
         console.log('user is not logged in');
     }*/
 }
-
-// Add event listeners
-//browser.runtime.onMessage.addListener(messageListener);
-//document.addEventListener('visibilitychange', handleVisibilityChange);
-// sent from popup/login.tsx
-onMessage('LoggedIn', (data) => {
-    console.log('logged in message received', data);
-    if (data.data.accessToken && data.data.refreshToken) {
-        console.log('storing tokens');
-        //userStoreLogin(data.data.accessToken, data.data.refreshToken);
-    }
-    //console.log('userStoreLogin done', SyncUserStore.getState().user);
-    pageTypeDetect();
-});
-// Execute the main function
 
 //listener for updates to the user store
 browser.storage.local.onChanged.addListener(main)

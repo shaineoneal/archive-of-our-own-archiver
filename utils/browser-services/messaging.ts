@@ -17,6 +17,8 @@ import {
     revokeTokens
 } from "@/utils/browser-services";
 import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
+import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
+import { sendMessageToTabs } from "@/utils/browser-services";
 
 
 interface ProtocolMap {
@@ -166,4 +168,16 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
         throw new Error(error);
     }
     return false;
+}
+
+export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
+
+    console.log('logged in message received', msg.data);
+    const { userStoreLogin } = SyncUserStore.getState().actions;
+
+    if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
+        userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
+    }
+        //console.log('userStoreLogin done', SyncUserStore.getState().user);
+    pageTypeDetect();
 }
