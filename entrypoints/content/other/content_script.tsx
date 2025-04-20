@@ -1,4 +1,5 @@
 import { standardBlurbsPage } from '../../../components/blurbsPage.tsx';
+import { ReactElement } from 'react';
 import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
@@ -101,11 +102,11 @@ export async function main(ctx: any) {
 browser.storage.local.onChanged.addListener(main)
 
 
-export function App() : JSX.Element {
+export function App() : ReactElement {
     return (
-        <div>
-            <h1>Content Script</h1>
-            <p>This is a content script.</p>
-        </div>
+        <a href="chrome-extension://fpolkflkolbgaceliloehfofnoiklngb/popup.html" target="_blank">
+            <span>++</span>
+            <sup> also beta</sup>
+        </a>
     );
 }
