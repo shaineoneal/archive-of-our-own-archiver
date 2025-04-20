@@ -96,17 +96,13 @@ export async function handleLogin(): Promise<void> {
                     const newSheet = await createSpreadsheet(access_token);
                     userStoreLogin(access_token, refresh_token, newSheet);
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
+                    await sendMessageToTabs('LoggedIn',
+                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
                 } else {
-                    userStoreLogin(access_token, refresh_token);
-                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token});
-                }
-
-
-                const tabs = await browser.tabs.query({url: '*://archiveofourown.org/*'});
-                if (tabs) {
-                    tabs.forEach(tab => {
-                        sendMessage('LoggedIn', {refreshToken: refresh_token, accessToken: access_token}, tab.id);
-                    });
+                    userStoreLogin(access_token, refresh_token, user.spreadsheetId);
+                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
+                    await sendMessageToTabs('LoggedIn',
+                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
                 }
             } else {
                 console.log("No refresh token found, revoking tokens");
