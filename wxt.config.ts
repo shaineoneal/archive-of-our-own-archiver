@@ -28,8 +28,8 @@ export default defineConfig({
             default_popup: 'index.html'
         },
         web_accessible_resources: [{
-            resources: ['js/content_script.css'],
-            matches: ['*://*.archiveofourown.org/*']
+            resources: ['js/content_script.css', 'popup.html'],
+            matches: ['*://*.archiveofourown.org/*', 'chrome-extension://fpolkflkolbgaceliloehfofnoiklngb/*']
         }],
         browser_specific_settings: {
             gecko: {
