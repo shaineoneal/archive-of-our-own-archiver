@@ -19,8 +19,8 @@ export default defineContentScript({
         console.log('content script running');
         const ui = createIntegratedUi(ctx, {
             position: 'inline',
-            anchor: 'body',
-            append: "first",
+            anchor: 'h1',
+            append: 'last',
             onMount: (container) => {
                 // Create a root on the UI container and render a component
                 const root = createRoot(container);
