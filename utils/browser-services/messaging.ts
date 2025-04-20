@@ -89,7 +89,8 @@ export async function handleLogin(): Promise<void> {
             // If the response has a refresh token, store the async login
             // then send a message to the content script to update the login status
             if (refresh_token) {
-                if (!user.spreadsheetId) {
+                if (!user.spreadsheetId || user.spreadsheetId === '') {
+                    // If the user has no spreadsheetId, create a new one
                     const newSheet = await createSpreadsheet(access_token);
                     userStoreLogin(access_token, refresh_token, newSheet);
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
