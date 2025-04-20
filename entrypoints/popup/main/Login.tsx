@@ -19,12 +19,9 @@ export const Login = () => {
     // TODO: set up full user store on login
 
     /**
-     * Handles the login functionality.
-     * Launches the web authentication flow with interactive set to true.
-     * Requests authorization and sets the access token in the local storage and user store.
-     * Set the spreadsheet URL in the sync storage.
+     * calls {@link handleLogin} to initiate the login process.
      */
-    const handleLogin = async () => {
+    const handleLoginPress = async () => {
         setLoader(true);    //show loader
 
         try {
@@ -42,7 +39,7 @@ export const Login = () => {
             <div className="login">
                 <button
                     id="login-button"
-                    onClick={ handleLogin }
+                    onClick={ handleLoginPress }
                     disabled={ loader }
                 >
                     Login to Google
