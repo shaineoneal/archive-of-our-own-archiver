@@ -4,6 +4,8 @@ import { createIntegratedUi } from "wxt/client";
 import { App } from "./other/content_script.tsx"
 import ReactDOM from "react";
 import { createRoot } from "react-dom/client";
+import { onMessage } from "@/utils/browser-services";
+import { handleLoggedIn} from "@/utils/browser-services";
 
 
 export * from "../../utils/Ao3_BaseWork.ts"
@@ -36,6 +38,7 @@ export default defineContentScript({
 
         // Call mount to add the UI to the DOM
         ui.mount();
-        },
+        onMessage('LoggedIn', handleLoggedIn);
+    },
 });
 
