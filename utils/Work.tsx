@@ -108,7 +108,7 @@ export class Work {
             data.c[1].v ? data.c[1].v : '',
             {
                 title: data.c[2].v ? data.c[2].v : '',
-                authors: data.c[3].v ? data.c[3].v.split(',') : [],
+                authors: data.c[3] ? data.c[3].v.split(',') : ['Anonymous'],
                 fandoms: data.c[4].v ? data.c[4].v.split(',') : [],
                 relationships: data.c[5].v ? data.c[5].v.split(',') : [],
                 tags: data.c[6].v ? data.c[6].v.split(',') : [],
