@@ -80,10 +80,10 @@ export function addWorkControl(workWrap: Element): HTMLElement {
         sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: Work) => {
             console.log('content script response: ', response);
             if(response) {
-                console.log('addWork error: ', response);
-                return;
+                changeBlurbStyle(WorkStatus.Read, workWrap);
             }
-            changeBlurbStyle(WorkStatus.Read, workWrap);
+            console.log('addWork error: ', response);
+            return;
         });
     });
 
