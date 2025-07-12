@@ -1,5 +1,5 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { browser } from "wxt/browser";
+import { browser } from "#imports";
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 

@@ -1,7 +1,7 @@
 import { WorkStatus } from "@/utils/types/data.ts";
 import { countWords } from "@/utils/wordCounter.ts";
 import { setStore } from "@/utils/browser-services";
-import { browser } from "wxt/browser";
+import { browser } from "#imports";
 
 interface HistoryEntry {
     action: string;
