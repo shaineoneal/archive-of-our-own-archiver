@@ -3,7 +3,7 @@ import { persist, StorageValue } from "zustand/middleware";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { getStore, removeStore, setStore, StoreMethod } from "../browser-services";
 import { omit } from "lodash";
-import { browser } from "wxt/browser";
+import { browser } from "#imports";
 
 /* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
 
