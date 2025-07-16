@@ -34,7 +34,7 @@ export class metaBlurb extends BaseWork {
 
         const wordCount = metaBlurb.querySelector('dd.words')!.textContent;
 
-        var chapterCount =
+        let chapterCount =
             metaBlurb.querySelector('dd.chapters')?.textContent;
         if (!chapterCount) {
             //one-shot
