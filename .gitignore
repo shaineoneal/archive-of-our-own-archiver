@@ -1,10 +1,4 @@
-archive-of-our-own-archiver.wiki/**
 node_modules/**
 dist/**
-.idea/**
 .env
-.vscode
-.vs
-/.output/
-/.trunk
-/.wxt/
+
