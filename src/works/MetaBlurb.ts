@@ -6,7 +6,7 @@ export class metaBlurb extends BaseWork {
         if (!metaBlurb) {
             throw new Error('Work not found on page');
         }
-        const workId = location.href.split('/')[4] as unknown as number;
+        const workId = parseInt(location.href.split('/')[4], 10);
 
         const title = document.querySelector('.title.heading')!.textContent;
 
