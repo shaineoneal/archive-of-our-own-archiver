@@ -1,6 +1,6 @@
 // @ts-ignore
 import { handleVisibilityChange, main, main as contentScriptMain, messageListener } from "./other/content_script.tsx";
-import { createIntegratedUi } from "wxt/client";
+import { createIntegratedUi } from "#imports";
 import { App } from "./other/content_script.tsx"
 import ReactDOM from "react";
 import { createRoot } from "react-dom/client";
