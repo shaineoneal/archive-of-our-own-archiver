@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+
+  "name": "Rewritten AO3 Extension",
+  "description": "rewrite of AO3 Extension",
+  "version": "0.1",
+
+
+  "oauth2": {
+    "client_id": "972283065139-0vv4km66vsale3ibeu2dr253gki1r8ln.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/userinfo.profile"]
+  },
+  "key": "***REMOVED***",
+  "permissions": ["webRequest", "identity", "storage", "scripting", "identity.email", "activeTab"],
+  "host_permissions": ["*://*.archiveofourown.org/*", "https://docs.google.com/spreadsheets/*", "*://*.google.com/"],
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  
+  "action": {
+    "default_icon": "icons/icon-16.png",
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [
+      {
+          "matches": ["*://*.archiveofourown.org/*"],
+          "js": ["js/content_script.js"],
+          "css": ["js/content_script.css"],
+          "run_at": "document_end"
+      }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["js/content_script.css"],
+    "matches": ["*://*.archiveofourown.org/*"]
+  }]
+}

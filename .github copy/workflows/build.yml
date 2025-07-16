@@ -12,6 +12,10 @@ on:
 jobs:
   build:
 
+    env:
+      REACT_APP_API_KEY: '***REMOVED***'
+      REACT_APP_CLIENT_SECRET: '***REMOVED***'
+
     runs-on: ubuntu-latest
 
     strategy:
