@@ -1,7 +1,7 @@
-import { defineRunnerConfig } from "wxt";
+import { defineWebExtConfig } from "wxt";
 import { resolve } from 'node:path';
 
-export default defineRunnerConfig({
+export default defineWebExtConfig({
     openDevtools: true,
     chromiumProfile: resolve('.wxt/chrome-data'),
     keepProfileChanges: true,

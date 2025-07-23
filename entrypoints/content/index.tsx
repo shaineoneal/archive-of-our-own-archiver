@@ -3,7 +3,7 @@ import { handleVisibilityChange, main as contentScriptMain, messageListener } fr
 import React from "react";
 import ReactDOM from "react";
 import { createRoot } from 'react-dom/client';
-import { ContentScriptContext } from "wxt/client";
+import { ContentScriptContext } from "#imports";
 import { MantineProvider } from "@mantine/core";
 
 export * from "./Ao3_BaseWork.ts"
