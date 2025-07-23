@@ -1,7 +1,6 @@
 import { WorkStatus } from "@/utils/types/data.ts";
 import { countWords } from "@/utils/wordCounter.ts";
-import { setStore } from "@/utils/browser-services";
-import { browser } from "wxt/browser";
+import { browser } from "#imports";
 
 interface HistoryEntry {
     action: string;
@@ -107,12 +106,12 @@ export class Work {
         return new Work(
             data.c[1].v ? data.c[1].v : '',
             {
-                title: data.c[2].v ? data.c[2].v : '',
-                authors: data.c[3].v ? data.c[3].v.split(',') : [],
-                fandoms: data.c[4].v ? data.c[4].v.split(',') : [],
-                relationships: data.c[5].v ? data.c[5].v.split(',') : [],
-                tags: data.c[6].v ? data.c[6].v.split(',') : [],
-                description: data.c[7].v ? data.c[7].v : '',
+                title: data.c[2] ? data.c[2].v : '',
+                authors: data.c[3] ? data.c[3].v.split(',') : [],
+                fandoms: data.c[4] ? data.c[4].v.split(',') : [],
+                relationships: data.c[5] ? data.c[5].v.split(',') : [],
+                tags: data.c[6] ? data.c[6].v.split(',') : [],
+                description: data.c[7]? data.c[7].v : '',
                 wordCount: data.c[8] ? data.c[8].v : 0,
                 chapterCount: data.c[9] ? data.c[9].v : 0,
                 status: data.c[10] ? data.c[10].v : 'read',
