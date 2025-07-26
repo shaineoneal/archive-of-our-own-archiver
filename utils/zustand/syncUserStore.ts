@@ -45,7 +45,7 @@ export const SyncUserStore = create<UserStoreType>()(
                 getUser: async () => {
                     const userStore = await browser.storage.sync.get('user-store');
                     const user = userStore['user-store'] as any;
-                    return user.user || DEFAULT_USER;
+                    return user ? user.user : DEFAULT_USER;
                 },
                 setAccessToken: (accessT: string) => {
                     set({ user: { ...get().user, accessToken: accessT } });
