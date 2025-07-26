@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { PopupBody } from './main/popup_body.tsx';
+import { PopupBody } from './main/PopupBody.tsx';
 import { useLoaderStore, useUser } from '@/utils/zustand';
 import { Container, LoadingOverlay, MantineProvider } from "@mantine/core";
 import { isInPopup } from '@/utils';
