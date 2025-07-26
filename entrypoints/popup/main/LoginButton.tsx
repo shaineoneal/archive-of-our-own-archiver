@@ -12,7 +12,7 @@ import { Button, Center, Text } from "@mantine/core";
  * @group Popup
  * @returns the LoginButton component 
  */
-export const Login = () => {
+export const LoginButton = () => {
     const { loader, setLoader } = useLoaderStore();
     const { userStoreLogin, setSpreadsheetId } = useActions();
     const spreadsheetId = useUser().spreadsheetId;
