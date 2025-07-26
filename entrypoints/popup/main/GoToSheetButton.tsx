@@ -6,7 +6,7 @@ import '@mantine/core/styles.css'
  * @param props.spreadsheetId The id of the spreadsheet to go to.
  * @returns A button that when clicked will go to the user's sheet.
  */
-export const GoToSheet = (props: { spreadsheetId: string }) => {
+export const GoToSheetButton = (props: { spreadsheetId: string }) => {
     const handleGoToSheet = () => {
         browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0` });
     };
