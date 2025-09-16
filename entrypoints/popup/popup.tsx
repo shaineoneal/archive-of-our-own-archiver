@@ -1,13 +1,12 @@
-import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { PopupBody } from './main/PopupBody.tsx';
-import { useLoaderStore, useUser } from '@/utils/zustand';
 import { Container, LoadingOverlay, MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
+import { useMounted } from "@mantine/hooks";
+import { PopupBody } from './main/PopupBody.tsx';
+import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";
+import { useLoaderStore, useUser } from '@/utils/zustand';
 import { isInPopup } from '@/utils';
 import { theme } from "@/utils/theme.ts";
-import "@mantine/core/styles.css"
-import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";
-import { useMounted } from "@mantine/hooks";
 
 /**
  * The popup component.
@@ -21,17 +20,8 @@ import { useMounted } from "@mantine/hooks";
  * @returns the Popup component
  */
 const Popup = () => {
-    // create new react state for user
-    const user = useUser();
     const { loader } = useLoaderStore();
     const mounted = useMounted();
-    console.log('mounted: ', mounted);
-    // Check if the popup is in a popup window
-    const popupLocation = isInPopup()
-
-    useEffect(() => {
-        //to ensure that the options icon reloads when the user logs in
-    }, [user]);
 
     return (
         <Container
@@ -39,7 +29,7 @@ const Popup = () => {
             p='var(--mantine-spacing-sm)'
             className="main-popup-header"
         >
-            <LoadingOverlay visible={!mounted && !loader} overlayProps={{ radius: 'sm', blur: 2 }}/>
+            <LoadingOverlay visible={!mounted || loader} overlayProps={{ radius: 'sm', blur: 2 }}/>
             <PopupHeader/>
             <PopupBody/>
         </Container>
