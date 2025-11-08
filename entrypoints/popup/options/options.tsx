@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { root } from '@/entrypoints/popup/popup.tsx';
-import { SyncUserStore, useActions } from '@/utils/zustand';
+import { UserStore, useActions } from '@/utils/zustand';
 import { Logout } from './';
 import { NewSheet } from '@/components/NewSheet.tsx';
 import { Container, Flex, Input, MantineProvider, Paper, Title } from "@mantine/core";
@@ -19,11 +19,11 @@ export function openOptionsPage() {
 const Options = () => {
 
     let { setSpreadsheetId } = useActions();
-    let { spreadsheetId } = SyncUserStore.getState().user;
+    let { spreadsheetId } = UserStore.getState().user;
     let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
 
     useEffect(() => {
-        spreadsheetId = SyncUserStore.getState().user.spreadsheetId;
+        spreadsheetId = UserStore.getState().user.spreadsheetId;
     }, [spreadsheetId]);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

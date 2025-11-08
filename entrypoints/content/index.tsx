@@ -9,6 +9,8 @@ import { MantineProvider } from "@mantine/core";
 export * from "./Ao3_BaseWork.ts"
 export * from "./Work.tsx";
 
+
+// TODO: reload page on user change
 export default defineContentScript({
     matches: ["*://*.archiveofourown.org/*"],
     runAt: "document_end",
@@ -39,8 +41,6 @@ function createUi(ctx: ContentScriptContext) {
             cssVariablesSelector="html"
             getRootElement={() => shadow.querySelector("html")!}
         >
-            <p>hi
-                </p>
             </MantineProvider>
             </React.StrictMode>,
         );

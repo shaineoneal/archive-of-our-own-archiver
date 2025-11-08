@@ -2,7 +2,7 @@ import { standardBlurbsPage } from './blurbsPage.tsx';
 import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
 import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
 import { MessageResponse } from "@/utils/types/MessageResponse";
-import { SessionUserStore, SyncUserStore, useUser } from "@/utils/zustand";
+import { UserStore, useUser } from "@/utils/zustand";
 import { insideWorkPage } from "@/entrypoints/content/insideWorkPage.tsx";
 
 // Interface for message structure
@@ -97,15 +97,15 @@ export async function main() {
 //document.addEventListener('visibilitychange', handleVisibilityChange);
 
 // sent from popup/login.tsx
-onMessage('LoggedIn', (data) => {
-    console.log('logged in message received', data);
-    if (data.data.accessToken && data.data.refreshToken) {
-        console.log('storing tokens');
-        //userStoreLogin(data.data.accessToken, data.data.refreshToken);
-    }
-    //console.log('userStoreLogin done', SyncUserStore.getState().user);
-    pageTypeDetect();
-});
+//onMessage('LoggedIn', (data) => {
+//    console.log('logged in message received', data);
+//    if (data.data.accessToken && data.data.refreshToken) {
+//        console.log('storing tokens');
+//        //userStoreLogin(data.data.accessToken, data.data.refreshToken);
+//    }
+//    //console.log('userStoreLogin done', SyncUserStore.getState().user);
+//    pageTypeDetect();
+//});
 // Execute the main function
 main();
 

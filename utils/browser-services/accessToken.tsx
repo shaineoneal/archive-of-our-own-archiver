@@ -1,6 +1,6 @@
-import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { SyncUserStore } from "@/utils/zustand";
 import { setAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
+import { HttpMethod, makeRequest } from './httpRequest.ts';
+import { UserStore } from "@/utils/zustand";
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
@@ -72,7 +72,6 @@ export async function exchangeRefreshForAccessToken(refreshT: string): Promise<s
     try {
         return await parseAccessTokenResponse(response);
     } catch (error) {
-        console.log('Error parsing response: ', error);
         throw new Error('Error exchanging refresh token for access token');
     }
 }
@@ -103,7 +102,7 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
         if (response) {
             const data = await response.json();
             console.log('isAccessTokenValid data: ', data);
-            return data.aud === client_id;
+            return response.ok;
         }
     } catch (error) {
         console.log('Error validating token: ', error);
@@ -113,34 +112,54 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
     return false;
 }
 
+
 /**
- * Retrieves a valid access token, either by validating the current one or exchanging the refresh token.
+ * Retrieves a valid access token for the current user.
  *
- * @async
- * @param {string} accessToken - The current access token.
- * @param {string} refreshToken - The refresh token to exchange for a new access token if the current one is invalid.
- * @returns {Promise<string>} A promise that resolves with a valid access token.
- * @throws {Error} Throws an error if unable to retrieve a valid access token.
+ * This function checks the validity of the current access token. If the token is valid,
+ * it is returned. If the token is invalid, the function attempts to exchange the refresh
+ * token for a new access token. If the exchange is successful, the new access token is 
+ * stored and returned. Otherwise, an error is thrown.
+ *
+ * @returns {Promise<string>} A promise that resolves to a valid access token.
+ * @throws {Error} Throws an error if a valid access token cannot be retrieved.
  */
-export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
-    console.log('Checking access token validity:', accessToken);
-    if (await isAccessTokenValid(accessToken)) {
-        console.log('Access token is valid');
-        return accessToken;
-    } else {
-        console.log('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
-        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
-        if (newAccessToken) {
-            console.log('New access token obtained:', newAccessToken);
-            return newAccessToken;
-        } else {
-            throw new Error('Unable to retrieve a valid access token');
-        }
+export async function getValidAccessToken(): Promise<string> {
+    const { getUser, setAccessToken, logout } = UserStore.getState().actions;
+    const user = await getUser();
+    const { accessToken, refreshToken } = user;
+    
+    if (!accessToken || !refreshToken) {
+        throw new Error('User not found or missing authentication tokens');
     }
+
+    log('Checking access token validity:', accessToken);
+    
+    // Return existing token if still valid
+    if (await isAccessTokenValid(accessToken)) {
+        log('Access token is valid');
+        return accessToken;
+    }
+
+    // Exchange refresh token for new access token
+    log('Access token is invalid, exchanging refresh token');
+    try {
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
+        
+        // Store the new access token
+        setAccessToken(newAccessToken);
+        await setAccessTokenCookie(newAccessToken);
+        
+        log('New access token obtained and stored');
+        return newAccessToken;
+    } catch (error) {
+        logout();
+        throw new Error('Unable to retrieve a valid access token, logging out user');
+        }
 }
 
 export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
-    const {setAccessToken} = SyncUserStore.getState().actions;
+    const {setAccessToken} = UserStore.getState().actions;
     try {
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         console.log('newAccessToken', newAccessToken);

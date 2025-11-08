@@ -1,5 +1,5 @@
 import { createSpreadsheet } from '@/utils/browser-services';
-import { SyncUserStore, useLoaderStore } from '@/utils/zustand';
+import { UserStore, useLoaderStore } from '@/utils/zustand';
 import { Button, Flex } from "@mantine/core";
 import classes from '@/components/modules/NewSheetButton.module.css'
 
@@ -13,8 +13,8 @@ import classes from '@/components/modules/NewSheetButton.module.css'
  */
 export const NewSheet = () => {
     const { setLoader } = useLoaderStore();
-    let { accessToken } = SyncUserStore.getState().user;
-    const setSpreadsheetId = SyncUserStore.getState().actions.setSpreadsheetId;
+    let { accessToken } = UserStore.getState().user;
+    const setSpreadsheetId = UserStore.getState().actions.setSpreadsheetId;
 
     if (accessToken === undefined) {
         return null;

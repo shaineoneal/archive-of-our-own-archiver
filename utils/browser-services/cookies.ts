@@ -1,19 +1,63 @@
-export async function setAccessTokenCookie(value: string) {
-    //console.log('setting cookie: ', value);
-// get current date
-    let currentDate = new Date();
-    const expirationDate = new Date(currentDate.getTime() + 3600000);
-    console.log('currentDate: ', currentDate);
-    console.log('expirationDate: ', expirationDate);
+// utils/browser-services/cookies.ts
 
-    //document.cookie = `accessToken=${value}; expires=${expirationDate.getTime() + 3600}; domain=archiveofourown.org; path=/`;
-    // Set the access token cookie with a 30-second expiration
-browser.cookies.set({ url: 'https://archiveofourown.org', name: 'accessToken', value, expirationDate: expirationDate.getTime() })
-.then(cookie => console.log('cookie set: ', cookie));
+const COOKIE_DOMAIN = 'archiveofourown.org';
+const COOKIE_URL = 'https://archiveofourown.org';
+const EXPIRATION_MS = 3600000; // 1 hour
+
+export async function setAccessTokenCookie(value: string) {
+    log('setAccessTokenCookie called with value:', value);
+    const expirationDate = new Date(Date.now() + EXPIRATION_MS);
+    await browser.cookies.set({
+        url: COOKIE_URL,
+        name: 'accessToken',
+        value,
+        expirationDate: expirationDate.getTime()
+    });
+}
+
+export async function setRefreshTokenCookie(value: string) {
+    const expirationDate = new Date(Date.now() + EXPIRATION_MS);
+    await browser.cookies.set({
+        url: COOKIE_URL,
+        name: 'refreshToken',
+        value,
+        expirationDate: expirationDate.getTime()
+    });
 }
 
 export async function getAccessTokenCookie(): Promise<string | undefined> {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-    console.log('cookies found: ', cookies);
     return cookies.find(cookie => cookie[0] === 'accessToken')?.[1];
 }
+
+export async function getRefreshTokenCookie(): Promise<string | undefined> {
+    const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
+    return cookies.find(cookie => cookie[0] === 'refreshToken')?.[1];
+}
+
+export async function removeAccessTokenCookie() {
+    await browser.cookies.remove({ url: COOKIE_URL, name: 'accessToken' });
+}
+
+export async function removeRefreshTokenCookie() {
+    await browser.cookies.remove({ url: COOKIE_URL, name: 'refreshToken' });
+}
+
+// Zustand-compatible cookie storage
+export const cookieStorage = {
+    async getItem(name: string) {
+        const accessToken = await getAccessTokenCookie() || '';
+        const refreshToken = await getRefreshTokenCookie() || '';
+        return {
+            state: { accessToken, refreshToken }
+        };
+    },
+    async setItem(name: string, value: any) {
+        await setAccessTokenCookie(value.state.accessToken || '');
+        await setRefreshTokenCookie(value.state.refreshToken || '');
+    },
+    async removeItem(name: string) {
+        await removeAccessTokenCookie();
+        await removeRefreshTokenCookie();
+    }
+};

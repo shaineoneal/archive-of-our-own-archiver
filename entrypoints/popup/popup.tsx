@@ -7,6 +7,7 @@ import { PopupHeader } from "@/components/PopupHeader/PopupHeader.tsx";
 import { useLoaderStore, useUser } from '@/utils/zustand';
 import { isInPopup } from '@/utils';
 import { theme } from "@/utils/theme.ts";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 /**
  * The popup component.
@@ -40,6 +41,8 @@ export const root = createRoot(document.getElementById("root")!);
 
 root.render(
     <MantineProvider theme={theme}>
-        <Popup/>
+        <GoogleOAuthProvider clientId={import.meta.env.WXT_API_CLIENT_ID!}>
+            <Popup/>
+        </GoogleOAuthProvider>
     </MantineProvider>
 );

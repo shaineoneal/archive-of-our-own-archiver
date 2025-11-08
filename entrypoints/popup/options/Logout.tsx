@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { revokeTokens } from "@/utils/browser-services";
 import { useActions, useUser } from '@/utils/zustand';
 import { Button } from "@mantine/core";
+import { sendMessage } from '@/utils/browser-services/messaging';
+import { useForceUpdate } from "@mantine/hooks";
 
 export const Logout = () => {
     const [style, setStyle] = useState("");
@@ -10,16 +12,14 @@ export const Logout = () => {
 
     const handleLogout = async () => {
         console.log("handleLogout");
-        //setStyle("visited");
-        if (accessToken !== undefined) {
-            console.log("revokeTokens");
-            //TODO: FIX THIS
-            logout();
-            await revokeTokens(accessToken);
+        try {
+            await sendMessage('Logout', undefined);
+        } catch (error) {
+            console.error('Error during logout:', error);
+        } finally {
+            //window.location.href = "popup.html";
         }
-        // TODO: needs to still logout if the user does not have a refresh token
-        //  AKA if it expires
-        //logout();
+
     };
 
     return (

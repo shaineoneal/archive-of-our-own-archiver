@@ -2,33 +2,26 @@ import { useEffect } from 'react';
 import { IconSettingsFilled } from "@tabler/icons-react";
 import { useUser } from '@/utils/zustand';
 import { ActionIcon } from '@mantine/core';
-import classes from '@/components/PopupHeader/PopupHeader.module.css'
+import classes from '@/components/modules/PopupHeader.module.css'
 
 /**
- * OptionsIcon component renders an icon that links to the options page.
- * It uses the user's access token to determine whether to display the icon.
- * 
+ * Renders an icon that links to the options page if the user has an access token.
+ *
  * @component
- * @example
- * return (
- *   <OptionsIcon />
- * )
- * 
+ * @example <OptionsIcon />
+ *
  * @returns {JSX.Element} The rendered component.
- * 
+ *
  * @remarks
- * This component uses the `useUser` hook to get the access token and 
- * `useEffect` to log when the component is mounted or updated.
- * 
+ * Uses the `useUser` hook to access the user’s access token.
+ *
  * @see {@link https://reactjs.org/docs/hooks-effect.html|useEffect}
- * @see {@link https://reactjs.org/docs/hooks-reference.html#usecontext|useContext}
  */
 export const OptionsIcon = () => {
 
     const accessT = useUser().accessToken;
 
     useEffect(() => {
-       console.log('optionsIcon useEffect');
     }, [accessT]);
 
     return (
