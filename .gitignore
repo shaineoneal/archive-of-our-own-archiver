@@ -3,4 +3,10 @@ dist/**
 .env
 .output/**
 .idea/**
-
+.env
+.vscode
+.vs
+/.output/
+/.trunk
+/.wxt/
+package-lock.json
