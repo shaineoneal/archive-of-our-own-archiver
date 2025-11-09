@@ -8,3 +8,4 @@ dist/**
 /.output/
 /.trunk
 /.wxt/
+package-lock.json
