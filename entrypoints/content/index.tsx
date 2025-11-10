@@ -28,6 +28,7 @@ export default defineContentScript({
                     <App />
                 );
                 main(ctx);
+                container.setAttribute("style", "display: inline;");
                 return root;
             },
             onRemove: (root) => {
