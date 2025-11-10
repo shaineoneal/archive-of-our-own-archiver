@@ -1,3 +1,4 @@
+<<<<<<<< HEAD:src/Ao3_BaseWork.ts
 <<<<<<<< HEAD:src/works/WorkBlurb.ts
 import { BaseWork } from "./BaseWork";
 
@@ -52,6 +53,10 @@ export class WorkBlurb extends BaseWork {
 ========
 import { Work } from "./Work.tsx";
 
+========
+import { Work } from "./Work.tsx";
+
+>>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d:utils/Ao3_BaseWork.ts
 export class Ao3_BaseWork extends Work {
     title: string;
     authors: string[];
@@ -72,7 +77,10 @@ export class Ao3_BaseWork extends Work {
         this.description = description;
         this.wordCount = wordCount;
         this.chapterCount = chapterCount;
+<<<<<<<< HEAD:src/Ao3_BaseWork.ts
 >>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d:src/Ao3_BaseWork.ts
+========
+>>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d:utils/Ao3_BaseWork.ts
     }
 
     static createWork(workNode: Element | null) {

@@ -41,8 +41,6 @@
     "typedoc": "^0.26.3",
     "typedoc-theme-hierarchy": "^5.0.0",
     "typescript": "^5.5.2",
-<<<<<<< HEAD
-=======
     "webpack": "^5.97.1",
 >>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d
     "webpack-cli": "^5.1.4",
