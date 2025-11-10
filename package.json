@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-typescript-starter",
+  "name": "ao3-archiver",
   "version": "1.0.0",
-  "description": "chrome-extension-typescript-starter",
+  "description": "archive of our own archiver",
   "main": "index.js",
   "scripts": {
     "docs": "typedoc --validation",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
+    "url": "https://github.com/shaineoneal/archive-of-our-own-archiver.git"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.268",
@@ -41,6 +41,10 @@
     "typedoc": "^0.26.3",
     "typedoc-theme-hierarchy": "^5.0.0",
     "typescript": "^5.5.2",
+<<<<<<< HEAD
+=======
+    "webpack": "^5.97.1",
+>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d
     "webpack-cli": "^5.1.4",
     "wxt": "^0.20.11",
     "zustand": "^4.5.4"
