@@ -1,5 +1,55 @@
-import { Work } from "./Work.tsx";
+<<<<<<<< HEAD:src/works/WorkBlurb.ts
+import { BaseWork } from "./BaseWork";
 
+export class WorkBlurb extends BaseWork {
+    static getWorkFromPage(workId: number): BaseWork {
+        const workNode = document.querySelector(`#work_${workId}`);
+
+        if (!workNode) {
+            throw new Error(`Work ${workId} not found on page`);
+        }
+        const title = workNode.querySelector('.heading > a')!.textContent;
+
+        const authorNodes = workNode.querySelectorAll("[rel='author']");
+        const authors = Array.from(authorNodes).map(
+            (authorNode) => authorNode.textContent
+        );
+
+        const fandomNodes = workNode.querySelectorAll('.fandoms > a');
+        const fandoms = Array.from(fandomNodes).map(
+            (fandomNode) => fandomNode.textContent
+        );
+
+        const relationships = ['placeholder'];
+
+        const tags = ['placeholder'];
+
+        const description = 'longer placeholder';
+
+        const wordCount = workNode.querySelector('dd.words')!.textContent;
+
+        var chapterCount =
+            workNode.querySelector('dd.chapters > a')?.textContent;
+        if (!chapterCount) {
+            //one-shot
+            chapterCount = '1';
+        }
+
+        return new this(
+            workId,
+            title!,
+            authors as string[],
+            fandoms as string[],
+            relationships,
+            tags,
+            description,
+            parseInt(wordCount!.replace(/,/g, '')),
+            parseInt(chapterCount!.replace(/,/g, '')),
+            "",
+            0,
+            0
+        );
+========
 import { Work } from "./Work.tsx";
 
 export class Ao3_BaseWork extends Work {
@@ -22,6 +72,7 @@ export class Ao3_BaseWork extends Work {
         this.description = description;
         this.wordCount = wordCount;
         this.chapterCount = chapterCount;
+>>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d:src/Ao3_BaseWork.ts
     }
 
     static createWork(workNode: Element | null) {
@@ -29,6 +80,9 @@ export class Ao3_BaseWork extends Work {
             throw new Error(`Work not found on page`);
         }
 
+<<<<<<<< HEAD:src/works/WorkBlurb.ts
+        const workId = parseInt(workNode.id.split('_')[1]);
+========
         let workId;
 
         if(workNode.id) {
@@ -41,6 +95,7 @@ export class Ao3_BaseWork extends Work {
             }
             workId = parseInt(workIdNode.id.split('_')[1]);
         }
+>>>>>>>> 1692b6678568874e76be9dbba32dc05b16b0bb1d:src/Ao3_BaseWork.ts
 
         const title = workNode.querySelector('.heading > a')!.textContent;
 
