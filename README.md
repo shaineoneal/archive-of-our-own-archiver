@@ -13,18 +13,17 @@ The thought behind all of this was "What if I could, instead of using cache or l
 
 ## Demo
 
-
-https://github.com/user-attachments/assets/e9a497f1-9329-45ce-a8bd-43920f698b5e
-
-
+[!demo](https://github.com/user-attachments/assets/e9a497f1-9329-45ce-a8bd-43920f698b5e/)
 
 ## Building from Source
+
+> [!NOTE]
+> There are several issues/bugs with this version and it is not considered secure by Chrome standards. Use at your own risk.
+
 
 <details>
 
 <summary>If you really want to try and build this, I think this version works?</summary>
-
-> Note: There are several issues/bugs with this version and it is not considered secure by Chrome standards. Use at your own risk.
 
 ### Restrictions
 
