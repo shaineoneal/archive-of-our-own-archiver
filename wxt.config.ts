@@ -35,6 +35,7 @@ export default defineConfig({
                 id: 'shaineoneal@gmail.com',
                 strict_min_version: '58.0'
             }
-        }
+        },
+        version: import.meta.env.NEXT_VERSION,
     }
 });
