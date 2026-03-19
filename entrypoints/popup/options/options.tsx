@@ -5,6 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import '../../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
+import { VersionNumber } from "@/entrypoints/popup/options/VersionNumber.tsx";
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
@@ -70,6 +71,7 @@ const Options =  () => {
                     />
                     <Logout/>
                     <NewSheet/>
+                    <VersionNumber/>
                 </div>
             </main>
         </>
