@@ -3,11 +3,10 @@
 
 name: build
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
+
+env:
+  CURRENT_VERSION: ${{ vars.CURRENT_VERSION }}
 
 jobs:
   build:
