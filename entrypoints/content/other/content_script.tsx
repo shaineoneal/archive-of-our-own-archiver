@@ -98,8 +98,14 @@ export async function main(ctx: any) {
     }
 }
 
-//listener for updates to the user store
-browser.storage.local.onChanged.addListener(main)
+// Listener for updates to the user store
+export function registerStorageListener() {
+    browser.storage.local.onChanged.addListener(main);
+}
+
+export function unregisterStorageListener() {
+    browser.storage.local.onChanged.removeListener(main);
+}
 
 
 export function App() : ReactElement {
