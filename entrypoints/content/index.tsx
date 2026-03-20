@@ -1,15 +1,14 @@
 // @ts-ignore
-import { handleVisibilityChange, main, main as contentScriptMain, messageListener, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
 import { createIntegratedUi } from "#imports";
-import { App } from "./other/content_script.tsx"
-import ReactDOM from "react";
+import { handleLoggedIn, onMessage } from "@/utils/browser-services";
 import { createRoot } from "react-dom/client";
-import { onMessage } from "@/utils/browser-services";
-import { handleLoggedIn} from "@/utils/browser-services";
+import { App, main, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
 
 
-export * from "../../utils/Ao3_BaseWork.ts"
+export * from "../../utils/Ao3_BaseWork.ts";
 export * from "../../utils/Work.tsx";
+
+let loggedInListenerRegistered = false;
 
 export default defineContentScript({
     matches: ["*://*.archiveofourown.org/*"],
@@ -41,7 +40,10 @@ export default defineContentScript({
 
         // Call mount to add the UI to the DOM
         ui.mount();
-        onMessage('LoggedIn', handleLoggedIn);
+        if (!loggedInListenerRegistered) {
+            onMessage('LoggedIn', handleLoggedIn);
+            loggedInListenerRegistered = true;
+        }
     },
 });
 
