@@ -1,9 +1,7 @@
-import { standardBlurbsPage } from '../../../components/blurbsPage.tsx';
+import { sendMessage } from "@/utils/browser-services/messaging.ts";
+import { SyncUserStore } from "@/utils/zustand";
 import { ReactElement } from 'react';
-import { getAccessTokenCookie } from "@/utils/browser-services/cookies.ts";
-import { onMessage, sendMessage } from "@/utils/browser-services/messaging.ts";
-import { MessageResponse } from "@/utils/types/MessageResponse";
-import { SessionUserStore, SyncUserStore, useUser } from "@/utils/zustand";
+import { standardBlurbsPage } from '@/components/blurbsPage.tsx';
 
 // Interface for message structure
 interface Message {
