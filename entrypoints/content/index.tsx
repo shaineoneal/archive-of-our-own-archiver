@@ -1,5 +1,5 @@
 // @ts-ignore
-import { handleVisibilityChange, main, main as contentScriptMain, messageListener } from "./other/content_script.tsx";
+import { handleVisibilityChange, main, main as contentScriptMain, messageListener, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
 import { createIntegratedUi } from "#imports";
 import { App } from "./other/content_script.tsx"
 import ReactDOM from "react";
@@ -27,6 +27,7 @@ export default defineContentScript({
                 root.render(
                     <App />
                 );
+                registerStorageListener();
                 main(ctx);
                 container.setAttribute("style", "display: inline;");
                 return root;
@@ -34,6 +35,7 @@ export default defineContentScript({
             onRemove: (root) => {
                 // Unmount the root when the UI is removed
                 (root != undefined) ? root.unmount() : undefined;
+                unregisterStorageListener();
             },
         });
 
