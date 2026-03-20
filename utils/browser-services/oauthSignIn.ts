@@ -7,6 +7,11 @@ const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const scopes = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile'
 let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
 
+if (import.meta.env.BROWSER === 'firefox' && browser.identity) {
+    redirectUri = browser.identity.getRedirectURL();
+}
+
+console.log("redirectURI: " , redirectUri);
 /**
  * Creates the URL for the OAuth authorization flow.
  * 
@@ -15,7 +20,7 @@ let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#authorization-code-flow | Google Identity API - Authorization code flow}
  */
 const createAuthUrl = (): string => {
-    console.log('redirectUri: ', redirectUri);
+    console.log('redirectUri: ', browser.identity.getRedirectURL());
     console.log('oauth2: ', client_id);
     console.log('scopes: ', scopes);
     if (!client_id || !scopes) {
