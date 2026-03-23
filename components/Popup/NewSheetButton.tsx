@@ -1,5 +1,5 @@
 import { createSpreadsheet } from '@/utils/browser-services';
-import { SyncUserStore, useActions, useLoaderStore } from '@/utils/zustand';
+import { SyncUserStore, useLoaderStore } from '@/utils/zustand';
 
 /**
  * Component for creating a new Google Sheet.
@@ -7,9 +7,9 @@ import { SyncUserStore, useActions, useLoaderStore } from '@/utils/zustand';
  * Displays a loader while the spreadsheet is being created.
  * @component
  * @group Popup
- * @returns the NewSheet component
+ * @returns the NewSheetButton component
  */
-export const NewSheet = () => {
+export const NewSheetButton = () => {
     const { loader, setLoader } = useLoaderStore();
     let { accessToken, spreadsheetId } = SyncUserStore.getState().user;
     const setSpreadsheetId = SyncUserStore.getState().actions.setSpreadsheetId;
