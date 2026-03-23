@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { exchangeRefreshForAccessToken, isAccessTokenValid, onMessage } from '@/utils/browser-services';
-import { log } from '@/utils';
+import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/utils/browser-services';
+import { logger } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { GoToSheet, Login } from './';
 
@@ -25,7 +25,7 @@ export const PopupBody = () => {
     useEffect(() => {
         (async () => {
             const newUser = await SyncUserStore.getState().actions.getUser()
-            console.log('popupbody', newUser);
+            logger.info('popupbody', { newUser });
             setUser(newUser.accessToken!, newUser.refreshToken!, newUser.spreadsheetId!);
             user = newUser;
 
@@ -78,7 +78,7 @@ export const PopupBody = () => {
                     logout();
                     return;
                 }
-            } else log ('Access token is valid');
+            } else logger.info('Access token is valid');
             setLoader(false);
         })();
     }, []);
