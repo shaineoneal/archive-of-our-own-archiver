@@ -20,6 +20,7 @@
     "url": "https://github.com/shaineoneal/archive-of-our-own-archiver.git"
   },
   "devDependencies": {
+    "@mantine/core": "^8.3.18",
     "@types/chrome": "^0.0.268",
     "@types/jquery": "^3.5.30",
     "@types/lodash": "^4.17.15",

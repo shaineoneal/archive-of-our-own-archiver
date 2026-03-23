@@ -4,6 +4,7 @@ import { PopupBody } from './main/popup_body.tsx';
 import { UserDataType, useUser } from '@/utils/zustand';
 import { OptionsIcon } from './main/optionsIcon.tsx';
 import '../styles.scss';
+import { MantineProvider } from "@mantine/core";
 
 /**
  * The popup component.
@@ -47,5 +48,7 @@ const Popup = () => {
 export const root = createRoot(document.getElementById("root")!);
 
 root.render(
-    <Popup />
+    <MantineProvider>
+        <Popup/>
+    </MantineProvider>
 );
