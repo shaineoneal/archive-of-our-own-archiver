@@ -1,24 +1,23 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { Ao3_BaseWork, Work } from "@/entrypoints/content";
+import { Work } from "@/entrypoints/content";
 import { SyncUserStore, UserDataType } from "@/utils/zustand";
 import {
+    addWorkToSheet,
+    chromeLaunchWebAuthFlow,
+    createSpreadsheet,
+    exchangeRefreshForAccessToken,
+    getValidAccessToken,
+    handleTokenExchange,
     isAccessTokenValid,
     querySpreadsheet,
-    addWorkToSheet,
-    setAccessTokenCookie,
-    getValidAccessToken,
-    setStore,
-    StoreMethod,
-    handleTokenExchange,
-    exchangeRefreshForAccessToken,
-    chromeLaunchWebAuthFlow,
     requestAuthorization,
-    createSpreadsheet,
-    revokeTokens
+    revokeTokens,
+    sendMessageToTabs,
+    setStore,
+    StoreMethod
 } from "@/utils/browser-services";
 import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
-import { sendMessageToTabs } from "@/utils/browser-services";
 
 
 interface ProtocolMap {
@@ -59,7 +58,7 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
 }
 
 export async function handleGetValidAccessToken(): Promise<string> {
-    console.log("GetValidAccessToken");
+    logger.debug("GetValidAccessToken");
     const user = await SyncUserStore.getState().actions.getUser();
     if(await isAccessTokenValid(user.accessToken)) {
         return user.accessToken;
@@ -83,7 +82,7 @@ export async function handleLogin(): Promise<void> {
 
         // If the response has a URL and a code, request authorization
         if (flowResp.url && flowResp.code) {
-            console.log('Flow response: ', flowResp);
+            logger.debug('Flow response: ', flowResp);
             const {access_token, refresh_token} = await requestAuthorization(flowResp);
 
             //TODO: if no refresh token, fix it
@@ -105,13 +104,13 @@ export async function handleLogin(): Promise<void> {
                         {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
                 }
             } else {
-                console.log("No refresh token found, revoking tokens");
+                logger.debug("No refresh token found, revoking tokens");
                 await revokeTokens(access_token);
             }
 
         }
     } catch (error) {
-        console.log('Error in handleLogin: ', error);
+        logger.debug('Error in handleLogin: ', error);
     }
 }
 
@@ -133,9 +132,9 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
         let responseArray: boolean[] = [];
         if (response.table.rows && response.table.rows.length > 0) {
             for (let row of response.table.rows) {
-                console.log('row', row);
+                logger.debug('row', row);
                 const work = Work.fromSheet(row)
-                console.log('work', work);
+                logger.debug('work', work);
                 setStore(`${work.workId}`, work.info, StoreMethod.LOCAL);
             }
             responseArray = compareArrays(msg.data, response.table.rows);
@@ -168,12 +167,12 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
 
 export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
 
-    console.log('logged in message received', msg.data);
+    logger.debug('logged in message received', msg.data);
     const { userStoreLogin } = SyncUserStore.getState().actions;
 
     if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
         userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
     }
-        //console.log('userStoreLogin done', SyncUserStore.getState().user);
+        //logger.debug('userStoreLogin done', SyncUserStore.getState().user);
     pageTypeDetect();
 }

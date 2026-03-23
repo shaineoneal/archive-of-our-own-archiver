@@ -8,10 +8,10 @@ export const Logout = () => {
     const { logout } = useActions();
 
     const handleLogout = async () => {
-        console.log("handleLogout");
+        logger.debug("handleLogout");
         //setStyle("visited");
         if (accessToken !== undefined) {
-            console.log("revokeTokens");
+            logger.debug("revokeTokens");
             //TODO: FIX THIS
             logout();
             await revokeTokens(accessToken);
