@@ -2,7 +2,7 @@ import { Work } from "@/entrypoints/content";
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 
 export const updateWorkInSheet = async (spreadsheetId: string, accessToken: string, work: Work): Promise<boolean> => {
-    console.log('updateWorkInSheet', work);
+    logger.debug('updateWorkInSheet', work);
 
     const response = await makeRequest({
         url: `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchUpdate`,
@@ -30,7 +30,7 @@ export const updateWorkInSheet = async (spreadsheetId: string, accessToken: stri
         }
     });
 
-    console.log('updateWorkInSheet response', response);
+    logger.debug('updateWorkInSheet response', response);
 
     return true;
 }

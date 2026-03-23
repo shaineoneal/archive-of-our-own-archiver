@@ -1,5 +1,6 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 import { browser } from "#imports";
+import { logger } from "@/utils";
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 
@@ -11,7 +12,7 @@ if (import.meta.env.BROWSER === 'firefox' && browser.identity) {
     redirectUri = browser.identity.getRedirectURL();
 }
 
-console.log("redirectURI: " , redirectUri);
+logger.debug("redirectURI: " , redirectUri);
 /**
  * Creates the URL for the OAuth authorization flow.
  * 
@@ -20,9 +21,7 @@ console.log("redirectURI: " , redirectUri);
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#authorization-code-flow | Google Identity API - Authorization code flow}
  */
 const createAuthUrl = (): string => {
-    console.log('redirectUri: ', browser.identity.getRedirectURL());
-    console.log('oauth2: ', client_id);
-    console.log('scopes: ', scopes);
+    logger.info("Creating auth url");
     if (!client_id || !scopes) {
         throw new Error('Invalid oauth2 configuration');
     }
@@ -36,7 +35,7 @@ const createAuthUrl = (): string => {
         scope: scopes
     });
 
-    console.log('Auth URL Params: ', authParams.toString());
+    logger.debug('Auth URL Params: ', { authParams });
 
     return `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
 }
@@ -93,29 +92,29 @@ export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<Au
             if (redirectUri) {
                 authUrl = redirectUri
             }
-            console.log('RedirectUri: ', redirectUri);
+            logger.debug('RedirectUri: ', redirectUri);
         } catch (error) {
-            console.log('chromeLaunchWebAuthFlow Error: ', error);
+            logger.debug('chromeLaunchWebAuthFlow Error: ', error);
         }
     } else if (import.meta.env.BROWSER === 'edge') {
     } else {
-        console.log('current browser: ', import.meta.env.BROWSER);
+        logger.debug('current browser: ', import.meta.env.BROWSER);
         authUrl = createAuthUrl()
     }
-    console.log('other RedirectUri: ', redirectUri);
+    logger.debug('other RedirectUri: ', redirectUri);
     try {
         const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
 
-        console.log('launchWebAuthFlow Response: ', responseUrl);
+        logger.debug('launchWebAuthFlow Response: ', responseUrl);
         if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
-            console.log('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
+            logger.debug('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
             throw new Error();
         } else {
             const url = new URL(responseUrl);
 
             const params = Object.fromEntries((url.searchParams).entries());
 
-            console.log('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
+            logger.debug('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
             const response: AuthFlowResponse = {
                 url: responseUrl,
@@ -124,7 +123,7 @@ export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<Au
             return response;
         }
     } catch (error) {
-        console.log('chromeLaunchWebAuthFlow Error: ', error);
+        logger.debug('chromeLaunchWebAuthFlow Error: ', error);
         throw new Error('Error launching web authentication flow');
     }
 
@@ -141,9 +140,9 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
     return new Promise((resolve, reject) => {
 
         if (!client_id || !scopes || !client_secret) {
-            console.log('requestAuth oauth2: ', client_id);
+            logger.debug('requestAuth oauth2: ', client_id);
             if (!client_secret) {
-                console.log('requestAuth client_secret: ', client_secret);
+                logger.debug('requestAuth client_secret: ', client_secret);
             }
         }
 
@@ -163,7 +162,7 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
             },
         }).then(async (response) => {
             const parsedResponse = await response.json();
-            console.log('requestAuthorization Response: ', parsedResponse);
+            logger.debug('requestAuthorization Response: ', parsedResponse);
             resolve(parsedResponse);
             
         }).catch((error: any) => {

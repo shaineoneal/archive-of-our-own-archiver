@@ -15,7 +15,7 @@ export default defineContentScript({
     runAt: "document_end",
 
     main(ctx) {
-        console.log('content script running');
+        logger.debug('content script running');
         const ui = createIntegratedUi(ctx, {
             position: 'inline',
             anchor: 'h1',

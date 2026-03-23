@@ -10,9 +10,11 @@ interface Message {
 
 // Listener for messages from the background script
 export const messageListener = (message: Message, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void): void => {
-    console.log('content_script', 'heard message: ', message);
+
+    logger.debug('content_script', 'heard message: ', message);
+
     if (message.message === 'userChanged') {
-        console.log('userChanged');
+        logger.info('userChanged');
         handleUserChanged(sendResponse);
     }
 };
@@ -26,12 +28,12 @@ function handleUserChanged(sendResponse: (response: any) => void): void {
 // Handle visibility change of the tab
 export async function handleVisibilityChange(): Promise<void> {
     if (document.visibilityState === 'visible') {
-        console.log('tab is now visible');
+        logger.debug('tab is now visible');
         //initializePort();
         //const resp = await sendMessage('GetValidAccessToken', undefined)
         //console.log(resp);
     } else {
-        console.log('tab is now hidden, closing port');
+        logger.debug('tab is now hidden, closing port');
         //closePort();
         disconnectContentScript();
     }
@@ -62,12 +64,12 @@ function refreshAccessToken(): void {
 export function pageTypeDetect(): void {
     if (document.querySelector('.index.group.work')) {
         standardBlurbsPage().then(() => {
-            console.log('standardBlurbsPage done');
+            logger.debug('standardBlurbsPage done');
         });
     } else if (document.querySelector('.work.meta.group')) {
-        console.log('Work Page');
+        logger.debug('Work Page');
     } else {
-        console.log('PANIK: Unknown page');
+        logger.debug('PANIK: Unknown page');
     }
 }
 
@@ -83,16 +85,16 @@ export async function main(ctx: any) {
 
     if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
-        log('IsAccessTokenValid response', resp);
+        logger.debug('IsAccessTokenValid response', resp);
         if (resp) {
-            console.log('user is logged in');
+            logger.debug('user is logged in');
             SyncUserStore.getState().actions.userStoreLogin(user.accessToken, user.refreshToken!, user.spreadsheetId!);
             pageTypeDetect();
         } else {
-            console.log('user is not logged in, access token is invalid');
+            logger.debug('user is not logged in, access token is invalid');
         }
     } else {
-        console.log('user is not logged in');
+        logger.debug('user is not logged in');
     }
 }
 
