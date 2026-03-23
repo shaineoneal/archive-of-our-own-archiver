@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons';
 import { BiArrowBack } from 'react-icons/bi';
-import '../../styles.scss';
+import '../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
-import { Logout, NewSheet } from './';
+import { LogoutButton } from '../../components/Popup/LogoutButton.tsx';
+import { NewSheetButton } from '../../components/Popup/NewSheetButton.tsx';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -14,7 +15,7 @@ export function openOptionsPage() {
  * The main component for the options page.
  * @returns the Options component
  */
-const Options =  () => {
+const Options = () => {
 
     let { setSpreadsheetId } = useActions();
     let { spreadsheetId } = SyncUserStore.getState().user;
@@ -69,8 +70,8 @@ const Options =  () => {
                         defaultValue={spreadsheetUrl}
                         onChange={onChange}
                     />
-                    <Logout/>
-                    <NewSheet/>
+                    <LogoutButton/>
+                    <NewSheetButton/>
                 </div>
             </main>
         </>
