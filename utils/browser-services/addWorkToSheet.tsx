@@ -77,9 +77,9 @@ const createRequestBody = (work: Work, history: HistoryEntry[]): RequestBody => 
  * @returns {Promise<Work>} - A promise that resolves to the added work entry.
  */
 export const addWorkToSheet = async (spreadsheetId: string, authToken: string, work: Work): Promise<Work> => {
-    console.log('addWorkToSheet', work);
-    console.log('authToken', authToken);
-    console.log('spreadsheetId', spreadsheetId);
+    logger.debug('addWorkToSheet', work);
+    logger.debug('authToken', authToken);
+    logger.debug('spreadsheetId', spreadsheetId);
 
     // Create history entry and default user work
     const history = createHistoryEntry();
@@ -96,10 +96,10 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
         body: createRequestBody(work, history)
     });
 
-    console.log('unparsed response', response);
+    logger.debug('unparsed response', response);
     const parsedResponse = await response.json();
 
-    console.log('addWorkToSheet', 'response', parsedResponse);
+    logger.debug('addWorkToSheet', 'response', parsedResponse);
 
     // Handle potential authentication error
     if (parsedResponse.error && parsedResponse.status === 'UNAUTHENTICATED') {

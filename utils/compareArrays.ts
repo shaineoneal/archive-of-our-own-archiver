@@ -9,11 +9,11 @@ export function compareArrays(searchList: any[], response: any[]): boolean[] {
 
     let boolArray: boolean[] = new Array(searchList.length).fill(false);
 
-    console.log('searchList', searchList);
-    console.log('searchList type', typeof searchList[1]);
-    console.log('response', response);
+    logger.debug('searchList', searchList);
+    logger.debug('searchList type', typeof searchList[1]);
+    logger.debug('response', response);
     if(response.length > 1) {
-        console.log('response type', typeof response[1].c[1].v);
+        logger.debug('response type', typeof response[1].c[1].v);
     }
 
     searchList.forEach((searchItem) => {

@@ -61,7 +61,7 @@ export async function makeRequest(request: HttpRequest): Promise<HttpResponse> {
         body: JSON.stringify(request.body)
     };
 
-    console.log('makeRequest options: ', options);
+    logger.debug('makeRequest options: ', options);
 
     return await fetch(request.url, options);
 }

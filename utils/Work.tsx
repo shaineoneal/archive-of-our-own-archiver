@@ -1,6 +1,6 @@
 import { WorkStatus } from "@/utils/types/data.ts";
 import { countWords } from "@/utils/wordCounter.ts";
-import { setStore } from "@/utils/browser-services";
+
 interface HistoryEntry {
     action: string;
     date: string;
@@ -68,7 +68,7 @@ export class Work {
         const wordCount = this.parseNumber(workNode.querySelector("dd.words")?.textContent ?? "");
         const chapterCount = this.parseNumber(workNode.querySelector("dd.chapters")?.textContent?.split("/")[0]);
 
-        console.log('title', title);
+        logger.debug('title', title);
         return new Work(
             workId,
             {
@@ -127,7 +127,7 @@ export class Work {
     static fromActiveWork(doc: Document): Work {
         const chapters = Chapter.parseChapterInfo(doc);
         const workId = doc.querySelector('.download ul a')?.getAttribute('href')?.split('/')[2];
-        console.log('workId', workId);
+        logger.debug('workId', workId);
         if (!workId) {
             throw new Error('Work ID not found');
         }
@@ -144,23 +144,23 @@ export class Work {
             return 0;
         }
         const previousChapters = this.info?.chapters?.slice(0, currentChap - 1);
-        console.log("previousChapters", previousChapters);
+        logger.debug("previousChapters", previousChapters);
 
         if (!previousChapters) {
             return 0;
         }
         let totalWordCount = 0;
         for (const chapter of previousChapters) {
-            console.log("chapter", chapter);
+            logger.debug("chapter", chapter);
             totalWordCount += chapter.wordCount;
         }
-        console.log("cnt", totalWordCount);
+        logger.debug("cnt", totalWordCount);
         return totalWordCount;
     }
 
     createProgressBar(activeChap: Chapter): React.ReactNode {
         let prevCount = this.sumPreviousChapters(activeChap.chapterNumber);
-        console.log(prevCount);
+        logger.debug(prevCount);
         const totalWordCount = this.info?.chapters?.reduce((sum, chapter) => sum + chapter.wordCount, 0) ?? 0;
         return <ProgressBar current={prevCount} total={totalWordCount} thisChap={activeChap?.wordCount ?? 0} />;
     }
@@ -232,7 +232,7 @@ export class Chapter {
             const work = Chapter.chapterFromNode(chapters[i]);
             chapterList.push(work);
         }
-        console.log('chapterList:', chapterList);
+        logger.debug('chapterList:', chapterList);
         return chapterList;
     }
 

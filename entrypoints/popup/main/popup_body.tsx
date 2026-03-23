@@ -30,7 +30,7 @@ export const PopupBody = () => {
             user = newUser;
 
             if (user.refreshToken && !user.accessToken) {
-                console.log('User has a refresh token but no access token');
+                logger.debug('User has a refresh token but no access token');
 
                 try {
                     // If the user has a refresh token but no access token, exchange the refresh token for an access token
@@ -41,7 +41,7 @@ export const PopupBody = () => {
                     }
                     setAccessToken(newAccessToken);
                 } catch (e) {
-                    console.log('Error exchanging refresh token for access token', e);
+                    logger.debug('Error exchanging refresh token for access token', e);
                     logout();
                     return;
                 } finally {
@@ -55,21 +55,21 @@ export const PopupBody = () => {
             }
             // Check if the access token is valid
             const validity = await isAccessTokenValid(user.accessToken!);
-            console.log('User access token', validity);
+            logger.debug('User access token', validity);
             if (user.accessToken && !await isAccessTokenValid(user.accessToken)) {
-                console.log('Access token is invalid');
+                logger.debug('Access token is invalid');
                 if (user.refreshToken) {
                     try {
                         // If the access token is invalid, exchange the refresh token for a new access token
                         const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
-                        console.log('Access token is invalid', newAccessToken);
+                        logger.debug('Access token is invalid', newAccessToken);
                         if (!newAccessToken) {
                             logout();
                             return;
                         }
                         setAccessToken(newAccessToken);
                     } catch (e) {
-                        console.log('Error exchanging refresh token for access token', e);
+                        logger.error('Error exchanging refresh token for access token', e);
                         logout();
                         return;
                     }

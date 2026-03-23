@@ -1,6 +1,5 @@
 import { Work } from '../utils/Work.tsx';
 import { sendMessage } from "@/utils/browser-services/messaging.ts";
-import { MessageResponse } from "@/utils/types/MessageResponse";
 import { changeBlurbStyle } from "../utils/changeBlurbStyle.tsx";
 import { wrap } from "@/utils";
 import '@/entrypoints/styles.scss';
@@ -72,17 +71,17 @@ export function addWorkControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        console.log('addWork clicked!: ', work);
+        logger.debug('addWork clicked!: ', work);
 
         const workBlurb = Work.fromBlurb(work);
-        console.log('workBlurb: ', workBlurb);
+        logger.debug('workBlurb: ', workBlurb);
 
         sendMessage('AddWorkToSpreadsheet', workBlurb).then((response: Work) => {
-            console.log('content script response: ', response);
+            logger.debug('content script response: ', response);
             if(response) {
                 changeBlurbStyle(WorkStatus.Read, workWrap);
             }
-            console.log('addWork error: ', response);
+            logger.debug('addWork error: ', response);
             return;
         });
     });
@@ -103,19 +102,19 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        console.log('removeWork clicked!: ', workWrap);
+        logger.debug('removeWork clicked!: ', workWrap);
 
         const workBlurb = Work.fromBlurb(workWrap);
-        console.log('workBlurb.workId: ', workBlurb);
+        logger.debug('workBlurb.workId: ', workBlurb);
 
         //sendMessage(
         //    MessageName.RemoveWorkFromSheet,
         //    { workId: workBlurb.workId },
         //    (response: MessageResponse<boolean>) => {
         //        if (response.error) {
-        //            console.log('removeWork error: ', response.error);
+        //            logger.debug('removeWork error: ', response.error);
         //        } else {
-        //            console.log('content script response: ', response.response);
+        //            logger.debug('content script response: ', response.response);
         //            changeBlurbStyle(WorkStatus.Default, workWrap);
         //        }
         //    }
@@ -133,7 +132,7 @@ export function removeWorkControl(workWrap: Element): HTMLElement {
 export function addControls(workWrap: Element): Node {
 
     const work = workWrap.querySelector("li[id*='work_']") as Element;
-    console.log('work: ', work);
+    logger.debug('work: ', work);
     const workId = work.id.split('_')[1];
 
     const controls = document.createElement('ul');
@@ -148,7 +147,7 @@ export function addControls(workWrap: Element): Node {
             }
         });
     } catch (error) {
-        console.log('Error getting workId from local storage: ', error);
+        logger.debug('Error getting workId from local storage: ', error);
     }
 
     return controls as Node;
@@ -160,18 +159,18 @@ export function addControls(workWrap: Element): Node {
  * @returns The info element
  */
 export function addInfo(work: Element): Node {
-    console.log('adding info to work: ', work);
+    logger.debug('adding info to work: ', work);
 
     const workId = work.id.split('_')[1];
-    console.log('workId: ', workId);
+    logger.debug('workId: ', workId);
 
     const info = document.createElement('div');
     info.className = 'blurb-info';
 
     browser.storage.local.get(workId, (result) => {
-        console.log('result from local store: ', result);
+        logger.debug('result from local store: ', result);
         const userWork = result[workId];
-        console.log('userWork: ', userWork);
+        logger.debug('userWork: ', userWork);
 
         const history = userWork.history
             ? typeof userWork.history === 'string'
@@ -215,7 +214,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
     innerToggle.addEventListener('click', async (e) => {
         e.preventDefault();
 
-        console.log('incrementReadCount clicked!: ', workWrap);
+        logger.debug('incrementReadCount clicked!: ', workWrap);
 
         const aWork = Work.fromBlurb(workWrap);
         const workId = `${aWork.workId}`;
@@ -225,7 +224,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 return;
             }
             const uWork = result[aWork.workId];
-            console.log('uWork: ', uWork);
+            logger.debug('uWork: ', uWork);
 
             uWork.readCount += 1;
             const history = uWork.history
@@ -237,7 +236,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                 action: "reread",
                 date: new Date().toLocaleString(),
             });
-            console.log('hist', history);
+            logger.debug('hist', history);
 
             const work = new Work(
                 aWork.workId,
@@ -258,9 +257,9 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
             //    { work: work },
             //    (response: MessageResponse<boolean>) => {
             //        if (response.error) {
-            //            console.log('incrementReadCount error: ', response.error);
+            //            logger.debug('incrementReadCount error: ', response.error);
             //        } else {
-            //            console.log('content script response: ', response.response);
+            //            logger.debug('content script response: ', response.response);
             //            changeBlurbStyle(WorkStatus.Read, workWrap);
             //        }
             //    }

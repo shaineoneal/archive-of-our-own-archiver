@@ -1,6 +1,5 @@
 import { WorkStatus } from "@/utils/types/data.ts";
-import { addControls, addInfo, addWorkControl, removeWorkControl } from "../components/blurbControls.tsx";
-import { removeWorkFromSheet } from "@/utils/browser-services/removeWorkFromSheet.ts";
+import { addControls, addInfo } from "../components/blurbControls.tsx";
 
 const STATUS_CLASSES = {
     reading: 'status-reading',
@@ -22,9 +21,9 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
     const workEl = work as Element;
     const toggleEl = wrapEl.querySelector('.blurb-toggle') as Element;
 
-    console.log('wrapEl: ', wrapEl);
-    console.log('toggleEl: ', toggleEl);
-    console.log('workEl: ', workEl);
+    logger.debug('wrapEl: ', wrapEl);
+    logger.debug('toggleEl: ', toggleEl);
+    logger.debug('workEl: ', workEl);
 
     switch (workStatus) {
         case 'reading':
@@ -59,6 +58,6 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             toggleEl.appendChild(addControls(wrapEl));
             break;
     }
-    console.log('work: ', workEl);
+    logger.debug('work: ', workEl);
     return workEl;
 }
