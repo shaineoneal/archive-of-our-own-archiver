@@ -27,7 +27,7 @@ export const OptionsIcon = () => {
     const accessT = useUser().accessToken;
 
     useEffect(() => {
-       console.log('optionsIcon useEffect');
+       logger.debug('optionsIcon useEffect');
     }, [accessT]);
 
     return (

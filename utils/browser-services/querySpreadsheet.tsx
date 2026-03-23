@@ -28,7 +28,7 @@ function createEncodedQuery(searchList: number[]): string {
 }
 
 async function parseResponse(response: HttpResponse): Promise<any> {
-    console.log('parseResponse', 'response', response);
+    logger.debug('parseResponse', 'response', response);
     let data = await response.text();
     return JSON.parse(data.substring(47, data.length - 2));
 }

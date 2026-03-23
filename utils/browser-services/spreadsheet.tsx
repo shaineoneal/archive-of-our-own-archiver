@@ -10,19 +10,19 @@ export async function createSpreadsheet(token: string) {
         body: JSON.stringify(sheetLayout),
     };
 
-    log ('options: ', options);
+    logger.debug('options: ', options);
 
     return fetch(url, options)      //TODO: change to makeRequest
         .then((response) => {
-            console.log('Response status:', response.status);
+            logger.debug('Response status:', response.status);
             return response.json();
         })
         .then((data) => {
-            console.log('Success:', data);
+            logger.debug('Success:', data);
             return data.spreadsheetId;
         })
         .catch((error) => {
-            console.log('Error creating spreadsheet:', error);
+            logger.debug('Error creating spreadsheet:', error);
             throw error;
         });
 }
