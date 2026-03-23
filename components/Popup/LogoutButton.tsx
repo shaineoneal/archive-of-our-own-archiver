@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { revokeTokens } from "@/utils/browser-services";
 import { useActions, useUser } from '@/utils/zustand';
 
-export const Logout = () => {
+export const LogoutButton = () => {
     const [style, setStyle] = useState("");
     const accessToken = useUser().accessToken;
     const { logout } = useActions();
@@ -30,4 +30,4 @@ export const Logout = () => {
     );
 };
 
-export default Logout;
+export default LogoutButton;

@@ -2,14 +2,15 @@ import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/utils/browser-services';
 import { logger } from '@/utils';
 import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/utils/zustand';
-import { GoToSheet, Login } from './';
+import { GoToSheetButton } from './GoToSheetButton';
+import { LoginButton } from './LoginButton';
 
 
 /**
  * The popup body component.
- * This component will display either a login or the GoToSheet component based on the user's login status.
+ * This component will display either a login or the GoToSheetButton component based on the user's login status.
  * If the user is not logged in, it will display a login button.
- * If the user is logged in, it will display the GoToSheet component.
+ * If the user is logged in, it will display the GoToSheetButton component.
  * If the user's access token is invalid, it will exchange the refresh token for an access token.
  * If the user does not have a refresh token, it will log the user out.
  * @category Component
@@ -84,8 +85,8 @@ export const PopupBody = () => {
     }, []);
 
     return loader ? <div className="loader" /> 
-        : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <Login />
-            : <GoToSheet spreadsheetId={user.spreadsheetId as string} />;
+        : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <LoginButton />
+            : <GoToSheetButton spreadsheetId={user.spreadsheetId as string} />;
 };
 
 export default PopupBody;

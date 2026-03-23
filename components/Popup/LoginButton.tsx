@@ -1,5 +1,5 @@
 import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
-import { sendMessage } from '@/utils/browser-services/messaging';
+import { sendMessage } from '@/utils/browser-services/messaging.ts';
 
 
 /**
@@ -10,7 +10,7 @@ import { sendMessage } from '@/utils/browser-services/messaging';
  * @group Popup
  * @returns the LoginButton component 
  */
-export const Login = () => {
+export const LoginButton = () => {
     const { loader, setLoader } = useLoaderStore();
     const { userStoreLogin, setSpreadsheetId } = useActions();
     const spreadsheetId = useUser().spreadsheetId;
