@@ -1,4 +1,3 @@
-import { chromeLaunchWebAuthFlow, createSpreadsheet, requestAuthorization, revokeTokens } from '@/utils/browser-services';
 import { useActions, useLoaderStore, useUser } from '@/utils/zustand';
 import { sendMessage } from '@/utils/browser-services/messaging';
 
@@ -27,7 +26,7 @@ export const Login = () => {
         try {
             await sendMessage('Login', undefined);
         } catch (error) {
-            console.log('Error in handleLogin: ', error);
+            logger.error('Error in handleLogin: ', error);
         } finally {
             setLoader(false);   //hide loader
         }

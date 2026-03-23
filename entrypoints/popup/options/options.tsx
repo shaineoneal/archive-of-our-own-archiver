@@ -5,6 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import '../../styles.scss';
 import { SyncUserStore, useActions } from '@/utils/zustand';
 import { Logout, NewSheet } from './';
+
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
 }
@@ -27,10 +28,10 @@ const Options =  () => {
         const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(\/|$)/;
 
         const match = event.target.value.match(regex);
-        console.log('match: ', match);
+        logger.debug('match: ', match);
         if(match && match[1]) {
             const spreadsheetId = match[1];
-            console.log('new spreadsheetId: ', spreadsheetId);
+            logger.debug('new spreadsheetId: ', spreadsheetId);
             setSpreadsheetId(spreadsheetId);
             //TODO: set spreadsheetId
         } else {

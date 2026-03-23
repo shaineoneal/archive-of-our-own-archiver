@@ -1,12 +1,15 @@
 import {
-    handleAddWorkToSpreadsheet, handleGetValidAccessToken,
-    handleIsAccessTokenValid, handleLogin,
-    handleQuerySpreadSheet, handleUpdateWorkInSpreadsheet,
+    handleAddWorkToSpreadsheet,
+    handleGetValidAccessToken,
+    handleIsAccessTokenValid,
+    handleLogin,
+    handleQuerySpreadSheet,
+    handleUpdateWorkInSpreadsheet,
     onMessage
 } from "@/utils/browser-services";
 
 export default defineBackground(() => {
-    console.log('background script running');
+    logger.info('background script running');
 
     onMessage('QuerySpreadSheet', handleQuerySpreadSheet);
     onMessage('AddWorkToSpreadsheet', handleAddWorkToSpreadsheet);
