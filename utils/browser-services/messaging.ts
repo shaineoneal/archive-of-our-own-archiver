@@ -16,7 +16,7 @@ import {
     setStore,
     StoreMethod
 } from "@/utils/browser-services";
-import { updateWorkInSheet } from "@/utils/browser-services/updateWorkInSheet.tsx";
+import { addToHistory } from "@/utils/browser-services/updateWorkInSheet.tsx";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
 
 
@@ -110,7 +110,7 @@ export async function handleLogin(): Promise<void> {
 
         }
     } catch (error) {
-        logger.debug('Error in handleLogin: ', error);
+        logger.error('Error in handleLogin: ', error);
     }
 }
 
@@ -154,9 +154,10 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
     }
 
     try {
-        const response = await updateWorkInSheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
+        const response = await addToHistory(msg.data, syncUser.spreadsheetId, syncUser.accessToken);
+        logger.debug('row', response);
         if (response) {
-            setStore(`${msg.data.workId}`, msg.data, StoreMethod.LOCAL);
+            setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
             return response;
         }
     } catch (error: any) {
