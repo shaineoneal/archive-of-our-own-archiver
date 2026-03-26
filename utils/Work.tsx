@@ -1,7 +1,7 @@
 import { WorkStatus } from "@/utils/types/data.ts";
 import { countWords } from "@/utils/wordCounter.ts";
 
-interface HistoryEntry {
+export interface HistoryEntry {
     action: string;
     date: string;
 }
@@ -103,23 +103,24 @@ export class Work {
     static fromSheet(data: any): Work {
 
         return new Work(
-            data.c[1].v ? data.c[1].v : '',
+            data.c[1] ? data.c[1].v : '',
             {
-                title: data.c[2].v ? data.c[2].v : '',
-                authors: data.c[3] ? data.c[3].v.split(',') : ['Anonymous'],
-                fandoms: data.c[4].v ? data.c[4].v.split(',') : [],
-                relationships: data.c[5].v ? data.c[5].v.split(',') : [],
-                tags: data.c[6].v ? data.c[6].v.split(',') : [],
-                description: data.c[7].v ? data.c[7].v : '',
-                wordCount: data.c[8] ? data.c[8].v : 0,
-                chapterCount: data.c[9] ? data.c[9].v : 0,
-                status: data.c[10] ? data.c[10].v : 'read',
-                history: data.c[11] ? data.c[11].v : '',
-                chapters: data.c[12] ? data.c[12].v : [],
-                personalTags: data.c[13] ? data.c[13].v.split(',') : [],
-                rating: data.c[14] ? data.c[14].v : 0,
-                readCount: data.c[15] ? data.c[15].v : 1,
-                skipReason: data.c[16] ? data.c[16].v : undefined
+                index: data.c[0] && data.c[0].v ? data.c[0].v : 0,
+                title: data.c[2] && data.c[2].v ? data.c[2].v : '',
+                authors: data.c[3] && data.c[3].v ? data.c[3].v.split(',') : ['Anonymous'],
+                fandoms: data.c[4] && data.c[4].v ? data.c[4].v.split(',') : [],
+                relationships: data.c[5] && data.c[5].v ? data.c[5].v.split(',') : [],
+                tags: data.c[6] && data.c[6].v ? data.c[6].v.split(',') : [],
+                description: data.c[7] && data.c[7].v ? data.c[7].v : '',
+                wordCount: data.c[8] && data.c[8].v ? data.c[8].v : 0,
+                chapterCount: data.c[9] && data.c[9].v ? data.c[9].v : 0,
+                status: data.c[10] && data.c[10].v ? data.c[10].v : 'read',
+                history: data.c[11] && data.c[11].v ? data.c[11].v : '',
+                chapters: data.c[12] && data.c[12].v ? data.c[12].v : [],
+                personalTags: data.c[13] && data.c[13].v ? data.c[13].v.split(',') : [],
+                rating: data.c[14] && data.c[14].v ? data.c[14].v : 0,
+                readCount: data.c[15] && data.c[15].v ? data.c[15].v : 1,
+                skipReason: data.c[16] && data.c[16].v ? data.c[16].v : undefined
             }
         );
     }
