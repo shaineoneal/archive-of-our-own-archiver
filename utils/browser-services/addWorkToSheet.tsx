@@ -1,5 +1,6 @@
 import { Ao3_BaseWork, Work } from '@/entrypoints/content';
 import { HttpMethod, makeRequest } from "./httpRequest.ts";
+import { toNumber } from "lodash";
 
 //TODO: currently hard coded for the first sheet, need to make it dynamic
 
@@ -110,21 +111,21 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
     return new Work(
         parsedResponse.updates.updatedData.values[0][1],
         {
-            index: parsedResponse.updates.updatedData.values[0][0],
+            index: toNumber(parsedResponse.updates.updatedData.values[0][0]),
             title: parsedResponse.updates.updatedData.values[0][2],
             authors: parsedResponse.updates.updatedData.values[0][3],
             fandoms: parsedResponse.updates.updatedData.values[0][4],
             relationships: parsedResponse.updates.updatedData.values[0][5],
             tags: parsedResponse.updates.updatedData.values[0][6],
             description: parsedResponse.updates.updatedData.values[0][7],
-            wordCount: parsedResponse.updates.updatedData.values[0][8],
-            chapterCount: parsedResponse.updates.updatedData.values[0][9],
+            wordCount: toNumber(parsedResponse.updates.updatedData.values[0][8]),
+            chapterCount: toNumber(parsedResponse.updates.updatedData.values[0][9]),
             status: parsedResponse.updates.updatedData.values[0][10],
             history: parsedResponse.updates.updatedData.values[0][11],
             chapters: parsedResponse.updates.updatedData.values[0][12],
             personalTags: parsedResponse.updates.updatedData.values[0][13],
-            rating: parsedResponse.updates.updatedData.values[0][14],
-            readCount: parsedResponse.updates.updatedData.values[0][15],
+            rating: toNumber(parsedResponse.updates.updatedData.values[0][14]),
+            readCount: toNumber(parsedResponse.updates.updatedData.values[0][15]),
             skipReason: parsedResponse.updates.updatedData.values[0][16]
         }
     );

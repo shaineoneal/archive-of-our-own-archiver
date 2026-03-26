@@ -21,12 +21,11 @@ const TOGGLES = {
 export function addBlurbControls(worksOnPage: NodeList, boolRead: boolean[]): void {
     worksOnPage.forEach((work, index) => {
         const workEl = work as Element;
-        const workIdClass = workEl.id.split('_')[1];
 
         // Create a new div to wrap the work element
         const workWrap = document.createElement('div');
-        workWrap.classList.add('blurb-with-toggles', 'archiver-controls', workIdClass);
-
+        workWrap.classList.add('blurb-with-toggles', 'archiver-controls');
+        workWrap.id = `${workEl.id}-wrap`;
         //workWrap.style.cssText = JSON.stringify(getComputedStyle(workEl));
 
         // Wrap the work element in the new div
@@ -170,7 +169,9 @@ export function addInfo(work: Element): Node {
     browser.storage.local.get(workId, (result) => {
         logger.debug('result from local store: ', result);
         const userWork = result[workId];
-        logger.debug('userWork: ', userWork);
+        logger.debug('addInfo userWork: ', userWork);
+
+        //if userWork.history exists,
 
         const history = userWork.history
             ? typeof userWork.history === 'string'
@@ -217,6 +218,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
         logger.debug('incrementReadCount clicked!: ', workWrap);
 
         const aWork = Work.fromBlurb(workWrap);
+        logger.debug('awork: ', aWork);
         const workId = `${aWork.workId}`;
 
         browser.storage.local.get(workId, (result) => {
@@ -225,13 +227,11 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
             }
             const uWork = result[aWork.workId];
             logger.debug('uWork: ', uWork);
-
-            uWork.readCount += 1;
             const history = uWork.history
                 ? typeof uWork.history === 'string'
                     ? JSON.parse(uWork.history)
                     : uWork.history
-                : [{ action: "added", date: 'pre-2025' }];
+                : [];
             history.push({
                 action: "reread",
                 date: new Date().toLocaleString(),
@@ -241,6 +241,7 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
             const work = new Work(
                 aWork.workId,
                 {
+                    index: uWork.index,
                     title: uWork.title,
                     authors: uWork.authors,
                     fandoms: uWork.fandoms,
@@ -249,9 +250,27 @@ function incrementReadCountControl(workWrap: Element): HTMLElement {
                     description: uWork.description,
                     wordCount: uWork.wordCount,
                     chapterCount: uWork.chapterCount,
+                    status: uWork.status,
+                    history: history,
+                    chapters: uWork.chapters,
+                    personalTags: uWork.personalTags,
+                    rating: uWork.rating,
+                    readCount: uWork.readCount += 1,
                 },
             );
 
+            logger.debug('work', work);
+
+            sendMessage('UpdateWorkInSpreadsheet', work).then((response) => {
+                logger.debug('content script response: ', response);
+                if (!response) {
+                        logger.error('incrementReadCount error ');
+                    } else {
+                        logger.debug('content script responded');
+                        changeBlurbStyle(WorkStatus.Read, workWrap);
+                    }
+                return;
+            });
             //sendMessage(
             //    MessageName.UpdateWorkInSheet,
             //    { work: work },
