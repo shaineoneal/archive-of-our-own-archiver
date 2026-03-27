@@ -1,3 +1,4 @@
+import { WorkStatus } from "@/types/data.ts";
 
 
 const STATUS_CLASSES = {
