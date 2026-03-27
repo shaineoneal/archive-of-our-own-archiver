@@ -4,7 +4,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
     srcDir: 'src',
     modules: ['@wxt-dev/module-react'],
-    manifest: {
+    manifest: () => ({
         name: 'Rewritten AO3 Extension',
         description: 'rewrite of AO3 Extension',
         oauth2: {
@@ -12,7 +12,7 @@ export default defineConfig({
             scopes: ['https://www.googleapis.com/auth/spreadsheets',
                 'https://www.googleapis.com/auth/userinfo.profile']
         },
-        key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmiXSszV2OCyf7MiWKkw6NsCJ2Xy9xrfseBfdcOKlX08HNPyKjpSR6gOsx96ZGVe0nVpxIkC7+zBG5GWp7rMVxVeVoDPE+d0KCvjkxpgDybq3gFtlszNZOKSUiUbRfwuk+ukstp9yY0PuNR1C/EB+WvwHGmPDTkMHAzTtgX+BEPs3VYjrGpVW6avdlGYOBtBUOcTg0oO2NdmKIQdm0cHeZIOqRTgNR/hlNMjY7rI9BGYSVVe7ac5k/wk9zqYTPB7fK/rkvoJxktRF3NavkRfiSt/XX8EmCTYzYLrlRVvq2/wQtoP4nf0wKIQAalqTGb1z5Rn7ded5+IU9iAYL9rm4VQIDAQAB',
+        key: import.meta.env.WXT_API_EXTENSION_PUBLIC_KEY,
         permissions: ['webRequest', 'identity', 'storage', 'scripting', 'activeTab', 'cookies'],
         host_permissions: ['*://*.archiveofourown.org/*', 'https://docs.google.com/spreadsheets/*', '*://*.google.com/'],
         options_ui: {
@@ -37,5 +37,5 @@ export default defineConfig({
                 strict_min_version: '58.0'
             }
         }
-    }
+    })
 });
