@@ -158,7 +158,7 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
         logger.debug('row', response);
         if (response) {
             setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
-            return response;
+            return response.ok;
         }
     } catch (error: any) {
         throw new Error(error);
