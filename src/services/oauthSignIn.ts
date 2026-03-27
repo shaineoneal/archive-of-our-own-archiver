@@ -26,6 +26,7 @@ const createAuthUrl = (): string => {
         throw new Error('Invalid oauth2 configuration');
     }
 
+    logger.debug("Params: ", redirectUri);
 
     const authParams = new URLSearchParams({
         access_type: 'offline',
