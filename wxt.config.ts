@@ -2,8 +2,9 @@ import { defineConfig } from 'wxt';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+    srcDir: 'src',
     modules: ['@wxt-dev/module-react'],
-    manifest: {
+    manifest: () => ({
         name: 'Rewritten AO3 Extension',
         description: 'rewrite of AO3 Extension',
         oauth2: {
@@ -11,7 +12,7 @@ export default defineConfig({
             scopes: ['https://www.googleapis.com/auth/spreadsheets',
                 'https://www.googleapis.com/auth/userinfo.profile']
         },
-        key: '***REMOVED***',
+        key: import.meta.env.WXT_API_EXTENSION_PUBLIC_KEY,
         permissions: ['webRequest', 'identity', 'storage', 'scripting', 'activeTab', 'cookies'],
         host_permissions: ['*://*.archiveofourown.org/*', 'https://docs.google.com/spreadsheets/*', '*://*.google.com/'],
         options_ui: {
@@ -36,5 +37,5 @@ export default defineConfig({
                 strict_min_version: '58.0'
             }
         }
-    }
+    })
 });
