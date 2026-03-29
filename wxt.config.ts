@@ -33,7 +33,7 @@ export default defineConfig({
         }],
         browser_specific_settings: {
             gecko: {
-                id: 'shaineoneal@gmail.com',
+                id: 'ao3-archiver@gmail.com',
                 strict_min_version: '58.0'
             }
         }

@@ -1,16 +1,11 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { browser } from "#imports";
 import { logger } from "@/utils";
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const scopes = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile'
-let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
-
-if (import.meta.env.BROWSER === 'firefox' && browser.identity) {
-    redirectUri = browser.identity.getRedirectURL();
-}
+let redirectUri = import.meta.env.CHROME ? import.meta.env.WXT_API_REDIRECT_URI : "https://shaine.io/";
 
 logger.debug("redirectURI: " , redirectUri);
 /**
@@ -86,47 +81,50 @@ export interface AuthRequestResponse {
  * 
  */
 export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
-    let authUrl = '';
-    if (import.meta.env.BROWSER === 'chrome') {
-        try {
-            redirectUri = browser.identity.getRedirectURL();
-            if (redirectUri) {
-                authUrl = redirectUri
-            }
-            logger.debug('RedirectUri: ', redirectUri);
-        } catch (error) {
-            logger.debug('chromeLaunchWebAuthFlow Error: ', error);
-        }
-    } else if (import.meta.env.BROWSER === 'edge') {
-    } else {
-        logger.debug('current browser: ', import.meta.env.BROWSER);
-        authUrl = createAuthUrl()
-    }
-    logger.debug('other RedirectUri: ', redirectUri);
-    try {
-        const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
 
-        logger.debug('launchWebAuthFlow Response: ', responseUrl);
-        if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
-            logger.debug('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
-            throw new Error();
-        } else {
-            const url = new URL(responseUrl);
 
-            const params = Object.fromEntries((url.searchParams).entries());
 
-            logger.debug('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
-            const response: AuthFlowResponse = {
-                url: responseUrl,
-                code: params.code
-            };
-            return response;
-        }
-    } catch (error) {
-        logger.debug('chromeLaunchWebAuthFlow Error: ', error);
-        throw new Error('Error launching web authentication flow');
-    }
+    //if (import.meta.env.BROWSER === 'chrome') {
+    //    try {
+    //        redirectUri = browser.identity.getRedirectURL();
+    //        if (redirectUri) {
+    //            authUrl = redirectUri
+    //        }
+    //        logger.debug('RedirectUri: ', redirectUri);
+    //    } catch (error) {
+    //        logger.debug('chromeLaunchWebAuthFlow Error: ', error);
+    //    }
+    //} else if (import.meta.env.BROWSER === 'edge') {
+    //} else {
+    //    logger.debug('current browser: ', import.meta.env.BROWSER);
+    //    authUrl = createAuthUrl()
+    //}
+    //logger.debug('other RedirectUri: ', redirectUri);
+    //try {
+    //    const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
+//
+    //    logger.debug('launchWebAuthFlow Response: ', responseUrl);
+    //    if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
+    //        logger.debug('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
+    //        throw new Error();
+    //    } else {
+    //        const url = new URL(responseUrl);
+//
+    //        const params = Object.fromEntries((url.searchParams).entries());
+//
+    //        logger.debug('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
+//
+    //        const response: AuthFlowResponse = {
+    //            url: responseUrl,
+    //            code: params.code
+    //        };
+    //        return response;
+    //    }
+    //} catch (error) {
+    //    logger.debug('chromeLaunchWebAuthFlow Error: ', error);
+    //    throw new Error('Error launching web authentication flow');
+    //}
 
 }
 

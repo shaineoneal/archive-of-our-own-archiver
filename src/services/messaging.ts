@@ -2,22 +2,18 @@ import { defineExtensionMessaging } from "@webext-core/messaging";
 import { SyncUserStore, UserDataType } from "@/stores";
 import {
     addWorkToSheet,
-    chromeLaunchWebAuthFlow,
-    createSpreadsheet,
     exchangeRefreshForAccessToken,
     getValidAccessToken,
     handleTokenExchange,
     isAccessTokenValid,
     querySpreadsheet,
-    requestAuthorization,
-    revokeTokens,
-    sendMessageToTabs,
     setStore,
     StoreMethod,
     Work
 } from "@/services";
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
+import { startAuthFlow } from "@/services/customAuthFlow.ts";
 
 
 interface ProtocolMap {
@@ -76,15 +72,18 @@ export async function handleGetValidAccessToken(): Promise<string> {
 export async function handleLogin(): Promise<void> {
     const {getUser, userStoreLogin} = SyncUserStore.getState().actions;
     const user = await getUser();
+
     try {
         // Launch the web authentication flow with interactive set to true
-        const flowResp = await chromeLaunchWebAuthFlow(true);
+        const flowResp = await startAuthFlow();
+        logger.debug('auth flow resp', flowResp);
+
+
 
         // If the response has a URL and a code, request authorization
-        if (flowResp.url && flowResp.code) {
-            logger.debug('Flow response: ', flowResp);
-            const {access_token, refresh_token} = await requestAuthorization(flowResp);
-
+       /* if (flowResp.access_token && flowResp.refresh_token) {
+            const access_token = flowResp.access_token;
+            const refresh_token = flowResp.refresh_token;
             //TODO: if no refresh token, fix it
 
             // If the response has a refresh token, store the async login
@@ -108,10 +107,12 @@ export async function handleLogin(): Promise<void> {
                 await revokeTokens(access_token);
             }
 
-        }
+        } **/
     } catch (error) {
         logger.error('Error in handleLogin: ', error);
+
     }
+
 }
 
 export async function handleIsAccessTokenValid(msg: { data: string }): Promise<boolean> {
@@ -130,6 +131,7 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     try {
         const response = await querySpreadsheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
         let responseArray: boolean[] = [];
+        logger.debug('Response to querysheet: ', response);
         if (response.table.rows && response.table.rows.length > 0) {
             for (let row of response.table.rows) {
                 logger.debug('row', row);
