@@ -34,7 +34,7 @@ const isProd = import.meta.env.PROD;
 function createLogger() {
     function log(level: LogLevel): (...args: unknown[]) => void {
         // Only log debug and info when in development mode
-        if (isProd && (level === "debug" || level === "info")) return () => {};
+        //if (isProd && (level === "debug" || level === "info")) return () => {};
 
         const color = COLORS[level];
         const prefix = `%c[${level.toUpperCase()}]`;
