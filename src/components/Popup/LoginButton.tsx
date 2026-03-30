@@ -1,5 +1,6 @@
-import { useActions, useLoaderStore, useUser } from '@/stores';
+import { useLoaderStore, useUser } from '@/stores';
 import { sendMessage } from "@/services";
+import { Button, Center, Text } from '@mantine/core';
 
 /**
  * Component for the login functionality.
@@ -11,7 +12,6 @@ import { sendMessage } from "@/services";
  */
 export const LoginButton = () => {
     const { loader, setLoader } = useLoaderStore();
-    const { userStoreLogin, setSpreadsheetId } = useActions();
     const spreadsheetId = useUser().spreadsheetId;
 
     // TODO: set up full user store on login
@@ -33,16 +33,16 @@ export const LoginButton = () => {
 
     return (
         <>
-            <h1>Please log in to begin</h1>
-            <div className="login">
-                <button
+            <Text size="xl" fw={500} ta="center" p={15}>Please log in to begin</Text>
+            <Center>
+                <Button
                     id="login-button"
                     onClick={ handleLoginPress }
                     disabled={ loader }
                 >
                     Login to Google
-                </button>
-            </div>
+                </Button>
+            </Center>
         </>
     );
 };
