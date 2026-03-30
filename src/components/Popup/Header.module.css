@@ -1,0 +1,19 @@
+.header {
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--mantine-spacing-sm);
+}
+
+.header .title {
+    background: transparent;
+    color: var(--mantine-color-bright);
+}
+
+.header .back {
+    stroke: var(--mantine-color-bright);
+}
+.header .icon {
+    width: 28px;
+    height: 28px;
+    color: var(--mantine-color-text);
+}

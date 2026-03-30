@@ -1,3 +1,5 @@
+import { Button, Center } from '@mantine/core'
+import '@mantine/core/styles.css'
 
 /**
  * Component that displays a button to go to the user's sheet.
@@ -10,10 +12,15 @@ export const GoToSheetButton = (props: { spreadsheetId: string }) => {
     };
 
     return (
-        <div className="loggedIn">
-            <button id="sheet-button" onClick={handleGoToSheet}>
+        <Center>
+            <Button
+                justify="center"
+                id="sheet-button"
+                onClick={ handleGoToSheet }
+                variant="filled"
+            >
                 View your sheet
-            </button>
-        </div>
+            </Button>
+        </Center>
     );
 };
