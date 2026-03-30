@@ -1,5 +1,6 @@
 import { createSpreadsheet } from '@/services';
 import { SyncUserStore, useLoaderStore } from '@/stores';
+import { Button, Flex } from "@mantine/core";
 
 /**
  * Component for creating a new Google Sheet.
@@ -35,13 +36,13 @@ export const NewSheetButton = () => {
     };
 
     return (
-        <div>
-            <button
-                id="new-sheet-button"
+        <Flex justify="end" align="center">
+            <Button
                 onClick={ handleNewSheet }
+                variant="light"
             >
                 New Sheet
-            </button>
-        </div>
+            </Button>
+        </Flex>
     );
 };

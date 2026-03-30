@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { IconContext } from 'react-icons';
-import { BiArrowBack } from 'react-icons/bi';
-import '../styles.scss';
 import { SyncUserStore, useActions } from '@/stores';
 import { LogoutButton } from '@/components/Popup/LogoutButton.tsx';
 import { NewSheetButton } from '@/components/Popup/NewSheetButton.tsx';
 import { root } from "@/entrypoints/popup/popup.tsx";
+import '@mantine/core/styles.css';
+import { theme } from "@/utils/theme.ts";
+import { PopupHeader } from "@/components/Popup/Header.tsx";
+import { Container, Flex, Input, MantineProvider, Paper, Title } from '@mantine/core';
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -51,33 +52,34 @@ const Options = () => {
     //});
 
     return (
-        <>
-            <header>
-                <div className="flex-container">
-                    <IconContext.Provider value={{className: 'back-icon'}}>
-                        <a href="popup.html">
-                            <BiArrowBack/>
-                        </a>
-                    </IconContext.Provider>
-                    <div className="title">AO3E Rewritten&apos;s Options</div>
-                </div>
-            </header>
+        <Container w="350px" p='var(--mantine-spacing-sm)'>
+            <PopupHeader/>
             <main>
-                <div className="options-container">
-                    <div>Google Spreadsheets URL</div>
-                    <input 
-                        type="text" 
-                        defaultValue={spreadsheetUrl}
-                        onChange={onChange}
-                    />
+                <Paper shadow="xs" p="md" mb="md" withBorder>
+                    <Flex direction="column"
+                          justify="space-between"
+                          gap="xs"
+                    >
+                        <Title size="h4">Google Spreadsheets URL</Title>
+                        <Input
+                            type="text"
+                            defaultValue={spreadsheetUrl}
+                            onChange={onChange}
+                        />
+                        <NewSheetButton/>
+                    </Flex>
+                </Paper>
+                <Paper shadow="xs" p="md" withBorder>
                     <LogoutButton/>
-                    <NewSheetButton/>
-                </div>
+                </Paper>
+
             </main>
-        </>
+        </Container>
     );
 };
 
 root.render(
-    <Options />
+    <MantineProvider theme={theme}>
+        <Options/>
+    </MantineProvider>
 );
