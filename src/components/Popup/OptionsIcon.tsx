@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { IconContext } from 'react-icons';
-import { BsFillGearFill } from 'react-icons/bs';
 import { useUser } from '@/stores';
+import { ActionIcon } from "@mantine/core";
+import { IconSettingsFilled } from "@tabler/icons-react";
+import classes from '@/components/Popup/Header.module.css';
 
 /**
  * OptionsIcon component renders an icon that links to the options page.
@@ -27,14 +28,19 @@ export const OptionsIcon = () => {
     const accessT = useUser().accessToken;
 
     useEffect(() => {
-       logger.debug('optionsIcon useEffect');
+        console.log('optionsIcon useEffect');
     }, [accessT]);
 
     return (
-        <IconContext.Provider value={{ className: 'settings-icon' }}>
-            <a href="options.html">
-                {accessT ? <BsFillGearFill /> : null}
-            </a>
-        </IconContext.Provider>
+        <ActionIcon
+            component="a"
+            href="options.html"
+            size="lg"
+            variant="default"
+            bd="none"
+            bg="transparent"
+        >
+            {accessT ? <IconSettingsFilled className={classes.icon}/> : null}
+        </ActionIcon>
     );
 }

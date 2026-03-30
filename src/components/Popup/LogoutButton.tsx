@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { revokeTokens } from "@/services";
 import { useActions, useUser } from '@/stores';
+import { Button } from '@mantine/core';
 
 export const LogoutButton = () => {
     const [style, setStyle] = useState("");
@@ -23,9 +24,7 @@ export const LogoutButton = () => {
 
     return (
         <div >
-            <a className='no-underline' href="popup.html">
-                <button className={style} onClick={handleLogout} >Logout</button>
-            </a>
+            <Button className={style} onClick={handleLogout} >Logout</Button>
         </div>
     );
 };

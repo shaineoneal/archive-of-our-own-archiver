@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PopupBody } from '../../components/Popup/PopupBody.tsx';
-import { OptionsIcon } from '@/components/Popup/OptionsIcon.tsx';
-import '../styles.scss';
-import { MantineProvider } from "@mantine/core";
-import { UserDataType, useUser } from "@/stores";
+import '@mantine/core/styles.css';
+import { Container, LoadingOverlay, MantineProvider } from "@mantine/core";
+import { useLoaderStore } from "@/stores";
+import { isInPopup } from "@/utils";
+import { useMounted } from "@mantine/hooks";
+import { PopupHeader } from "@/components/Popup/Header.tsx";
+import { theme } from "@/utils/theme.ts"
 
 /**
  * The popup component.
@@ -18,37 +20,26 @@ import { UserDataType, useUser } from "@/stores";
  * @returns the Popup component
  */
 const Popup = () => {
-    // create new react state for user
-    const [user, setUser] = useState<UserDataType>(useUser());
-
-    useEffect(() => {
-        //to ensure that the options icon reloads when the user logs in
-    }, [user]);
+    const { loader } = useLoaderStore();
+    const mounted = useMounted();
 
     return (
-        <>
-            <header>
-                <div className="flex-container">
-                    <div className="logo">
-                        <img src="icons/icon-32.png" alt="extension-icon" />
-                    </div>
-                    <div className="title">AO3E: Rewritten</div>
-                    <OptionsIcon />
-                </div>
-            </header>
-            <main>
-                <div className="body">
-                    <PopupBody />
-                </div>
-            </main>
-        </>
+        <Container
+            w={isInPopup() ? "350px" : "100%"}
+            p='var(--mantine-spacing-sm)'
+            className="main-popup-header"
+        >
+            <LoadingOverlay visible={!mounted || loader} overlayProps={{ radius: 'sm', blur: 2 }}/>
+            <PopupHeader/>
+            <PopupBody/>
+        </Container>
     );
 };
 
 export const root = createRoot(document.getElementById("root")!);
 
 root.render(
-    <MantineProvider>
+    <MantineProvider theme={theme}>
         <Popup/>
     </MantineProvider>
 );
