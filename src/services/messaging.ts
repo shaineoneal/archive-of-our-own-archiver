@@ -11,13 +11,14 @@ import {
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
-    sendMessageToTabs,
+    sendMessageToAo3Tabs,
     setStore,
     StoreMethod,
     Work
 } from "@/services";
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
+import { TokenService } from "@/services/tokenService.ts";
 
 
 interface ProtocolMap {
@@ -85,6 +86,9 @@ export async function handleLogin(): Promise<void> {
             logger.debug('Flow response: ', flowResp);
             const {access_token, refresh_token} = await requestAuthorization(flowResp);
 
+            logger.debug('Access token: ', access_token);
+            logger.debug('Refresh token: ', refresh_token);
+            logger.debug('SpreadsheetId: ', user.spreadsheetId);
             //TODO: if no refresh token, fix it
 
             // If the response has a refresh token, store the async login
@@ -94,14 +98,16 @@ export async function handleLogin(): Promise<void> {
                     // If the user has no spreadsheetId, create a new one
                     const newSheet = await createSpreadsheet(access_token);
                     userStoreLogin(access_token, refresh_token, newSheet);
+
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
-                    await sendMessageToTabs('LoggedIn',
-                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
+                    await sendMessageToAo3Tabs('LoggedIn');
                 } else {
+                    const success = await storage.setItem('session:test', 'testing')
+                    logger.debug('Storage set success: ', success);
                     userStoreLogin(access_token, refresh_token, user.spreadsheetId);
-                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
-                    await sendMessageToTabs('LoggedIn',
-                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
+                    logger.debug('Sending message');
+                    //await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
+                    await sendMessageToAo3Tabs('LoggedIn' );
                 }
             } else {
                 logger.debug("No refresh token found, revoking tokens");
@@ -121,7 +127,9 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
     const { setAccessToken, getUser } = SyncUserStore.getState().actions;
     let syncUser = await getUser();
-
+    await TokenService.getUser()
+    const success = await storage.setItem('session:test', 'testing')
+    logger.debug('Storage set success: ', success);
 
     if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
@@ -166,14 +174,9 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
     return false;
 }
 
-export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
+export function handleLoggedIn(msg: { data: UserDataType }): void {
 
     logger.debug('logged in message received', msg.data);
-    const { userStoreLogin } = SyncUserStore.getState().actions;
-
-    if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
-        userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
-    }
-        //logger.debug('userStoreLogin done', SyncUserStore.getState().user);
+     //logger.debug('userStoreLogin done', SyncUserStore.getState().user);
     pageTypeDetect();
 }

@@ -1,6 +1,5 @@
 // @ts-ignore
 import { createIntegratedUi } from "#imports";
-import { handleLoggedIn, onMessage } from '~/services'
 import { createRoot } from "react-dom/client";
 import { App, main, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
 
@@ -12,6 +11,7 @@ export default defineContentScript({
 
     main(ctx) {
         logger.debug('content script running');
+
         const ui = createIntegratedUi(ctx, {
             position: 'inline',
             anchor: 'h1',
@@ -37,8 +37,9 @@ export default defineContentScript({
         // Call mount to add the UI to the DOM
         ui.mount();
         if (!loggedInListenerRegistered) {
-            onMessage('LoggedIn', handleLoggedIn);
-            loggedInListenerRegistered = true;
+           browser.runtime.onMessage.addListener((message) => {
+               logger.debug(message);
+           });
         }
     },
 });

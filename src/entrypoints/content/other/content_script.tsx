@@ -84,11 +84,10 @@ export async function main(ctx: any) {
     const user = await SyncUserStore.getState().actions.getUser();
 
     if(user.accessToken) {
-        const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
-        logger.debug('IsAccessTokenValid response', resp);
+        const resp = await sendMessage('GetValidAccessToken', undefined);
+        logger.debug('GetValidAccessToken response', resp);
         if (resp) {
             logger.debug('user is logged in');
-            SyncUserStore.getState().actions.userStoreLogin(user.accessToken, user.refreshToken!, user.spreadsheetId!);
             pageTypeDetect();
         } else {
             logger.debug('user is not logged in, access token is invalid');
@@ -100,7 +99,7 @@ export async function main(ctx: any) {
 
 // Listener for updates to the user store
 export function registerStorageListener() {
-    browser.storage.local.onChanged.addListener(main);
+    browser.storage.sync.onChanged.addListener(main);
 }
 
 export function unregisterStorageListener() {

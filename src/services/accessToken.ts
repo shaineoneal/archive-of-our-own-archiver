@@ -12,6 +12,7 @@ const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
  * @returns {Promise<Response>} - The response from the OAuth2 server.
  */
 const requestAccessToken = (refreshT: string): Promise<Response> => {
+
     if(!client_id || !client_secret) {
         throw new Error('Invalid oauth2 configuration in requestAccessToken');
     }
@@ -124,14 +125,18 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
  */
 export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
     logger.debug('Checking access token validity:', accessToken);
+    const user = await SyncUserStore.getState().actions.getUser();
     if (await isAccessTokenValid(accessToken)) {
         logger.debug('Access token is valid');
+
+        await TokenService.getUser()
         return accessToken;
     } else {
         logger.debug('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         if (newAccessToken) {
             logger.debug('New access token obtained:', newAccessToken);
+            SyncUserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');

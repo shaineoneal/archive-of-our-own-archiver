@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^5.6.0",
+    "@webext-core/proxy-service": "^2.0.0",
     "eslint-plugin-react": "^7.37.5",
     "init": "^0.1.2",
     "typedoc-github-theme": "^0.1.2"
