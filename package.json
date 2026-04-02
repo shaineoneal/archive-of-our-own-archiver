@@ -1,6 +1,6 @@
 {
   "name": "ao3-archiver",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "archive of our own archiver",
   "main": "index.js",
   "scripts": {
