@@ -52,7 +52,7 @@ const Options = () => {
     //});
 
     return (
-        <Container w="350px" p='var(--mantine-spacing-sm)'>
+        <Container fluid p='var(--mantine-spacing-sm)' className="responsiveContainer">
             <PopupHeader/>
             <main>
                 <Paper shadow="xs" p="md" mb="md" withBorder>
