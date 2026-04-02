@@ -6,6 +6,13 @@ $loader-color: black;
 $loader-border-color: var(--color);
 $read-status-color: #5998d6;
 
+
+.responsiveContainer {
+    @media (min-device-width: 684px) {
+        width: 350px;
+    }
+}
+
 h1 {
     text-align: center;
 }
@@ -170,9 +177,6 @@ a.no-underline {
     }
 }
 
-#root {
-    width: 350px;
-}
 
 .status-read {
     border-left-width: 10px !important;

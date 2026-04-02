@@ -3,7 +3,6 @@ import { PopupBody } from '../../components/Popup/PopupBody.tsx';
 import '@mantine/core/styles.css';
 import { Container, LoadingOverlay, MantineProvider } from "@mantine/core";
 import { useLoaderStore } from "@/stores";
-import { isInPopup } from "@/utils";
 import { useMounted } from "@mantine/hooks";
 import { PopupHeader } from "@/components/Popup/Header.tsx";
 import { theme } from "@/utils/theme.ts"
@@ -25,9 +24,9 @@ const Popup = () => {
 
     return (
         <Container
-            w={isInPopup() ? "350px" : "100%"}
+            fluid
             p='var(--mantine-spacing-sm)'
-            className="main-popup-header"
+            className="main-popup-header responsiveContainer"
         >
             <LoadingOverlay visible={!mounted || loader} overlayProps={{ radius: 'sm', blur: 2 }}/>
             <PopupHeader/>
