@@ -36,7 +36,7 @@ type UserStoreType = {
 /**
  * Zustand store for user data with persistence.
  */
-export const userStore = create<UserStoreType>()(
+export const UserStore = create<UserStoreType>()(
     persist(
         (set, get): UserStoreType => ({
             user: DEFAULT_USER,
@@ -127,11 +127,11 @@ export type ExtractState<S> = S extends {
     ? T
     : never;
 
-const userSelector = (state: ExtractState<typeof userStore>) => state.user;
-const actionsSelector = (state: ExtractState<typeof userStore>) => state.actions;
+const userSelector = (state: ExtractState<typeof UserStore>) => state.user;
+const actionsSelector = (state: ExtractState<typeof UserStore>) => state.actions;
 
 export function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStoreWithEqualityFn(userStore, selector, equalityFn);
+    return useStoreWithEqualityFn(UserStore, selector, equalityFn);
 }
 
 /**
