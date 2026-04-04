@@ -27,7 +27,7 @@ const Options = () => {
     }, [spreadsheetId]);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(\/|$)/;
+        const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/\/?u?\/?[0-9]?\/?d\/([A-Za-z0-9_-]+)(\/|$)/;
 
         const match = event.target.value.match(regex);
         logger.debug('match: ', match);
@@ -65,6 +65,7 @@ const Options = () => {
                             type="text"
                             defaultValue={spreadsheetUrl}
                             onChange={onChange}
+                            error={errorStatus ? 'Please enter a valid Google Spreadsheet URL' : false}
                         />
                         <NewSheetButton/>
                     </Flex>
