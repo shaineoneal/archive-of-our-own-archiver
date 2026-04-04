@@ -129,6 +129,9 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
 
     try {
         const response = await querySpreadsheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
+        if (!response || !response.table || !response.table.rows) {
+            logger.error('Invalid response from querySpreadsheet:', response);
+        }
         let responseArray: boolean[] = [];
         if (response.table.rows && response.table.rows.length > 0) {
             for (let row of response.table.rows) {
