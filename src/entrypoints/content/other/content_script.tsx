@@ -1,6 +1,7 @@
 import { sendMessage } from "@/services/messaging.ts";
 import { SyncUserStore } from "@/stores";
 import { ReactElement } from 'react';
+import { getValidAccessToken } from "@/services";
 
 
 // Interface for message structure
@@ -92,6 +93,13 @@ export async function main(ctx: any) {
             pageTypeDetect();
         } else {
             logger.debug('user is not logged in, access token is invalid');
+            try {
+                const newAT = await getValidAccessToken(user.accessToken, user.refreshToken!);
+                SyncUserStore.getState().actions.userStoreLogin(newAT, user.refreshToken!, user.spreadsheetId!);
+                pageTypeDetect();
+            } catch (err) {
+                logger.error(err);
+            }
         }
     } else {
         logger.debug('user is not logged in');
