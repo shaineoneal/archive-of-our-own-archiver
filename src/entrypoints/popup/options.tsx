@@ -18,6 +18,7 @@ export function openOptionsPage() {
  */
 const Options = () => {
 
+    const [ errorStatus, setErrorStatus ] = useState<boolean>(false);
     let { setSpreadsheetId } = useActions();
     let { spreadsheetId } = SyncUserStore.getState().user;
     let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
@@ -32,12 +33,14 @@ const Options = () => {
         const match = event.target.value.match(regex);
         logger.debug('match: ', match);
         if(match && match[1]) {
+            setErrorStatus(false);
             const spreadsheetId = match[1];
             logger.debug('new spreadsheetId: ', spreadsheetId);
             setSpreadsheetId(spreadsheetId);
-            //TODO: set spreadsheetId
+            //TODO: actually check if the user can access it properly
         } else {
             //TODO: handle invalid url
+            setErrorStatus(true);
         }
 
     };
