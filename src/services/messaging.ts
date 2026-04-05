@@ -1,5 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { SyncUserStore, UserDataType } from "@/stores";
+import { UserDataType, UserStore } from "@/stores";
 import {
     addWorkToSheet,
     chromeLaunchWebAuthFlow,
@@ -11,13 +11,13 @@ import {
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
-    sendMessageToTabs,
     setStore,
     StoreMethod,
     Work
 } from "@/services";
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
+import { TokenService } from "@/services/tokenService.ts";
 
 
 interface ProtocolMap {
@@ -33,7 +33,7 @@ interface ProtocolMap {
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
-    let sessionUser = await SyncUserStore.getState().actions.getUser();
+    let sessionUser = await UserStore.getState().actions.getUser();
 
     if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
         try {
@@ -59,13 +59,13 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
 
 export async function handleGetValidAccessToken(): Promise<string> {
     logger.debug("GetValidAccessToken");
-    const user = await SyncUserStore.getState().actions.getUser();
+    const user = await UserStore.getState().actions.getUser();
     if(await isAccessTokenValid(user.accessToken)) {
         return user.accessToken;
     } else {
         const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
         if (newAccessToken) {
-            SyncUserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
+            UserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');
@@ -74,7 +74,7 @@ export async function handleGetValidAccessToken(): Promise<string> {
 }
 
 export async function handleLogin(): Promise<void> {
-    const {getUser, userStoreLogin} = SyncUserStore.getState().actions;
+    const {getUser, userStoreLogin} = UserStore.getState().actions;
     const user = await getUser();
     try {
         // Launch the web authentication flow with interactive set to true
@@ -119,7 +119,7 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 }
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
-    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
+    const { setAccessToken, getUser } = UserStore.getState().actions;
     let syncUser = await getUser();
 
 
@@ -149,7 +149,7 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
 }
 
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
-    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
+    const { setAccessToken, getUser } = UserStore.getState().actions;
     let syncUser = await getUser();
 
     if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
@@ -172,11 +172,11 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
 export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
 
     logger.debug('logged in message received', msg.data);
-    const { userStoreLogin } = SyncUserStore.getState().actions;
+    const { userStoreLogin } = UserStore.getState().actions;
 
     if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
         userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
     }
-        //logger.debug('userStoreLogin done', SyncUserStore.getState().user);
+        //logger.debug('userStoreLogin done', UserStore.getState().user);
     pageTypeDetect();
 }
