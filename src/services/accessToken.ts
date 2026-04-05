@@ -1,6 +1,7 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { SyncUserStore } from '@/stores'
+import { UserStore } from '@/stores'
 import { setAccessTokenCookie } from "@/services";
+import { TokenService } from "@/services/tokenService.ts";
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
@@ -12,6 +13,7 @@ const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
  * @returns {Promise<Response>} - The response from the OAuth2 server.
  */
 const requestAccessToken = (refreshT: string): Promise<Response> => {
+
     if(!client_id || !client_secret) {
         throw new Error('Invalid oauth2 configuration in requestAccessToken');
     }
@@ -124,14 +126,18 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
  */
 export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
     logger.debug('Checking access token validity:', accessToken);
+    const user = await UserStore.getState().actions.getUser();
     if (await isAccessTokenValid(accessToken)) {
         logger.debug('Access token is valid');
+
+        await TokenService.getUser()
         return accessToken;
     } else {
         logger.debug('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         if (newAccessToken) {
             logger.debug('New access token obtained:', newAccessToken);
+            UserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');
@@ -140,7 +146,7 @@ export async function getValidAccessToken(accessToken: string, refreshToken: str
 }
 
 export async function handleTokenExchange<T>(refreshToken: string): Promise<T> {
-    const {setAccessToken} = SyncUserStore.getState().actions;
+    const {setAccessToken} = UserStore.getState().actions;
     try {
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         logger.debug('newAccessToken', newAccessToken);

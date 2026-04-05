@@ -1,5 +1,5 @@
 import { sendMessage } from "@/services/messaging.ts";
-import { SyncUserStore } from "@/stores";
+import { UserStore } from "@/stores/userStore";
 import { ReactElement } from 'react';
 import { getValidAccessToken } from "@/services";
 
@@ -82,7 +82,7 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main(ctx: any) {
-    const user = await SyncUserStore.getState().actions.getUser();
+    const user = await UserStore.getState().actions.getUser();
 
     if(user.accessToken) {
         const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);

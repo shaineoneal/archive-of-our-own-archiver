@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { exchangeRefreshForAccessToken, isAccessTokenValid } from '@/services/accessToken';
 import { logger } from '@/utils';
-import { SyncUserStore, useActions, useLoaderStore, useUser } from '@/stores';
+import { useActions, useLoaderStore, UserStore, useUser } from '@/stores';
 import { GoToSheetButton } from './GoToSheetButton';
 import { LoginButton } from './LoginButton';
 
@@ -20,12 +20,12 @@ import { LoginButton } from './LoginButton';
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
     let user = useUser();
-    const setUser = SyncUserStore.getState().actions.userStoreLogin;
+    const setUser = UserStore.getState().actions.userStoreLogin;
     const { setAccessToken, logout } = useActions();
 
     useEffect(() => {
         (async () => {
-            const newUser = await SyncUserStore.getState().actions.getUser()
+            const newUser = await UserStore.getState().actions.getUser()
             logger.info('popupbody', { newUser });
             setUser(newUser.accessToken!, newUser.refreshToken!, newUser.spreadsheetId!);
             user = newUser;

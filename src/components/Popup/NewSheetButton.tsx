@@ -1,5 +1,5 @@
 import { createSpreadsheet } from '@/services';
-import { SyncUserStore, useLoaderStore } from '@/stores';
+import { useLoaderStore, UserStore } from '@/stores';
 import { Button, Flex } from "@mantine/core";
 
 /**
@@ -12,8 +12,8 @@ import { Button, Flex } from "@mantine/core";
  */
 export const NewSheetButton = () => {
     const { loader, setLoader } = useLoaderStore();
-    let { accessToken, spreadsheetId } = SyncUserStore.getState().user;
-    const setSpreadsheetId = SyncUserStore.getState().actions.setSpreadsheetId;
+    let { accessToken, spreadsheetId } = UserStore.getState().user;
+    const setSpreadsheetId = UserStore.getState().actions.setSpreadsheetId;
 
     if (accessToken === undefined) {
         return null;
