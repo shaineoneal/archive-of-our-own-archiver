@@ -11,6 +11,7 @@ import {
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
+    sendMessageToAo3Tabs,
     setStore,
     StoreMethod,
     Work
