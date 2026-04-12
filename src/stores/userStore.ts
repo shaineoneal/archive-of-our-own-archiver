@@ -90,37 +90,6 @@ export const UserStore = create<UserStoreType>()(
     )
 );
 
-export const SessionUserStore = create<UserStoreType>() (
-    (set, get): UserStoreType => ({
-        user: DEFAULT_USER,
-        actions: {
-            getUser: async () => {
-                const userStore = await browser.storage.session.get('user-store');
-                const user = userStore['user-store'] as any;
-                return user.user;
-            },
-            setAccessToken: (accessT: string) => {
-                set({ user: { ...get().user, accessToken: accessT } });
-            },
-            setRefreshToken: (refreshT: string) => {
-                set({ user: { ...get().user, refreshToken: refreshT } });
-            },
-            setSpreadsheetId: (spreadsheetId: string) => {
-                set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
-            },
-            userStoreLogin: async ( accessToken, refreshToken ) => {
-                const { setAccessToken, setRefreshToken } = get().actions;
-                set({ user: { ...get().user } });
-                setAccessToken(accessToken);
-                setRefreshToken(refreshToken);
-            },
-            logout: () => {
-                set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
-            }
-        }
-    })
-);
-
 export type ExtractState<S> = S extends {
         getState: () => infer T;
     }

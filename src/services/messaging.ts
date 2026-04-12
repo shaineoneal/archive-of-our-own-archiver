@@ -34,21 +34,21 @@ interface ProtocolMap {
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
-    let sessionUser = await UserStore.getState().actions.getUser();
+    let user = await UserStore.getState().actions.getUser();
 
-    if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
+    if (user.spreadsheetId !== undefined && user.accessToken !== undefined) {
         try {
-            const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, msg.data);
+            const work = await addWorkToSheet(user.spreadsheetId, user.accessToken, msg.data);
             setStore(`${msg.data.workId}`, work.info, StoreMethod.LOCAL);
             return work;
         } catch (error) {
             console.error('error adding work to sheet', error);
-            if (sessionUser.refreshToken) {
-                let accessT = await getValidAccessToken(sessionUser.accessToken, sessionUser.refreshToken);
+            if (user.refreshToken) {
+                let accessT = await getValidAccessToken(user.accessToken, user.refreshToken);
                 if (accessT) {
-                    sessionUser.accessToken = accessT;
-                    setStore('user', sessionUser, StoreMethod.SYNC);
-                    return await handleTokenExchange<Work>(sessionUser.refreshToken);
+                    user.accessToken = accessT;
+                    setStore('user', user, StoreMethod.SYNC);
+                    return await handleTokenExchange<Work>(user.refreshToken);
                 }
             }
             throw new Error('access token expired or invalid, and there was an error exchanging the refresh token');
@@ -126,17 +126,17 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
     const { setAccessToken, getUser } = UserStore.getState().actions;
-    let syncUser = await getUser();
+    let user = await getUser();
     await TokenService.getUser()
     const success = await storage.setItem('session:test', 'testing')
     logger.debug('Storage set success: ', success);
 
-    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
+    if (user.spreadsheetId === '' || user.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await querySpreadsheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
+        const response = await querySpreadsheet(user.spreadsheetId!, user.accessToken, msg.data);
         if (!response || !response.table || !response.table.rows) {
             logger.error('Invalid response from querySpreadsheet:', response);
         }
@@ -158,14 +158,14 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
 
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
     const { setAccessToken, getUser } = UserStore.getState().actions;
-    let syncUser = await getUser();
+    let user = await getUser();
 
-    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
+    if (user.spreadsheetId === '' || user.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await addToHistory(msg.data, syncUser.spreadsheetId, syncUser.accessToken);
+        const response = await addToHistory(msg.data, user.spreadsheetId, user.accessToken);
         logger.debug('row', response);
         if (response) {
             setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
