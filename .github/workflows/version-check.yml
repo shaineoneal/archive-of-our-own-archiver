@@ -1,0 +1,23 @@
+name: Version Check
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compare Versions
+        run: |
+          # Example for package.json; adjust for your version file
+          NEW_VER=$(jq -r .version package.json)
+          git checkout origin/main package.json
+          OLD_VER=$(jq -r .version package.json)
+          
+          if [ "$NEW_VER" == "$OLD_VER" ]; then
+            echo "Error: Version must be updated before merging."
+            exit 1
+          fi
