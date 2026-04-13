@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@mantine/core": "^8.3.18",
+    "@semantic-release/exec": "^7.1.0",
     "@tabler/icons-react": "^3.41.1",
     "@types/chrome": "^0.0.268",
     "@types/jquery": "^3.5.30",
@@ -69,11 +70,57 @@
   "release": {
     "branches": [
       "main",
-      "testing/*"
+      "testing/git-rewrite-commits"
     ],
     "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/github"
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "angular",
+          "releaseRules": [
+            {
+              "type": "fix",
+              "release": "patch"
+            },
+            {
+              "type": "feat",
+              "release": "minor"
+            },
+            {
+              "type": "refactor",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "prepareCmd": "npm run zip && npm run zip:firefox"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": ".output/*-chrome.zip",
+              "label": "Chrome Extension"
+            },
+            {
+              "path": ".output/*-firefox.zip",
+              "label": "Firefox Extension"
+            }
+          ]
+        }
+      ]
     ]
   }
 }
