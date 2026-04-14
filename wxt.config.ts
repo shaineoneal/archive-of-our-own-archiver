@@ -12,7 +12,7 @@ export default defineConfig({
             scopes: ['https://www.googleapis.com/auth/spreadsheets',
                 'https://www.googleapis.com/auth/userinfo.profile']
         },
-        key: import.meta.env.WXT_API_EXTENSION_PUBLIC_KEY,
+        key: process.env.WXT_API_EXTENSION_PUBLIC_KEY,
         permissions: ['webRequest', 'identity', 'storage', 'scripting', 'activeTab', 'cookies'],
         host_permissions: ['*://*.archiveofourown.org/*', 'https://docs.google.com/spreadsheets/*', '*://*.google.com/'],
         options_ui: {
