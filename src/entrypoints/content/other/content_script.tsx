@@ -2,6 +2,7 @@ import { sendMessage } from "@/services/messaging.ts";
 import { SyncUserStore } from "@/stores";
 import { ReactElement } from 'react';
 import { getValidAccessToken } from "@/services";
+import { insideWorkPage } from "./insideWorksPage.tsx";
 
 
 // Interface for message structure
@@ -69,6 +70,9 @@ export function pageTypeDetect(): void {
         });
     } else if (document.querySelector('.work.meta.group')) {
         logger.debug('Work Page');
+        insideWorkPage().then(() => {
+            logger.debug('insideWorkPage done');
+        });
     } else {
         logger.debug('PANIK: Unknown page');
     }
