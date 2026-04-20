@@ -1,51 +1,42 @@
-
+import type { WorkStatus } from "@/types/data.ts";
 
 export interface HistoryEntry {
     action: string;
     date: string;
 }
 
+type SheetCell = { v?: unknown } | null | undefined;
+
+interface SheetRow {
+    c?: SheetCell[];
+}
+
+export interface WorkInfo {
+    index?: number;
+    title?: string;
+    authors?: string[];
+    fandoms?: string[];
+    relationships?: string[];
+    tags?: string[];
+    description?: string;
+    wordCount?: number;
+    chapterCount?: number;
+    status?: WorkStatus | string;
+    history?: HistoryEntry[] | string;
+    chapters?: Chapter[] | string;
+    personalTags?: string[];
+    rating?: number;
+    readCount?: number;
+    skipReason?: string;
+}
+
 export class Work {
     workId: number;
-    info?: {
-        index?: number,
-        title?: string,
-        authors?: string[],
-        fandoms?: string[],
-        relationships?: string[],
-        tags?: string[],
-        description?: string,
-        wordCount?: number,
-        chapterCount?: number,
-        status?: WorkStatus,
-        history?: HistoryEntry[],
-        chapters?: Chapter[],
-        personalTags?: string[],
-        rating?: number,
-        readCount?: number,
-        skipReason?: string
-    };
+    info?: WorkInfo;
 
     constructor(
         workId: number,
-        info?: {
-            index?: number,
-            title?: string,
-            authors?: string[],
-            fandoms?: string[],
-            relationships?: string[],
-            tags?: string[],
-            description?: string,
-            wordCount?: number,
-            chapterCount?: number,
-            status?: WorkStatus,
-            history?: HistoryEntry[],
-            chapters?: Chapter[],
-            personalTags?: string[],
-            rating?: number,
-            readCount?: number,
-            skipReason?: string
-        }
+        info?: WorkInfo
     ) {
         this.workId = workId;
         this.info = info;
@@ -56,72 +47,87 @@ export class Work {
         return parseInt(value ?? "0", 10);
     }
 
+    private static parseTextList(workNode: Element, selector: string): string[] {
+        return Array.from(workNode.querySelectorAll(selector)).map((node) => node.textContent ?? "");
+    }
+
+    private static splitSheetList(value: unknown, fallback: string[] = []): string[] {
+        return typeof value === "string" && value ? value.split(",") : fallback;
+    }
+
+    private static getSheetValue<T>(data: SheetRow, index: number, fallback: T): T {
+        const value = (data.c?.[index] as { v?: unknown } | undefined)?.v;
+        return (value ? value : fallback) as T;
+    }
+
+    private static parseBlurbInfo(workNode: Element): WorkInfo {
+        const title = workNode.querySelector(".heading > a")?.textContent ?? "";
+
+        return {
+            title,
+            authors: this.parseTextList(workNode, "[rel='author']"),
+            fandoms: this.parseTextList(workNode, ".fandoms > a"),
+            relationships: this.parseTextList(workNode, ".relationships > a"),
+            tags: this.parseTextList(workNode, ".warnings > a, .characters > a, .freeforms > a"),
+            description: workNode.querySelector(".summary > p")?.textContent ?? "",
+            wordCount: this.parseNumber(workNode.querySelector("dd.words")?.textContent ?? ""),
+            chapterCount: this.parseNumber(workNode.querySelector("dd.chapters")?.textContent?.split("/")[0]),
+        };
+    }
+
+    private static parseUserInfo(data: any): WorkInfo {
+        return {
+            index: data.index,
+            status: data.status,
+            history: data.history,
+            personalTags: data.personalTags,
+            rating: data.rating,
+            readCount: data.readCount,
+            skipReason: data.skipReason,
+            chapters: data.chapters,
+        };
+    }
+
+    private static parseSheetInfo(data: SheetRow): WorkInfo {
+        return {
+            index: this.getSheetValue(data, 0, 0),
+            title: this.getSheetValue(data, 2, ""),
+            authors: this.splitSheetList(this.getSheetValue(data, 3, ""), ["Anonymous"]),
+            fandoms: this.splitSheetList(this.getSheetValue(data, 4, ""), []),
+            relationships: this.splitSheetList(this.getSheetValue(data, 5, ""), []),
+            tags: this.splitSheetList(this.getSheetValue(data, 6, ""), []),
+            description: this.getSheetValue(data, 7, ""),
+            wordCount: this.getSheetValue(data, 8, 0),
+            chapterCount: this.getSheetValue(data, 9, 0),
+            status: this.getSheetValue(data, 10, "read"),
+            history: this.getSheetValue(data, 11, ""),
+            chapters: this.getSheetValue(data, 12, []),
+            personalTags: this.splitSheetList(this.getSheetValue(data, 13, ""), []),
+            rating: this.getSheetValue(data, 14, 0),
+            readCount: this.getSheetValue(data, 15, 1),
+            skipReason: this.getSheetValue(data, 16, undefined),
+        };
+    }
+
+    private getChapterList(): Chapter[] {
+        return Array.isArray(this.info?.chapters) ? this.info.chapters : [];
+    }
+
     static fromBlurb(workNode: Element): Work {
         const workId = parseInt(workNode.id.split("_")[1]);
-        const title = workNode.querySelector(".heading > a")?.textContent ?? "";
-        const authors = Array.from(workNode.querySelectorAll("[rel='author']")).map((node) => node.textContent ?? "");
-        const fandoms = Array.from(workNode.querySelectorAll(".fandoms > a")).map((node) => node.textContent ?? "");
-        const relationships = Array.from(workNode.querySelectorAll(".relationships > a")).map((node) => node.textContent ?? "");
-        const tags = Array.from(workNode.querySelectorAll(".warnings > a, .characters > a, .freeforms > a")).map((node) => node.textContent ?? "");
-        const description = workNode.querySelector(".summary > p")?.textContent ?? "";
-        const wordCount = this.parseNumber(workNode.querySelector("dd.words")?.textContent ?? "");
-        const chapterCount = this.parseNumber(workNode.querySelector("dd.chapters")?.textContent?.split("/")[0]);
+        const info = this.parseBlurbInfo(workNode);
 
-        logger.debug('title', title);
-        return new Work(
-            workId,
-            {
-                title: title,
-                authors: authors,
-                fandoms: fandoms,
-                relationships: relationships,
-                tags: tags,
-                description: description,
-                wordCount: wordCount,
-                chapterCount: chapterCount,
-            }
-        );
+        logger.debug("title", info.title);
+        return new Work(workId, info);
     }
 
     static fromUser(data: any): Work {
-        return new Work(
-            data.workId,
-            {
-                index: data.index,
-                status: data.status,
-                history: data.history,
-                personalTags: data.personalTags,
-                rating: data.rating,
-                readCount: data.readCount,
-                skipReason: data.skipReason,
-                chapters: data.chapters
-            }
-        );
+        return new Work(data.workId, this.parseUserInfo(data));
     }
 
     static fromSheet(data: any): Work {
-
-        return new Work(
-            data.c[1] ? data.c[1].v : '',
-            {
-                index: data.c[0] && data.c[0].v ? data.c[0].v : 0,
-                title: data.c[2] && data.c[2].v ? data.c[2].v : '',
-                authors: data.c[3] && data.c[3].v ? data.c[3].v.split(',') : ['Anonymous'],
-                fandoms: data.c[4] && data.c[4].v ? data.c[4].v.split(',') : [],
-                relationships: data.c[5] && data.c[5].v ? data.c[5].v.split(',') : [],
-                tags: data.c[6] && data.c[6].v ? data.c[6].v.split(',') : [],
-                description: data.c[7] && data.c[7].v ? data.c[7].v : '',
-                wordCount: data.c[8] && data.c[8].v ? data.c[8].v : 0,
-                chapterCount: data.c[9] && data.c[9].v ? data.c[9].v : 0,
-                status: data.c[10] && data.c[10].v ? data.c[10].v : 'read',
-                history: data.c[11] && data.c[11].v ? data.c[11].v : '',
-                chapters: data.c[12] && data.c[12].v ? data.c[12].v : [],
-                personalTags: data.c[13] && data.c[13].v ? data.c[13].v.split(',') : [],
-                rating: data.c[14] && data.c[14].v ? data.c[14].v : 0,
-                readCount: data.c[15] && data.c[15].v ? data.c[15].v : 1,
-                skipReason: data.c[16] && data.c[16].v ? data.c[16].v : undefined
-            }
-        );
+        const workId = this.getSheetValue(data, 1, "");
+        return new Work(this.parseNumber(String(workId)), this.parseSheetInfo(data));
     }
 
     static fromActiveWork(doc: Document): Work {
@@ -143,7 +149,7 @@ export class Work {
         if (currentChap === 1) {
             return 0;
         }
-        const previousChapters = this.info?.chapters?.slice(0, currentChap - 1);
+        const previousChapters = this.getChapterList().slice(0, currentChap - 1);
         logger.debug("previousChapters", previousChapters);
 
         if (!previousChapters) {
@@ -161,7 +167,7 @@ export class Work {
     createProgressBar(activeChap: Chapter): React.ReactNode {
         let prevCount = this.sumPreviousChapters(activeChap.chapterNumber);
         logger.debug(prevCount);
-        const totalWordCount = this.info?.chapters?.reduce((sum, chapter) => sum + chapter.wordCount, 0) ?? 0;
+        const totalWordCount = this.getChapterList().reduce((sum, chapter) => sum + chapter.wordCount, 0);
         return <ProgressBar current={prevCount} total={totalWordCount} thisChap={activeChap?.wordCount ?? 0} />;
     }
 }
