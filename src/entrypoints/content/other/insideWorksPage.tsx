@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { Chapter, Work } from "@/models/work";
+import { Chapter, Work } from "@/models";
 
 /**
  * Extracts and counts the words in the chapter text on the work page.
