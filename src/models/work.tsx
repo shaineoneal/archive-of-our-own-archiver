@@ -1,15 +1,12 @@
 import type { WorkStatus } from "@/types/data.ts";
+import type { GvizCell, GvizRow } from "@/types/gvizDataTable.ts";
 
 export interface HistoryEntry {
     action: string;
     date: string;
 }
 
-type SheetCell = { v?: unknown } | null | undefined;
-
-interface SheetRow {
-    c?: SheetCell[];
-}
+type SheetCell = GvizCell | null | undefined;
 
 export interface WorkInfo {
     index?: number;
@@ -55,8 +52,8 @@ export class Work {
         return typeof value === "string" && value ? value.split(",") : fallback;
     }
 
-    private static getSheetValue<T>(data: SheetRow, index: number, fallback: T): T {
-        const value = (data.c?.[index] as { v?: unknown } | undefined)?.v;
+    private static getSheetValue<T>(data: GvizRow, index: number, fallback: T): T {
+        const value = (data.c?.[index] as GvizCell | undefined)?.v;
         return (value ? value : fallback) as T;
     }
 
@@ -88,7 +85,7 @@ export class Work {
         };
     }
 
-    private static parseSheetInfo(data: SheetRow): WorkInfo {
+    private static parseSheetInfo(data: GvizRow): WorkInfo {
         return {
             index: this.getSheetValue(data, 0, 0),
             title: this.getSheetValue(data, 2, ""),
@@ -125,7 +122,7 @@ export class Work {
         return new Work(data.workId, this.parseUserInfo(data));
     }
 
-    static fromSheet(data: any): Work {
+    static fromSheet(data: GvizRow): Work {
         const workId = this.getSheetValue(data, 1, "");
         return new Work(this.parseNumber(String(workId)), this.parseSheetInfo(data));
     }
