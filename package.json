@@ -68,7 +68,7 @@
   "release": {
     "branches": [
       "main",
-      "testing/git-rewrite-commits"
+      "testing/*"
     ],
     "plugins": [
       [
