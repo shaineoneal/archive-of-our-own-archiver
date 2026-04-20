@@ -26,35 +26,35 @@ export async function insideWorkPage(): Promise<void> {
 
     const activeChap = Chapter.getChapter();
     console.log('activeChap: ', activeChap);
-    const work = Work.fromActiveWork(await getEntireWorksPage());
-    console.log('work: ', work);
+    // is work already in storage?
+    const fullWork = Work.fromActiveWork(await getFullWork());
+    console.log('full_work: ', fullWork);
 
     if (activeChap && activeChap.chapterNumber === 1) {
         console.log('first chapter');
 
-        console.log('activeWork: ', work);
         //save work to local storage
         try {
-            await browser.storage.local.set({[work.workId]: work});
+            await browser.storage.local.set({[fullWork.workId]: fullWork});
             console.log('Work saved to local storage');
         } catch (error) {
             console.error('Error saving work to local storage: ', error);
         }
-        console.log('work previous chapters: ', work.sumPreviousChapters(activeChap.chapterNumber));
+        console.log('work previous chapters: ', fullWork.sumPreviousChapters(activeChap.chapterNumber));
 
     } else {
-        const workIdStr = work.workId.toString();
+        const workIdStr = fullWork.workId.toString();
         console.log(workIdStr);
         const storedWork = await browser.storage.local.get(workIdStr);
         console.log('storedWork: ', storedWork);
         if (storedWork) {
             console.log('storedWork found!!!: ', storedWork);
         }
-        console.log('testing: ', work.sumPreviousChapters(activeChap.chapterNumber));
+        console.log('testing: ', fullWork.sumPreviousChapters(activeChap.chapterNumber));
 
     }
-    addChapterInfo(work, activeChap);
-    const worksOnPage = await getEntireWorksPage();
+    addChapterInfo(fullWork, activeChap);
+    const worksOnPage = await getFullWork();
     parseChapterInfo(worksOnPage);
     console.log('worksOnPage: ', worksOnPage);
 
@@ -78,7 +78,7 @@ function addChapterInfo(work: Work, activeChap: Chapter): void {
     createRoot(progressBarContainer).render(work.createProgressBar(activeChap));
 }
 
-async function getEntireWorksPage(): Promise<Document> {
+async function getFullWork(): Promise<Document> {
     console.log('logging', document.location.href)
     // use regex to only get the base url
     const url = document.location.href.match(/(https:\/\/archiveofourown.org\/works\/\d+)/)?.[0];
