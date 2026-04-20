@@ -1,6 +1,7 @@
 import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest.ts";
+import type { GvizDataTableResponse } from "@/types/gvizDataTable.ts";
 
-export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]) {
+export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]): Promise<GvizDataTableResponse> {
 
     let query = createEncodedQuery(searchList);
 
@@ -27,8 +28,8 @@ function createEncodedQuery(searchList: number[]): string {
     return encodeURIComponent(query);
 }
 
-async function parseResponse(response: HttpResponse): Promise<any> {
+async function parseResponse(response: HttpResponse): Promise<GvizDataTableResponse> {
     logger.debug('parseResponse', 'response', response);
     let data = await response.text();
-    return JSON.parse(data.substring(47, data.length - 2));
+    return JSON.parse(data.substring(47, data.length - 2)) as GvizDataTableResponse;
 }

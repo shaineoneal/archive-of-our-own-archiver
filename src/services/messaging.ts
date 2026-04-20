@@ -1,5 +1,6 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import { SyncUserStore, UserDataType } from "@/stores";
+import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
     chromeLaunchWebAuthFlow,
@@ -18,6 +19,7 @@ import {
 } from "@/services";
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
+import { compareArrays } from "@/utils/compareArrays.ts";
 
 
 interface ProtocolMap {
@@ -119,32 +121,41 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 }
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
-    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
-    let syncUser = await getUser();
+    const { getUser } = SyncUserStore.getState().actions;
+    const syncUser = await getUser();
+    const searchList = msg.data ?? [];
 
+    if (searchList.length === 0) {
+        return [];
+    }
 
-    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
+    if (!syncUser.spreadsheetId || !syncUser.accessToken) {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await querySpreadsheet(syncUser.spreadsheetId!, syncUser.accessToken, msg.data);
-        if (!response || !response.table || !response.table.rows) {
-            logger.error('Invalid response from querySpreadsheet:', response);
-        }
-        let responseArray: boolean[] = [];
-        if (response.table.rows && response.table.rows.length > 0) {
-            for (let row of response.table.rows) {
-                logger.debug('row', row);
-                const work = Work.fromSheet(row)
-                logger.debug('work', work);
-                setStore(`${work.workId}`, work.info, StoreMethod.LOCAL);
+        const response = await querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, searchList);
+        logger.debug('Response from querySpreadsheet: ', response);
+
+        const rows = Array.isArray(response?.table?.rows) ? (response.table.rows as GvizRow[]) : [];
+        if (rows.length === 0) {
+            if (!Array.isArray(response?.table?.rows)) {
+                logger.error('Invalid response from querySpreadsheet:', response);
             }
-            responseArray = compareArrays(msg.data, response.table.rows);
+            return new Array(searchList.length).fill(false);
         }
-        return responseArray;
-    } catch (error: any) {
-        throw new Error(error);
+
+        for (const row of rows) {
+            logger.debug('row', row);
+            const work = Work.fromSheet(row);
+            logger.debug('work', work);
+            setStore(`${work.workId}`, work.info, StoreMethod.LOCAL);
+        }
+
+        return compareArrays(searchList, [...rows]);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`querySpreadsheet failed: ${message}`);
     }
 }
 
