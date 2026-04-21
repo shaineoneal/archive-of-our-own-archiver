@@ -11,7 +11,7 @@ export async function insideWorkPage(): Promise<void> {
     try {
         const progressBarContainer = document.querySelector('.progress-bar-container') as Element;
         if (progressBarContainer) {
-            console.log('Progress bar already injected.')
+            logger.debug('Progress bar already injected.')
             return;
         }
     }
@@ -20,46 +20,39 @@ export async function insideWorkPage(): Promise<void> {
     }
 
     //const workId = ActiveWork.getWorkId();
-    //console.log("insideWorkPage", workId);
+    //logger.debug("insideWorkPage", workId);
 
     const workNode = document.querySelector('.work.meta.group') as Element;
 
     const activeChap = Chapter.getChapter();
-    console.log('activeChap: ', activeChap);
+    logger.debug('activeChap: ', activeChap);
     // is work already in storage?
     const fullWork = Work.fromActiveWork(await getFullWork());
-    console.log('full_work: ', fullWork);
+    logger.debug('full_work: ', fullWork.info);
+    const workIdStr = fullWork.workId.toString();
 
-    if (activeChap && activeChap.chapterNumber === 1) {
-        console.log('first chapter');
-
-        //save work to local storage
-        try {
-            await browser.storage.local.set({[fullWork.workId]: fullWork});
-            console.log('Work saved to local storage');
-        } catch (error) {
-            console.error('Error saving work to local storage: ', error);
-        }
-        console.log('work previous chapters: ', fullWork.sumPreviousChapters(activeChap.chapterNumber));
-
-    } else {
-        const workIdStr = fullWork.workId.toString();
-        console.log(workIdStr);
+    try {
+        //is work in storage already?
         const storedWork = await browser.storage.local.get(workIdStr);
-        console.log('storedWork: ', storedWork);
-        if (storedWork) {
-            console.log('storedWork found!!!: ', storedWork);
+
+        if (storedWork[workIdStr]) {
+            logger.debug('stored work: ', storedWork[workIdStr]);
         }
-        console.log('testing: ', fullWork.sumPreviousChapters(activeChap.chapterNumber));
-
+        else {
+            //save work to session storage
+            try {
+                await browser.storage.local.set({[fullWork.workId]: fullWork.info});
+                logger.debug('Work saved to local storage');
+            } catch (error) {
+                console.error('Error saving work to local storage: ', error);
+            }
+        }
+    } catch (e) {
+        console.error(e);
     }
+
     addChapterInfo(fullWork, activeChap);
-    const worksOnPage = await getFullWork();
-    parseChapterInfo(worksOnPage);
-    console.log('worksOnPage: ', worksOnPage);
-
 }
-
 
 function addChapterInfo(work: Work, activeChap: Chapter): void {
 
@@ -70,19 +63,19 @@ function addChapterInfo(work: Work, activeChap: Chapter): void {
     chapterInfo?.appendChild(progressBarContainer);
 
     if(!chapterInfo) {
-        console.log('chapterInfo not found');
+        logger.debug('chapterInfo not found');
         return;
     }
 
-    console.log('chapterInfo: ', chapterInfo);
+    logger.debug('chapterInfo: ', chapterInfo);
     createRoot(progressBarContainer).render(work.createProgressBar(activeChap));
 }
 
 async function getFullWork(): Promise<Document> {
-    console.log('logging', document.location.href)
+    logger.debug('logging', document.location.href)
     // use regex to only get the base url
     const url = document.location.href.match(/(https:\/\/archiveofourown.org\/works\/\d+)/)?.[0];
-    console.log('url:', url);
+    logger.debug('url:', url);
 
     const response = await fetch(`${url}?view_full_work=true`);
     const text = await response.text();
@@ -94,7 +87,7 @@ async function getFullWork(): Promise<Document> {
 
 function parseChapterInfo(doc: Document): void {
     const chapters = doc.querySelectorAll("#chapters > .chapter");
-    console.log('chapters:', chapters);
+    logger.debug('chapters:', chapters);
     for (let i = 0; i < chapters.length; i++) {
         const work = Chapter.chapterFromNode(chapters[i]);
     }
