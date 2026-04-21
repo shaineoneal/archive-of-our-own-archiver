@@ -17,7 +17,7 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
 }
 
 function createEncodedQuery(searchList: number[]): string {
-    let query = `select A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q where B matches`;
+    let query = `select A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R where B matches`;
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;

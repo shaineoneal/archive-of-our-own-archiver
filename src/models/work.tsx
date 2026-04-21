@@ -26,6 +26,7 @@ export interface WorkInfo {
     rating?: number;
     readCount?: number;
     skipReason?: string;
+    kudos?: boolean;
 }
 
 export class Work {
@@ -83,6 +84,7 @@ export class Work {
             readCount: data.readCount,
             skipReason: data.skipReason,
             chapters: data.chapters,
+            kudos: data.kudos,
         };
     }
 
@@ -104,6 +106,7 @@ export class Work {
             rating: this.getSheetValue(data, 14, 0),
             readCount: this.getSheetValue(data, 15, 1),
             skipReason: this.getSheetValue(data, 16, undefined),
+            kudos: this.getSheetValue(data, 17, false),
         };
     }
 

@@ -178,6 +178,15 @@ const sheetLayout = {
                 startColumnIndex: 16,
                 endColumnIndex: 17
             }
+        },
+        {
+            namedRangeId: '18',
+            name: 'kudos',
+            range: {
+                sheetId: 0,
+                startColumnIndex: 17,
+                endColumnIndex: 18
+            }
         }
 
     ],
@@ -187,7 +196,7 @@ const sheetLayout = {
             sheetId: 0,
             gridProperties: {
                 rowCount: 2,
-                columnCount: 17,
+                columnCount: 18,
                 columnGroupControlAfter: true,
             }
         },
@@ -340,10 +349,19 @@ const sheetLayout = {
                                     textFormat: { bold: true },
                                 },
                             },
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Kudos',
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true },
+                                },
+                            },
                         ],
                     },
                     {
                         values: [
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
@@ -381,6 +399,7 @@ const sheetLayout = {
             { startColumn: 14, columnMetadata: { pixelSize: 100 } }, //rating
             { startColumn: 15, columnMetadata: { pixelSize: 100 } }, //read count
             { startColumn: 16, columnMetadata: { pixelSize: 200 } }, //skip reason
+            { startColumn: 17, columnMetadata: { pixelSize: 100 } }, //kudos
         ],
     },
 };

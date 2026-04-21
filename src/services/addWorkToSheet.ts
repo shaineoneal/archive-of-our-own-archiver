@@ -64,7 +64,8 @@ const createRequestBody = (work: Work, history: HistoryEntry[]): RequestBody => 
             work.info?.personalTags?.toString() ?? '',
             work.info?.rating,
             work.info?.readCount ?? 1,
-            work.info?.skipReason?.toString() ?? ''
+            work.info?.skipReason?.toString() ?? '',
+            work.info?.kudos ?? false,
         ]
     ]
 });
@@ -126,7 +127,8 @@ export const addWorkToSheet = async (spreadsheetId: string, authToken: string, w
             personalTags: parsedResponse.updates.updatedData.values[0][13],
             rating: toNumber(parsedResponse.updates.updatedData.values[0][14]),
             readCount: toNumber(parsedResponse.updates.updatedData.values[0][15]),
-            skipReason: parsedResponse.updates.updatedData.values[0][16]
+            skipReason: parsedResponse.updates.updatedData.values[0][16],
+            kudos: Boolean(parsedResponse.updates.updatedData.values[0][17]),
         }
     );
 };
