@@ -145,13 +145,6 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
             return new Array(searchList.length).fill(false);
         }
 
-        for (const row of rows) {
-            logger.debug('row', row);
-            const work = Work.fromSheet(row);
-            logger.debug('work', work);
-            setStore(`${work.workId}`, work.info, StoreMethod.LOCAL);
-        }
-
         return compareArrays(searchList, [...rows]);
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
