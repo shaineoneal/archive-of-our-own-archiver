@@ -1,4 +1,4 @@
-import { Work } from "@/src/entrypoints/content";
+import { Work } from "@/models"
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 
 export const updateWorkInSheet = async (spreadsheetId: string, accessToken: string, work: Work): Promise<boolean> => {
