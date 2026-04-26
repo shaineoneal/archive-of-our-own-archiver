@@ -1,5 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { SyncUserStore, UserDataType } from "@/stores";
+import { SyncUserStore, UserDataType, WorkStore } from "@/stores";
 import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
@@ -36,11 +36,12 @@ export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>(
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
     let sessionUser = await SyncUserStore.getState().actions.getUser();
+    const { setWork } = WorkStore.getState().actions;
 
     if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
         try {
             const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, msg.data);
-            setStore(`${msg.data.workId}`, work.info, StoreMethod.LOCAL);
+            setWork(work);
             return work;
         } catch (error) {
             console.error('error adding work to sheet', error);
