@@ -1,4 +1,4 @@
-import type { WorkStatus } from "@/types/data.ts";
+import { WorkStatus } from "@/types/data.ts";
 import type { GvizCell, GvizRow } from "@/types/gvizDataTable.ts";
 import { Chapter } from "@/models/Chapter.tsx";
 import { ProgressBar } from "@/components/Work/ProgressBar.tsx";
@@ -10,24 +10,24 @@ export interface HistoryEntry {
 
 type SheetCell = GvizCell | null | undefined;
 
-export interface WorkInfo {
-    index?: number;
-    title?: string;
-    authors?: string[];
-    fandoms?: string[];
-    relationships?: string[];
-    tags?: string[];
-    description?: string;
-    wordCount?: number;
-    chapterCount?: number;
-    status?: WorkStatus | string;
-    history?: HistoryEntry[] | string;
-    chapters?: Chapter[] | string;
-    personalTags?: string[];
-    rating?: number;
-    readCount?: number;
-    skipReason?: string;
-    kudos?: boolean;
+export type WorkInfo = {
+    index: number;
+    title: string;
+    authors: string[];
+    fandoms: string[];
+    relationships: string[];
+    tags: string[];
+    description: string;
+    wordCount: number;
+    chapterCount: number;
+    status: WorkStatus;
+    history: HistoryEntry[];
+    chapters: Chapter[];
+    personalTags: string[];
+    rating: number;
+    readCount: number;
+    skipReason: string;
+    kudos: boolean;
 }
 
 export class Work {
@@ -36,10 +36,13 @@ export class Work {
 
     constructor(
         workId: number,
-        info?: WorkInfo
+        info: WorkInfo
     ) {
         this.workId = workId;
-        this.info = info;
+        this.info = {
+            ...DEFAULT_WORK_INFO,
+            ...info,
+        };
     }
 
     static parseNumber(value: string | undefined): number {
@@ -64,6 +67,7 @@ export class Work {
         const title = workNode.querySelector(".heading > a")?.textContent ?? "";
 
         return {
+            ...DEFAULT_WORK_INFO,
             title,
             authors: this.parseTextList(workNode, "[rel='author']"),
             fandoms: this.parseTextList(workNode, ".fandoms > a"),
@@ -77,6 +81,7 @@ export class Work {
 
     private static parseUserInfo(data: any): WorkInfo {
         return {
+            ...DEFAULT_WORK_INFO,
             index: data.index,
             status: data.status,
             history: data.history,
@@ -106,7 +111,7 @@ export class Work {
             personalTags: this.splitSheetList(this.getSheetValue(data, 13, ""), []),
             rating: this.getSheetValue(data, 14, 0),
             readCount: this.getSheetValue(data, 15, 1),
-            skipReason: this.getSheetValue(data, 16, undefined),
+            skipReason: this.getSheetValue(data, 16, ""),
             kudos: this.getSheetValue(data, 17, false),
         };
     }
@@ -142,6 +147,7 @@ export class Work {
         return new Work(
             this.parseNumber(workId),
             {
+                ...DEFAULT_WORK_INFO,
                 chapters: chapters
             }
         );
@@ -173,3 +179,25 @@ export class Work {
         return <ProgressBar current={prevCount} total={totalWordCount} thisChap={activeChap?.wordCount ?? 0} />;
     }
 }
+
+
+const DEFAULT_WORK_INFO: WorkInfo = {
+    // @ts-ignore
+    index: '=ROW(INDIRECT("R[0]C[1]", FALSE))',
+    title: "",
+    authors: [],
+    fandoms: [],
+    relationships: [],
+    tags: [],
+    description: "",
+    wordCount: 0,
+    chapterCount: 0,
+    status: WorkStatus.Read,
+    history: [],
+    chapters: [],
+    personalTags: [],
+    rating: 0,
+    readCount: 1,
+    skipReason: "",
+    kudos: false,
+};
