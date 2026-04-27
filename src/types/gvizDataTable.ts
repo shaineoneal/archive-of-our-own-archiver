@@ -10,12 +10,12 @@ export type GvizCellValue = string | number | boolean | null;
 
 export interface GvizCell {
     v?: GvizCellValue;
-    f?: string | null;
-    p?: Record<string, unknown>;
+    f?: string | null;      //string version of v
+    p?: Record<string, unknown>;    //map of cell properties
 }
 
 export interface GvizRow {
-    c: Array<GvizCell | null>;
+    c: GvizCell[];
 }
 
 export interface GvizColumn {
