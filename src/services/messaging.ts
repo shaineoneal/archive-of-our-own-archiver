@@ -1,5 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { SyncUserStore, UserDataType, WorkStore } from "@/stores";
+import { UserStore, UserDataType, WorkStore } from "@/stores";
 import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
@@ -12,7 +12,7 @@ import {
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
-    sendMessageToTabs,
+    sendMessageToAo3Tabs,
     setStore,
     StoreMethod,
     Work
@@ -35,22 +35,22 @@ interface ProtocolMap {
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
-    let sessionUser = await SyncUserStore.getState().actions.getUser();
+    let user = await UserStore.getState().actions.getUser();
     const { setWork } = WorkStore.getState().actions;
 
-    if (sessionUser.spreadsheetId !== undefined && sessionUser.accessToken !== undefined) {
+    if (user.spreadsheetId !== undefined && user.accessToken !== undefined) {
         try {
-            const work = await addWorkToSheet(sessionUser.spreadsheetId, sessionUser.accessToken, msg.data);
+            const work = await addWorkToSheet(user.spreadsheetId, user.accessToken, msg.data);
             setWork(work);
             return work;
         } catch (error) {
             console.error('error adding work to sheet', error);
-            if (sessionUser.refreshToken) {
-                let accessT = await getValidAccessToken(sessionUser.accessToken, sessionUser.refreshToken);
+            if (user.refreshToken) {
+                let accessT = await getValidAccessToken(user.accessToken, user.refreshToken);
                 if (accessT) {
-                    sessionUser.accessToken = accessT;
-                    setStore('user', sessionUser, StoreMethod.SYNC);
-                    return await handleTokenExchange<Work>(sessionUser.refreshToken);
+                    user.accessToken = accessT;
+                    setStore('user', user, StoreMethod.SYNC);
+                    return await handleTokenExchange<Work>(user.refreshToken);
                 }
             }
             throw new Error('access token expired or invalid, and there was an error exchanging the refresh token');
@@ -62,13 +62,13 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
 
 export async function handleGetValidAccessToken(): Promise<string> {
     logger.debug("GetValidAccessToken");
-    const user = await SyncUserStore.getState().actions.getUser();
+    const user = await UserStore.getState().actions.getUser();
     if(await isAccessTokenValid(user.accessToken)) {
         return user.accessToken;
     } else {
         const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
         if (newAccessToken) {
-            SyncUserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
+            UserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');
@@ -77,7 +77,7 @@ export async function handleGetValidAccessToken(): Promise<string> {
 }
 
 export async function handleLogin(): Promise<void> {
-    const {getUser, userStoreLogin} = SyncUserStore.getState().actions;
+    const {getUser, userStoreLogin} = UserStore.getState().actions;
     const user = await getUser();
     try {
         // Launch the web authentication flow with interactive set to true
@@ -97,14 +97,16 @@ export async function handleLogin(): Promise<void> {
                     // If the user has no spreadsheetId, create a new one
                     const newSheet = await createSpreadsheet(access_token);
                     userStoreLogin(access_token, refresh_token, newSheet);
+
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
-                    await sendMessageToTabs('LoggedIn',
-                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
+                    await sendMessageToAo3Tabs('LoggedIn');
                 } else {
+                    const success = await storage.setItem('session:test', 'testing')
+                    logger.debug('Storage set success: ', success);
                     userStoreLogin(access_token, refresh_token, user.spreadsheetId);
-                    await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
-                    await sendMessageToTabs('LoggedIn',
-                        {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
+                    logger.debug('Sending message');
+                    //await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
+                    await sendMessageToAo3Tabs('LoggedIn' );
                 }
             } else {
                 logger.debug("No refresh token found, revoking tokens");
@@ -122,20 +124,20 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 }
 
 export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
-    const { getUser } = SyncUserStore.getState().actions;
-    const syncUser = await getUser();
+    const { setAccessToken, getUser } = UserStore.getState().actions;
+    let user = await getUser();
     const searchList = msg.data ?? [];
 
     if (searchList.length === 0) {
         return [];
     }
 
-    if (!syncUser.spreadsheetId || !syncUser.accessToken) {
+    if (user.spreadsheetId === '' || user.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await querySpreadsheet(syncUser.spreadsheetId, syncUser.accessToken, searchList);
+        const response = await querySpreadsheet(user.spreadsheetId, user.accessToken, searchList);
         logger.debug('Response from querySpreadsheet: ', response);
 
         const rows = Array.isArray(response?.table?.rows) ? (response.table.rows as GvizRow[]) : [];
@@ -154,15 +156,15 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
 }
 
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
-    const { setAccessToken, getUser } = SyncUserStore.getState().actions;
-    let syncUser = await getUser();
+    const { setAccessToken, getUser } = UserStore.getState().actions;
+    let user = await getUser();
 
-    if (syncUser.spreadsheetId === '' || syncUser.accessToken === '') {
+    if (user.spreadsheetId === '' || user.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await addToHistory(msg.data, syncUser.spreadsheetId, syncUser.accessToken);
+        const response = await addToHistory(msg.data, user.spreadsheetId, user.accessToken);
         logger.debug('row', response);
         if (response) {
             setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
@@ -177,11 +179,11 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
 export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
 
     logger.debug('logged in message received', msg.data);
-    const { userStoreLogin } = SyncUserStore.getState().actions;
+    const { userStoreLogin } = UserStore.getState().actions;
 
     if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
         userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
     }
-        //logger.debug('userStoreLogin done', SyncUserStore.getState().user);
+        //logger.debug('userStoreLogin done', UserStore.getState().user);
     pageTypeDetect();
 }

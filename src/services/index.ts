@@ -19,7 +19,7 @@ export async function getAo3Urls () {
     return await browser.tabs.query({ url: '*://archiveofourown.org/*' });
 }
 
-export async function sendMessageToTabs (type:any, message: any) {
+export async function sendMessageToAo3Tabs (message: any) {
     const tabs = await getAo3Urls();
     for (const tab of tabs) {
         await sendMessage(message, tab.id);

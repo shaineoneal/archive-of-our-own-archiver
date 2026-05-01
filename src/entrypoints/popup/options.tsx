@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SyncUserStore, useActions } from '@/stores';
+import { useActions, UserStore } from '@/stores';
 import { LogoutButton } from '@/components/Popup/LogoutButton.tsx';
 import { NewSheetButton } from '@/components/Popup/NewSheetButton.tsx';
 import { root } from "@/entrypoints/popup/popup.tsx";
@@ -20,11 +20,11 @@ const Options = () => {
 
     const [ errorStatus, setErrorStatus ] = useState<boolean>(false);
     let { setSpreadsheetId } = useActions();
-    let { spreadsheetId } = SyncUserStore.getState().user;
+    let { spreadsheetId } = UserStore.getState().user;
     let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
 
     useEffect(() => {
-        spreadsheetId = SyncUserStore.getState().user.spreadsheetId;
+        spreadsheetId = UserStore.getState().user.spreadsheetId;
     }, [spreadsheetId]);
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {

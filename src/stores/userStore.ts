@@ -36,7 +36,7 @@ type UserStoreType = {
 /**
  * Zustand store for user data with persistence.
  */
-export const SyncUserStore = create<UserStoreType>()(
+export const UserStore = create<UserStoreType>()(
     persist(
         (set, get): UserStoreType => ({
             user: DEFAULT_USER,
@@ -90,48 +90,17 @@ export const SyncUserStore = create<UserStoreType>()(
     )
 );
 
-export const SessionUserStore = create<UserStoreType>() (
-    (set, get): UserStoreType => ({
-        user: DEFAULT_USER,
-        actions: {
-            getUser: async () => {
-                const userStore = await browser.storage.session.get('user-store');
-                const user = userStore['user-store'] as any;
-                return user.user;
-            },
-            setAccessToken: (accessT: string) => {
-                set({ user: { ...get().user, accessToken: accessT } });
-            },
-            setRefreshToken: (refreshT: string) => {
-                set({ user: { ...get().user, refreshToken: refreshT } });
-            },
-            setSpreadsheetId: (spreadsheetId: string) => {
-                set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
-            },
-            userStoreLogin: async ( accessToken, refreshToken ) => {
-                const { setAccessToken, setRefreshToken } = get().actions;
-                set({ user: { ...get().user } });
-                setAccessToken(accessToken);
-                setRefreshToken(refreshToken);
-            },
-            logout: () => {
-                set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
-            }
-        }
-    })
-);
-
 export type ExtractState<S> = S extends {
         getState: () => infer T;
     }
     ? T
     : never;
 
-const userSelector = (state: ExtractState<typeof SyncUserStore>) => state.user;
-const actionsSelector = (state: ExtractState<typeof SyncUserStore>) => state.actions;
+const userSelector = (state: ExtractState<typeof UserStore>) => state.user;
+const actionsSelector = (state: ExtractState<typeof UserStore>) => state.actions;
 
 export function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStoreWithEqualityFn(SyncUserStore, selector, equalityFn);
+    return useStoreWithEqualityFn(UserStore, selector, equalityFn);
 }
 
 /**
