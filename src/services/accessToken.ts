@@ -1,7 +1,6 @@
 import { HttpMethod, makeRequest } from './httpRequest.ts';
 import { UserStore } from '@/stores'
 import { setAccessTokenCookie } from "@/services";
-import { TokenService } from "@/services/tokenService.ts";
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
