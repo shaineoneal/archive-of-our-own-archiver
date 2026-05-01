@@ -4,7 +4,7 @@ import { useStoreWithEqualityFn } from 'zustand/traditional';
 import { omit } from 'lodash';
 import { Work, WorkInfo } from '@/models/work.tsx';
 
-type WorkActionsType = {
+type ShelfActionsType = {
     setWork: (work: Work) => void;
     setWorks: (works: Work[]) => void;
     getWork: (workId: number) => Promise<Work | undefined>;
@@ -13,14 +13,14 @@ type WorkActionsType = {
     clearWorks: () => void;
 }
 
-type WorkStoreType = {
+type ShelfStoreType = {
     works: Record<string, WorkInfo>;
-    actions: WorkActionsType;
+    actions: ShelfActionsType;
 }
 
-export const WorkStore = create<WorkStoreType>()(
+export const ShelfStore = create<ShelfStoreType>()(
     persist(
-        (set, get): WorkStoreType => ({
+        (set, get): ShelfStoreType => ({
             works: {},
             actions: {
                 setWork: (work: Work) => {
@@ -80,12 +80,12 @@ type ExtractState<S> = S extends {
     ? T
     : never;
 
-const workSelector = (state: ExtractState<typeof WorkStore>) => state.works;
-const workActionsSelector = (state: ExtractState<typeof WorkStore>) => state.actions;
+const workSelector = (state: ExtractState<typeof ShelfStore>) => state.works;
+const workActionsSelector = (state: ExtractState<typeof ShelfStore>) => state.actions;
 
-export function useWorkStore<U>(selector: (state: WorkStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStoreWithEqualityFn(WorkStore, selector, equalityFn);
+export function useShelfStore<U>(selector: (state: ShelfStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
+    return useStoreWithEqualityFn(ShelfStore, selector, equalityFn);
 }
 
-export const useWork = () => useWorkStore(workSelector);
-export const useWorkActions = () => useWorkStore(workActionsSelector);
+export const useWork = () => useShelfStore(workSelector);
+export const useWorkActions = () => useShelfStore(workActionsSelector);

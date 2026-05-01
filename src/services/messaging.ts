@@ -1,5 +1,5 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { UserStore, UserDataType, WorkStore } from "@/stores";
+import { UserStore, UserDataType, ShelfStore } from "@/stores";
 import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
@@ -36,7 +36,7 @@ export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>(
 
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
     let user = await UserStore.getState().actions.getUser();
-    const { setWork } = WorkStore.getState().actions;
+    const { setWork } = ShelfStore.getState().actions;
 
     if (user.spreadsheetId !== undefined && user.accessToken !== undefined) {
         try {
