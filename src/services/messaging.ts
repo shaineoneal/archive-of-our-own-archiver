@@ -28,7 +28,7 @@ interface ProtocolMap {
     IsAccessTokenValid(accessToken: string): boolean;
     LoggedIn(data: UserDataType): void;
     Login(): void;
-    QuerySpreadSheet(searchList: number[]): boolean[];
+    QuerySpreadSheet(searchList: string[]): void;
     UpdateWorkInSpreadsheet(work: Work): boolean;
 }
 
@@ -168,7 +168,7 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
         logger.debug('row', response);
         if (response) {
             setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
-            return response;
+            return true;
         }
     } catch (error: any) {
         throw new Error(error);

@@ -31,12 +31,12 @@ export type WorkInfo = {
 }
 
 export class Work {
-    workId: number;
-    info?: WorkInfo;
+    workId: string;
+    info: WorkInfo;
 
     constructor(
-        workId: number,
-        info: WorkInfo
+        workId: string,
+        info: WorkInfo | Partial<WorkInfo>
     ) {
         this.workId = workId;
         this.info = {
@@ -58,7 +58,7 @@ export class Work {
         return typeof value === "string" && value ? value.split(",") : fallback;
     }
 
-    private static getSheetValue<T>(data: GvizRow, index: number, fallback: T): T {
+    private static getSheetValue<T>(data: GvizRow, index: number, fallback?: T): T {
         const value = (data.c?.[index] as GvizCell | undefined)?.v;
         return (value ? value : fallback) as T;
     }
@@ -105,12 +105,12 @@ export class Work {
             description: this.getSheetValue(data, 7, ""),
             wordCount: this.getSheetValue(data, 8, 0),
             chapterCount: this.getSheetValue(data, 9, 0),
-            status: this.getSheetValue(data, 10, "read"),
-            history: this.getSheetValue(data, 11, ""),
+            status: this.getSheetValue(data, 10, "read") as WorkStatus,
+            history: this.getSheetValue(data, 11, "[]") ? JSON.parse(this.getSheetValue(data, 11, "[]")) : [],
             chapters: this.getSheetValue(data, 12, []),
             personalTags: this.splitSheetList(this.getSheetValue(data, 13, ""), []),
             rating: this.getSheetValue(data, 14, 0),
-            readCount: this.getSheetValue(data, 15, 1),
+            readCount: this.getSheetValue(data, 15, 0),
             skipReason: this.getSheetValue(data, 16, ""),
             kudos: this.getSheetValue(data, 17, false),
         };
@@ -125,7 +125,7 @@ export class Work {
         const info = this.parseBlurbInfo(workNode);
 
         logger.debug("title", info.title);
-        return new Work(workId, info);
+        return new Work(workId.toString(), info);
     }
 
     static fromUser(data: any): Work {
@@ -134,7 +134,7 @@ export class Work {
 
     static fromSheet(data: GvizRow): Work {
         const workId = this.getSheetValue(data, 1, "");
-        return new Work(this.parseNumber(String(workId)), this.parseSheetInfo(data));
+        return new Work(workId, this.parseSheetInfo(data));
     }
 
     static fromActiveWork(doc: Document): Work {
@@ -145,7 +145,7 @@ export class Work {
             throw new Error('Work ID not found');
         }
         return new Work(
-            this.parseNumber(workId),
+            workId,
             {
                 ...DEFAULT_WORK_INFO,
                 chapters: chapters
@@ -197,7 +197,7 @@ const DEFAULT_WORK_INFO: WorkInfo = {
     chapters: [],
     personalTags: [],
     rating: 0,
-    readCount: 1,
+    readCount: 0,
     skipReason: "",
     kudos: false,
 };

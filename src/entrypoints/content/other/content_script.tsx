@@ -41,27 +41,6 @@ export async function handleVisibilityChange(): Promise<void> {
     }
 }
 
-// Check if the access token cookie is present
-function checkAccessToken(): void {
-
-}
-
-// Request to refresh the access token
-function refreshAccessToken(): void {
-    //sendMessage(
-    //    MessageName.RefreshAccessToken,
-    //    {},
-    //    (response: MessageResponse<string>) => {
-    //        if (response.error) {
-    //            console.log('refreshAccessToken error: ', response.error);
-    //        } else {
-    //            console.log('refreshAccessToken response: ', response.response);
-    //            pageTypeDetect();
-    //        }
-    //    }
-    //);
-}
-
 // Detect the type of page and handle accordingly
 export function pageTypeDetect(): void {
     if (document.querySelector('.index.group.work')) {
