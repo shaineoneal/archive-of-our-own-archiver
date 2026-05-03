@@ -129,7 +129,6 @@ export async function getValidAccessToken(accessToken: string, refreshToken: str
     if (await isAccessTokenValid(accessToken)) {
         logger.debug('Access token is valid');
 
-        await TokenService.getUser()
         return accessToken;
     } else {
         logger.debug('Access token is invalid, attempting to exchange refresh token: ', refreshToken);

@@ -11,7 +11,6 @@ export * from './refreshToken.ts';
 export * from './removeWorkFromSheet.ts';
 export * from './spreadsheet.ts';
 export * from './store.ts';
-export * from '../models/ao3BaseWork.ts'
 export * from '../models/work.tsx'
 
 

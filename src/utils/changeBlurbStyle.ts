@@ -1,3 +1,4 @@
+import { WorkStatus } from "@/types/data.ts";
 
 
 const STATUS_CLASSES = {
@@ -16,8 +17,7 @@ const STATUS_CLASSES = {
  */
 export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
     const wrapEl = workWrap as Element;
-    const work = wrapEl.querySelector("li[id*='work_']");
-    const workEl = work as Element;
+    const workEl = wrapEl.querySelector("li[id*='work_']") as Element;
     const toggleEl = wrapEl.querySelector('.blurb-toggle') as Element;
 
     logger.debug('wrapEl: ', wrapEl);
@@ -38,13 +38,12 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             workEl.classList.add('status','status-dropped');
             break;
         case 'read':
-            work!.classList.add('status','status-read');
+            workEl.classList.add('status','status-read');
             // remove controls and info
             if(toggleEl.querySelector('.blurb-controls')) toggleEl.removeChild(toggleEl.querySelector('.blurb-controls')!);
             if(toggleEl.querySelector('.blurb-info')) toggleEl.removeChild(toggleEl.querySelector('.blurb-info')!);
             // add back controls and info
-            toggleEl.appendChild(addControls(wrapEl));
-            toggleEl.appendChild(addInfo(workEl));
+
             break;
         default:
             (Object.keys(STATUS_CLASSES) as Array<keyof typeof STATUS_CLASSES>).forEach((status) => {
@@ -54,7 +53,7 @@ export function changeBlurbStyle(workStatus: WorkStatus, workWrap: Node) {
             toggleEl.querySelectorAll('.blurb-info').forEach((infoEl) => { infoEl.remove() });
             toggleEl.querySelectorAll('.toggle').forEach((toggleEl) => { toggleEl.remove() });
             if(toggleEl.querySelector('.blurb-controls')) toggleEl.removeChild(toggleEl.querySelector('.blurb-controls')!);
-            toggleEl.appendChild(addControls(wrapEl));
+
             break;
     }
     logger.debug('work: ', workEl);
