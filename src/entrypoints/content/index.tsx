@@ -1,8 +1,8 @@
-// @ts-ignore
 import { createIntegratedUi } from "#imports";
 import { handleLoggedIn, onMessage } from '~/services'
 import { createRoot } from "react-dom/client";
 import { App, main, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
+import "@/entrypoints/styles.scss";
 
 let loggedInListenerRegistered = false;
 
@@ -10,18 +10,20 @@ export default defineContentScript({
     matches: ["*://*.archiveofourown.org/*"],
     runAt: "document_end",
 
-    main(ctx) {
+    main: function (ctx) {
         logger.debug('content script running');
         const ui = createIntegratedUi(ctx, {
             position: 'inline',
             anchor: 'h1',
             append: 'last',
             onMount: (container) => {
+
+                logger.info('Container found, mounting...');
                 // Create a root on the UI container and render a component
                 container.classList.add("content-script-root");
                 const root = createRoot(container);
                 root.render(
-                    <App />
+                    <App/>
                 );
                 registerStorageListener();
                 main(ctx);
@@ -29,6 +31,8 @@ export default defineContentScript({
                 return root;
             },
             onRemove: (root) => {
+                logger.info('Content script UI removed, unmounting root and unregistering storage listener...');
+
                 // Unmount the root when the UI is removed
                 (root != undefined) ? root.unmount() : undefined;
                 unregisterStorageListener();

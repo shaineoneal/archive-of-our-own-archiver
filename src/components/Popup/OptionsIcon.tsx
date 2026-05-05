@@ -5,29 +5,16 @@ import { IconSettingsFilled } from "@tabler/icons-react";
 import classes from '@/components/Popup/Header.module.css';
 
 /**
- * OptionsIcon component renders an icon that links to the options page.
- * It uses the user's access token to determine whether to display the icon.
- * 
- * @component
- * @example
- * return (
- *   <OptionsIcon />
- * )
- * 
- * @returns {JSX.Element} The rendered component.
- * 
- * @remarks
- * This component uses the `useUser` hook to get the access token and 
- * `useEffect` to log when the component is mounted or updated.
- * 
- * @see {@link https://reactjs.org/docs/hooks-effect.html|useEffect}
- * @see {@link https://reactjs.org/docs/hooks-reference.html#usecontext|useContext}
+ * Renders a settings/options icon that links to the extension options page.
+ * The icon is only shown when a user access token is present.
  */
 export const OptionsIcon = () => {
 
+    /** Current access token from the user store; used to toggle icon visibility. */
     const accessT = useUser().accessToken;
 
     useEffect(() => {
+        // Debug hook to confirm token changes and re-renders.
         console.log('optionsIcon useEffect');
     }, [accessT]);
 

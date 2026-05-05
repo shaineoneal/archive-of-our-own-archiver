@@ -1,27 +1,27 @@
+import { logger } from "@/utils";
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { UserStore, UserDataType, ShelfStore } from "@/stores";
+import { UserStore, UserDataType, shelfSetWork, shelfSetShelf } from "@/stores";
 import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
     chromeLaunchWebAuthFlow,
     createSpreadsheet,
     exchangeRefreshForAccessToken,
-    getValidAccessToken,
-    handleTokenExchange,
     isAccessTokenValid,
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
     sendMessageToAo3Tabs,
-    setStore,
-    StoreMethod,
     Work
 } from "@/services";
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
-import { compareArrays } from "@/utils/compareArrays.ts";
+import { Spreadsheet } from "@/models/sheet.ts";
 
-
+/**
+ * Messaging protocol for extension requests and responses.
+ * Each key maps a message name to its request/response types.
+ */
 interface ProtocolMap {
     AddWorkToSpreadsheet(work: Work): Work;
     GetValidAccessToken(): string;
@@ -32,11 +32,22 @@ interface ProtocolMap {
     UpdateWorkInSpreadsheet(work: Work): boolean;
 }
 
+/**
+ * Messaging helpers generated from the protocol map.
+ */
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
+/**
+ * Handles adding a work to the user's spreadsheet.
+ * Rehydrates the work model, appends it, and updates the shelf store.
+ *
+ * @param msg - Message payload containing the work to add.
+ * @returns The appended work returned by the sheet.
+ * @throws If the user is missing credentials or token exchange fails.
+ */
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
-    let user = await UserStore.getState().actions.getUser();
-    const { setWork } = ShelfStore.getState().actions;
+    logger.info("Received addWorkToSpreadsheet message: ", msg.data);
+
     const user = await UserStore.getState().actions.getUser();
     const work = Work.rehydrateWork(msg.data);
 
@@ -55,8 +66,16 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
     }
 }
 
+/**
+ * Ensures a valid access token is returned.
+ * If the current token is invalid, attempts a refresh-token exchange.
+ *
+ * @returns A valid access token.
+ * @throws If a valid access token cannot be retrieved.
+ */
 export async function handleGetValidAccessToken(): Promise<string> {
-    logger.debug("GetValidAccessToken");
+    logger.info("Received getValidAccessToken message");
+
     const user = await UserStore.getState().actions.getUser();
 
     if(await isAccessTokenValid(user.accessToken)) {
@@ -72,8 +91,13 @@ export async function handleGetValidAccessToken(): Promise<string> {
     }
 }
 
+/**
+ * Initiates the login flow and persists tokens on success.
+ * Creates a spreadsheet when the user does not yet have one.
+ */
 export async function handleLogin(): Promise<void> {
-    const {getUser, userStoreLogin} = UserStore.getState().actions;
+    logger.info("Received login message");
+
     const { getUser, userStoreLogin } = UserStore.getState().actions;
     const user = await getUser();
     try {
@@ -114,13 +138,27 @@ export async function handleLogin(): Promise<void> {
     }
 }
 
+/**
+ * Validates whether an access token is still valid.
+ *
+ * @param msg - Message payload containing the access token to validate.
+ * @returns True if the token is valid; otherwise false.
+ */
 export async function handleIsAccessTokenValid(msg: { data: string }): Promise<boolean> {
     return await isAccessTokenValid(msg.data);
 }
 
-export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<boolean[]> {
-    const { setAccessToken, getUser } = UserStore.getState().actions;
-    let user = await getUser();
+/**
+ * Queries the spreadsheet for works matching the provided search list.
+ * Updates the shelf store with matched works.
+ *
+ * @param msg - Message payload containing the list of search terms.
+ * @throws If the user is missing credentials or query fails.
+ */
+export async function handleQuerySpreadSheet(msg: { data: string[] }): Promise<void> {
+    logger.info("Received querySpreadSheet message with searchList: ", msg.data);
+
+    const user = await UserStore.getState().actions.getUser();
     const searchList = msg.data ?? [];
 
     if (searchList.length === 0) {
@@ -153,9 +191,15 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     }
 }
 
+/**
+ * Adds an update to a work's history in the spreadsheet and updates the shelf store.
+ *
+ * @param msg - Message payload containing the work to update.
+ * @returns True if the update succeeded; otherwise false.
+ * @throws If the user is missing credentials or the update fails.
+ */
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
-    const { setAccessToken, getUser } = UserStore.getState().actions;
-    let user = await getUser();
+    const user = await UserStore.getState().actions.getUser();
 
     if (user.spreadsheetId === '' || user.accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
@@ -175,6 +219,12 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
     return false;
 }
 
+/**
+ * Handles a LoggedIn message and updates the user store.
+ * Triggers page type detection after login.
+ *
+ * @param msg - Message payload containing the user's login data (access token, refresh token, spreadsheet ID).
+ */
 export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
 
     logger.debug('logged in message received', msg.data);

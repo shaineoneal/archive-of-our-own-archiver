@@ -1,6 +1,27 @@
-export const ProgressBar: React.FC<{ current: number; total: number; thisChap: number; }> = ({ current, total, thisChap }) => {
+import React from "react";
 
+/**
+ * Props for {@link ProgressBar}.
+ */
+export type ProgressBarProps = {
+    /** Words already read. */
+    current: number;
+    /** Total words in the work. */
+    total: number;
+    /** Words in the current chapter. */
+    thisChap: number;
+};
+
+/**
+ * Displays reading progress for a work with chapter-level context.
+ *
+ * @param props - Progress values used to render the bar and labels.
+ */
+export const ProgressBar: React.FC<ProgressBarProps> = ({ current, total, thisChap }) => {
+
+    /** Percent of the total already read. */
     const progressPercent = (current / total) * 100;
+    /** Percent that includes the current chapter chunk. */
     const currentPercent = ((thisChap / total) * 100) + progressPercent;
 
     return (

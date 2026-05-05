@@ -5,17 +5,18 @@ import { useActions, useLoaderStore, UserStore, useUser } from '@/stores';
 import { GoToSheetButton } from './GoToSheetButton';
 import { LoginButton } from './LoginButton';
 
-
 /**
- * The popup body component.
- * This component will display either a login or the GoToSheetButton component based on the user's login status.
- * If the user is not logged in, it will display a login button.
- * If the user is logged in, it will display the GoToSheetButton component.
- * If the user's access token is invalid, it will exchange the refresh token for an access token.
- * If the user does not have a refresh token, it will log the user out.
- * @category Component
- * @group Popup
- * @returns the PopupBody component
+ * Popup body component that:
+ * - Loads the current user state.
+ * - Ensures access tokens are present and valid (refreshing if needed).
+ * - Shows a loader while auth state is resolved.
+ * - Shows login or navigation CTA based on auth state.
+ *
+ * @remarks
+ * Render states:
+ * - Loader while auth state is resolving.
+ * - Login button if any required auth field is missing.
+ * - Go-to-sheet button if user is authenticated.
  */
 export const PopupBody = () => {
     const { loader, setLoader } = useLoaderStore();
@@ -25,16 +26,18 @@ export const PopupBody = () => {
 
     useEffect(() => {
         (async () => {
+            // Hydrate user from storage and sync into the store.
             const newUser = await UserStore.getState().actions.getUser()
             logger.info('popupbody', { newUser });
             setUser(newUser.accessToken!, newUser.refreshToken!, newUser.spreadsheetId!);
             user = newUser;
 
+            // If we have a refresh token but no access token, try to exchange.
             if (user.refreshToken && !user.accessToken) {
                 logger.debug('User has a refresh token but no access token');
 
                 try {
-                    // If the user has a refresh token but no access token, exchange the refresh token for an access token
+                    // Exchange refresh token for access token.
                     const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
                     if (!newAccessToken) {
                         logout();
@@ -50,18 +53,19 @@ export const PopupBody = () => {
                 }
 
             } else if (user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '') {
-                // If the user is not logged in, set the loader to false and return
+                // If the user is not logged in, stop loading.
                 setLoader(false);
                 return;
             }
-            // Check if the access token is valid
+
+            // Validate existing access token and refresh if needed.
             const validity = await isAccessTokenValid(user.accessToken!);
             logger.debug('User access token', validity);
             if (user.accessToken && !await isAccessTokenValid(user.accessToken)) {
                 logger.debug('Access token is invalid');
                 if (user.refreshToken) {
                     try {
-                        // If the access token is invalid, exchange the refresh token for a new access token
+                        // If the access token is invalid, exchange the refresh token for a new access token.
                         const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
                         logger.debug('Access token is invalid', newAccessToken);
                         if (!newAccessToken) {
@@ -84,9 +88,13 @@ export const PopupBody = () => {
         })();
     }, []);
 
-    return loader ? <div className="loader" /> 
+    /**
+     * Render states:
+     * - Loader while auth state is resolving.
+     * - Login button if any required auth field is missing.
+     * - Go-to-sheet button if user is authenticated.
+     */
+    return loader ? <div className="loader" />
         : ( user.accessToken === '' || user.spreadsheetId === '' || user.refreshToken === '' ) ? <LoginButton />
             : <GoToSheetButton spreadsheetId={user.spreadsheetId as string} />;
 };
-
-export default PopupBody;
