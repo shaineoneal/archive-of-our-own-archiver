@@ -37,23 +37,18 @@ export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>(
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
     let user = await UserStore.getState().actions.getUser();
     const { setWork } = ShelfStore.getState().actions;
+    const user = await UserStore.getState().actions.getUser();
+    const work = Work.rehydrateWork(msg.data);
 
     if (user.spreadsheetId !== undefined && user.accessToken !== undefined) {
+        const ss = new Spreadsheet(user.spreadsheetId);
+
         try {
-            const work = await addWorkToSheet(user.spreadsheetId, user.accessToken, msg.data);
-            setWork(work);
-            return work;
+            const appendedWork = await addWorkToSheet(ss, user.accessToken, work);
+            shelfSetWork(appendedWork);
+            return appendedWork;
         } catch (error) {
-            console.error('error adding work to sheet', error);
-            if (user.refreshToken) {
-                let accessT = await getValidAccessToken(user.accessToken, user.refreshToken);
-                if (accessT) {
-                    user.accessToken = accessT;
-                    setStore('user', user, StoreMethod.SYNC);
-                    return await handleTokenExchange<Work>(user.refreshToken);
-                }
-            }
-            throw new Error('access token expired or invalid, and there was an error exchanging the refresh token');
+            throw new Error('access token expired or invalid, and there was an error exchanging the refresh token', { cause: error });
         }
     } else {
         throw new Error('no spreadsheetId or accessToken');
@@ -63,6 +58,7 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
 export async function handleGetValidAccessToken(): Promise<string> {
     logger.debug("GetValidAccessToken");
     const user = await UserStore.getState().actions.getUser();
+
     if(await isAccessTokenValid(user.accessToken)) {
         return user.accessToken;
     } else {
@@ -78,6 +74,7 @@ export async function handleGetValidAccessToken(): Promise<string> {
 
 export async function handleLogin(): Promise<void> {
     const {getUser, userStoreLogin} = UserStore.getState().actions;
+    const { getUser, userStoreLogin } = UserStore.getState().actions;
     const user = await getUser();
     try {
         // Launch the web authentication flow with interactive set to true
@@ -101,8 +98,6 @@ export async function handleLogin(): Promise<void> {
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
                     await sendMessageToAo3Tabs('LoggedIn');
                 } else {
-                    const success = await storage.setItem('session:test', 'testing')
-                    logger.debug('Storage set success: ', success);
                     userStoreLogin(access_token, refresh_token, user.spreadsheetId);
                     logger.debug('Sending message');
                     //await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
@@ -129,7 +124,7 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
     const searchList = msg.data ?? [];
 
     if (searchList.length === 0) {
-        return [];
+        return;
     }
 
     if (user.spreadsheetId === '' || user.accessToken === '') {
@@ -145,13 +140,16 @@ export async function handleQuerySpreadSheet(msg: { data: number[] }): Promise<b
             if (!Array.isArray(response?.table?.rows)) {
                 logger.error('Invalid response from querySpreadsheet:', response);
             }
-            return new Array(searchList.length).fill(false);
+            return;
         }
 
-        return compareArrays(searchList, [...rows]);
-    } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new Error(`querySpreadsheet failed: ${message}`);
+        shelfSetShelf(rows.map(row => {
+            return Work.fromRow(row);
+        }));
+
+        return;
+    } catch (error) {
+        throw new Error("querySpreadsheet failed:", { cause: error });
     }
 }
 
@@ -167,11 +165,12 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
         const response = await addToHistory(msg.data, user.spreadsheetId, user.accessToken);
         logger.debug('row', response);
         if (response) {
-            setStore(`${msg.data.workId}`, msg.data.info, StoreMethod.LOCAL);
+            logger.debug('Response from addToHistory: ', msg.data);
+            shelfSetWork(msg.data);
             return true;
         }
-    } catch (error: any) {
-        throw new Error(error);
+    } catch (error) {
+        throw error;
     }
     return false;
 }

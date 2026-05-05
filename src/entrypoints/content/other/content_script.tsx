@@ -93,7 +93,12 @@ export async function main(ctx: any) {
 
 // Listener for updates to the user store
 export function registerStorageListener() {
-    browser.storage.local.onChanged.addListener(main);
+    browser.storage.local.onChanged.addListener((changes: Record<string, { newValue?: unknown }>) => {
+        if (changes['user-store']) {
+            logger.debug('user-store changed in storage, reloading content script...');
+            main({});
+        }
+    });
 }
 
 export function unregisterStorageListener() {

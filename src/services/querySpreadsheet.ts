@@ -1,7 +1,7 @@
 import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest.ts";
 import type { GvizDataTableResponse } from "@/types/gvizDataTable.ts";
 
-export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: number[]): Promise<GvizDataTableResponse> {
+export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: string[]): Promise<GvizDataTableResponse> {
 
     let query = createEncodedQuery(searchList);
 
@@ -16,8 +16,8 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
     return await parseResponse(response);
 }
 
-function createEncodedQuery(searchList: number[]): string {
-    let query = `select A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R where B matches`;
+function createEncodedQuery(searchList: string[]): string {
+    let query = "select * where B matches";
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;
