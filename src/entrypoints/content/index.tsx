@@ -18,6 +18,7 @@ export default defineContentScript({
             append: 'last',
             onMount: (container) => {
                 // Create a root on the UI container and render a component
+                container.classList.add("content-script-root");
                 const root = createRoot(container);
                 root.render(
                     <App />

@@ -195,16 +195,21 @@ a.no-underline {
 
 
 .work.index.group {
-    div.blurb-with-toggles {
-        li.blurb-toggle {
-            padding: 0.3em 0.75em;
-            margin: 0;
+    .ao4-blurb-with-controls {
+        .ao4-blurb-panel {
             display: flex;
+            padding: 0.3em 0.75em;
+            margin: -0.429em -0.75em;
+            margin-bottom: 0.375em;
+            border-bottom: inherit;
             justify-content: space-between;
             align-items: center;
             line-height: 2.572;
-            top: 0.8px;
-            clip-path: inset(-3px -3px -1.5px -3px);
+            box-shadow: none;
+
+            + .header {
+                margin-top: 0.625em;
+            }
 
             div.blurb-info {
                 display: flex;

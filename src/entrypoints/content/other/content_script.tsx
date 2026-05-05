@@ -3,6 +3,8 @@ import { UserStore } from "@/stores/userStore";
 import { ReactElement } from 'react';
 import { getValidAccessToken } from "@/services";
 import { insideWorkPage } from "./insideWorksPage.tsx";
+import { useShelfHydration } from "@/stores";
+import { BlurbPortals } from "@/components/BlurbControls/BlurbPortals.tsx";
 
 
 // Interface for message structure
@@ -100,10 +102,15 @@ export function unregisterStorageListener() {
 
 
 export function App() : ReactElement {
+    const { isHydrated, shelfVersion } = useShelfHydration();
+
     return (
-        <a href="chrome-extension://fpolkflkolbgaceliloehfofnoiklngb/popup.html" target="_blank">
-            <span>++</span>
-            <sup> also beta</sup>
-        </a>
+        <>
+            <a href="chrome-extension://fpolkflkolbgaceliloehfofnoiklngb/popup.html" target="_blank">
+                <span>++</span>
+                <sup> also beta</sup>
+            </a>
+            {isHydrated ? <BlurbPortals key={shelfVersion} /> : null}
+        </>
     );
 }

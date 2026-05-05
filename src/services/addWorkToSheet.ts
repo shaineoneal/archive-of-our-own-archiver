@@ -26,7 +26,10 @@ export const addWorkToSheet = async (
 
         // Ensure the API response includes updates before mapping to Work
         if (response && response.updates) {
-            return Work.fromAppendResponse(response.updates);
+            const values = response.updatedData.values?.[0];
+            if (values) {
+                return Work.fromRow(values);
+            }
         }
 
         throw new Error("Missing updates in response.");
