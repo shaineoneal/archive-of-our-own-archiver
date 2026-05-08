@@ -1,12 +1,17 @@
-import { CloseButton, Flex, Group, ThemeIcon, Title } from "@mantine/core";
+import React from 'react';
 import classes from '@/components/Popup/Header.module.css';
-import { IconArrowLeft } from "@tabler/icons-react";
-import React from "react";
-import { ThemeToggle } from "@/components/Popup/ThemeToggle.tsx";
-import { OptionsIcon } from "@/components/Popup/OptionsIcon.tsx";
+import { CloseButton, Flex, Group, ThemeIcon, Title } from '@mantine/core';
+import { IconArrowLeft } from '@tabler/icons-react';
+import { OptionsIcon, ThemeToggle } from '@/components';
 
+/**
+ * Render the popup header for the current popup view.
+ *
+ * @remarks
+ * Reads the DOM for a `.main-popup-header` element to decide between the main
+ * header layout and the options layout.
+ */
 export function PopupHeader() {
-
     const mainPage = document.querySelector('.main-popup-header');
 
     // Are we on the main page or the options page?
@@ -16,12 +21,12 @@ export function PopupHeader() {
             <Flex className={classes.header}>
                 <Group>
                     <ThemeIcon className={classes.title}>
-                        <img src="icons/icon-32.png" alt="extension-icon"/>
+                        <img src="icons/icon-32.png" alt="extension-icon" />
                     </ThemeIcon>
 
                     <Title size="h3" ff="Georgia" className={classes.title}>AO3E: Rewritten</Title>
                 </Group>
-                <OptionsIcon/>
+                <OptionsIcon />
             </Flex>
         );
     }
@@ -32,10 +37,10 @@ export function PopupHeader() {
                 className={classes.back}
                 component="a"
                 href="popup.html"
-                icon={<IconArrowLeft/>}
+                icon={<IconArrowLeft />}
             />
             <div className="title">AO3E Rewritten&apos;s Options</div>
-            <ThemeToggle/>
+            <ThemeToggle />
         </Flex>
-    )
+    );
 }

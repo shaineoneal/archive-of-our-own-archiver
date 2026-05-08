@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { useUser } from '@/stores';
-import { ActionIcon } from "@mantine/core";
-import { IconSettingsFilled } from "@tabler/icons-react";
+import { ActionIcon } from '@mantine/core';
+import { IconSettingsFilled } from '@tabler/icons-react';
 import classes from '@/components/Popup/Header.module.css';
 
 /**
- * Renders a settings/options icon that links to the extension options page.
- * The icon is only shown when a user access token is present.
+ * Render an options icon that links to the extension options page.
+ * @remarks Only renders the icon when an access token is present.
  */
 export const OptionsIcon = () => {
-
     /** Current access token from the user store; used to toggle icon visibility. */
     const accessT = useUser().accessToken;
 
@@ -27,7 +26,7 @@ export const OptionsIcon = () => {
             bd="none"
             bg="transparent"
         >
-            {accessT ? <IconSettingsFilled className={classes.icon}/> : null}
+            {accessT ? <IconSettingsFilled className={classes.icon} /> : null}
         </ActionIcon>
     );
-}
+};

@@ -1,33 +1,27 @@
-import { useLoaderStore, useUser } from '@/stores';
-import { sendMessage } from "@/services";
 import { Button, Center, Text } from '@mantine/core';
+import { sendMessage } from '@/services';
+import { useLoaderStore } from '@/stores';
 
 /**
- * Component for the login functionality.
- * Allows users to log in to Google and obtain an access token.
- * The component displays a login button and a loader while the authentication flow is in progress.
- * @component
- * @group Popup
- * @returns the LoginButton component 
+ * Render a login button that starts the Google auth flow.
+ * @remarks Displays a loader state while the login message is in flight.
  */
 export const LoginButton = () => {
     const { loader, setLoader } = useLoaderStore();
-    const spreadsheetId = useUser().spreadsheetId;
-
-    // TODO: set up full user store on login
 
     /**
-     * calls {@link handleLogin} to initiate the login process.
+     * Start the login flow and toggle loader state.
+     * @returns A promise that resolves when the login attempt finishes.
      */
     const handleLoginPress = async () => {
-        setLoader(true);    //show loader
+        setLoader(true);
 
         try {
             await sendMessage('Login', undefined);
         } catch (error) {
             logger.error('Error in handleLogin: ', error);
         } finally {
-            setLoader(false);   //hide loader
+            setLoader(false);
         }
     };
 
@@ -37,8 +31,8 @@ export const LoginButton = () => {
             <Center>
                 <Button
                     id="login-button"
-                    onClick={ handleLoginPress }
-                    disabled={ loader }
+                    onClick={handleLoginPress}
+                    disabled={loader}
                 >
                     Login to Google
                 </Button>

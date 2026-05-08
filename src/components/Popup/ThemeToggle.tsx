@@ -1,11 +1,12 @@
 import { IconMoon, IconSun } from '@tabler/icons-react';
 import cx from 'clsx';
 import { ActionIcon, Group, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
-import classes from '@/components/Popup/ThemeToggle.module.css'
+import classes from '@/components/Popup/ThemeToggle.module.css';
 
+/** Toggle between light and dark color schemes. */
 export function ThemeToggle() {
     const { setColorScheme } = useMantineColorScheme();
-    const computedColorScheme = useComputedColorScheme('light', {getInitialValueInEffect: true});
+    const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true });
 
     return (
         <Group justify="center">
@@ -15,8 +16,8 @@ export function ThemeToggle() {
                 size="lg"
                 aria-label={computedColorScheme === 'light' ? 'Light Mode' : 'Dark Mode'}
             >
-                <IconSun className={cx(classes.icon, classes.light)} stroke={1.5}/>
-                <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5}/>
+                <IconSun className={cx(classes.icon, classes.light)} stroke={1.5} />
+                <IconMoon className={cx(classes.icon, classes.dark)} stroke={1.5} />
             </ActionIcon>
         </Group>
     );

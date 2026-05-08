@@ -1,30 +1,34 @@
 import { useState } from 'react';
-import { revokeTokens } from "@/services";
+import { revokeTokens } from '@/services';
 import { useActions, useUser } from '@/stores';
 import { Button } from '@mantine/core';
 
+/**
+ * Render a logout button that clears local auth state and revokes tokens.
+ * @remarks Uses the stored access token when available.
+ */
 export const LogoutButton = () => {
-    const [style, setStyle] = useState("");
+    const [style, setStyle] = useState('');
     const accessToken = useUser().accessToken;
     const { logout } = useActions();
 
     const handleLogout = async () => {
-        logger.debug("handleLogout");
-        //setStyle("visited");
+        logger.debug('handleLogout');
+        // setStyle("visited");
         if (accessToken !== undefined) {
-            logger.debug("revokeTokens");
-            //TODO: FIX THIS
+            logger.debug('revokeTokens');
+            // TODO: FIX THIS
             logout();
             await revokeTokens(accessToken);
         }
         // TODO: needs to still logout if the user does not have a refresh token
         //  AKA if it expires
-        //logout();
+        // logout();
     };
 
     return (
-        <div >
-            <Button className={style} onClick={handleLogout} >Logout</Button>
+        <div>
+            <Button className={style} onClick={handleLogout}>Logout</Button>
         </div>
     );
 };

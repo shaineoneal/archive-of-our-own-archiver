@@ -1,14 +1,15 @@
-import { Button, Center } from '@mantine/core'
-import '@mantine/core/styles.css'
+import '@mantine/core/styles.css';
+import { Button, Center } from '@mantine/core';
 
 /**
- * Component that displays a button to go to the user's sheet.
- * @param props.spreadsheetId The id of the spreadsheet to go to.
- * @returns A button that when clicked will go to the user's sheet.
+ * Render a button that opens the user's spreadsheet.
+ *
+ * @param spreadsheetId - The ID of the spreadsheet to open.
+ * @remarks Opens a new browser tab when the button is clicked.
  */
-export const GoToSheetButton = (props: { spreadsheetId: string }) => {
+export function GoToSheetButton({ spreadsheetId }: { spreadsheetId: string }) {
     const handleGoToSheet = () => {
-        browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${props.spreadsheetId}/edit#gid=0` });
+        browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=0` });
     };
 
     return (
@@ -16,11 +17,11 @@ export const GoToSheetButton = (props: { spreadsheetId: string }) => {
             <Button
                 justify="center"
                 id="sheet-button"
-                onClick={ handleGoToSheet }
+                onClick={handleGoToSheet}
                 variant="filled"
             >
                 View your sheet
             </Button>
         </Center>
     );
-};
+}
