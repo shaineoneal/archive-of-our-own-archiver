@@ -1,11 +1,14 @@
-import { Work } from "@/models";
-import { useBlurbWorkId, useWork } from "@/stores";
-import React from "react";
+import { Work } from '@/models';
+import { useBlurbWorkId, useWork } from '@/stores';
+import React from 'react';
 
 /**
- * Control for removing a work from the spreadsheet/shelf.
- * @returns Anchor control component.
- * @remarks Spreadsheet removal message is currently stubbed/commented.
+ * Render a control that removes the current work from the shelf.
+ *
+ * @remarks
+ * - Prevents default anchor navigation on click.
+ * - Logs and exits early when the work cannot be found in the store.
+ * - Spreadsheet removal messaging is currently stubbed/commented.
  */
 export function RemoveWorkControl() {
     const workId = useBlurbWorkId();
@@ -26,7 +29,7 @@ export function RemoveWorkControl() {
                 const workBlurb = new Work(workId, work.info);
                 logger.debug('workBlurb.workId: ', workBlurb);
 
-                //sendMessage(
+                // sendMessage(
                 //    MessageName.RemoveWorkFromSheet,
                 //    { workId: workBlurb.workId },
                 //    (response: MessageResponse<boolean>) => {
@@ -37,7 +40,7 @@ export function RemoveWorkControl() {
                 //            changeBlurbStyle(WorkStatus.Default, workWrap);
                 //        }
                 //    }
-                //);
+                // );
             }}
         >
             remove

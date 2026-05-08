@@ -1,10 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import { BlurbPanelContent } from "@/components";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef } from 'react';
+import { BlurbPanelContent } from '@/components';
+import { createPortal } from 'react-dom';
 
-/**
- * Props used to render controls into a specific blurb via a React portal.
- */
+/** Props used to render controls into a specific blurb via a React portal. */
 interface DynamicPortalProps {
     /** Target AO3 blurb element to host the controls. */
     targetBlurb: Element;
@@ -12,11 +10,14 @@ interface DynamicPortalProps {
     children: React.ReactNode;
     /** Stable key used by `createPortal`. */
     portalKey: string;
-};
+}
 
 /**
  * Creates and manages a per-blurb portal host injected into the target element.
+ *
  * @param props - Portal rendering configuration.
+ * @remarks Adds the `ao4-blurb-with-controls` class and prepends a `.ao4-blurb-panel` host
+ * to the target blurb, removing it on cleanup.
  * @returns A portal for the provided `children`, or `null` before host creation.
  */
 function DynamicPortal({ targetBlurb, children, portalKey }: DynamicPortalProps) {
@@ -50,14 +51,16 @@ function DynamicPortal({ targetBlurb, children, portalKey }: DynamicPortalProps)
 
 /**
  * Renders controls portals for each visible work/bookmark blurb on the page.
+ *
  * @returns Fragment containing one portal per blurb.
+ * @remarks Queries the document for `li.work` and `li.bookmark` each render.
  */
-export const BlurbPortals = ()=> {
+export const BlurbPortals = () => {
     const blurbs = Array.from(document.querySelectorAll('li.work, li.bookmark'));
 
     return (
         <>
-            {blurbs.map((workEl) => (
+            {blurbs.map(workEl => (
                 <DynamicPortal targetBlurb={workEl} portalKey={workEl.id} key={workEl.id}>
                     <BlurbPanelContent targetBlurb={workEl} workId={workEl.id.split('_')[1]} />
                 </DynamicPortal>

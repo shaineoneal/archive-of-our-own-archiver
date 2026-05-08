@@ -1,17 +1,14 @@
-/**
- * @packageDocumentation
- * @module BlurbControls
- */
-
-import React from "react";
-import { Work } from "@/models";
-import { sendMessage } from "@/services";
-import { useBlurbTargetBlurb, useBlurbWorkId } from "@/stores";
+import { Work } from '@/models';
+import { sendMessage } from '@/services';
+import { useBlurbTargetBlurb, useBlurbWorkId } from '@/stores';
 
 /**
- * Control for adding a work to the spreadsheet/shelf.
- * @returns Anchor control component.
- * @category Component
+ * Renders an "Add" control that persists the current blurb to the spreadsheet/shelf.
+ *
+ * @remarks
+ * - Reads the current work id and blurb from stores.
+ * - Builds a {@link Work} from the blurb, then sends it to the background via `sendMessage`.
+ * - Logs a warning if the background does not return a saved work.
  */
 export function AddWorkControl() {
     const workId = useBlurbWorkId();

@@ -1,10 +1,14 @@
-import React from "react";
-import { sendMessage } from "@/services";
-import { useBlurbWorkId, useWork } from "@/stores";
+import React from 'react';
+import { sendMessage } from '@/services';
+import { useBlurbWorkId, useWork } from '@/stores';
 
 /**
- * Control that increments a work's read count/history and syncs it.
- * @returns Anchor control component.
+ * Render a control that increments the current work read count.
+ *
+ * @remarks
+ * - Prevents default anchor navigation on click.
+ * - Updates the work history in the store before sending a sync message.
+ * - Sends an UpdateWorkInSpreadsheet message for the updated work.
  */
 export function IncrementReadCountControl() {
     const workId = useBlurbWorkId();
@@ -23,11 +27,11 @@ export function IncrementReadCountControl() {
                     return;
                 }
 
-                work.addHistory("fullWorkAdded");
+                work.addHistory('fullWorkAdded');
                 const history = work.info.history;
                 history.push({
-                    action: "reread",
-                    date: new Date().toLocaleString(),
+                    action: 'reread',
+                    date: new Date().toLocaleString()
                 });
 
                 logger.debug('hist', work);
@@ -40,7 +44,6 @@ export function IncrementReadCountControl() {
                     }
                     return;
                 });
-
             }}
         >
             +1

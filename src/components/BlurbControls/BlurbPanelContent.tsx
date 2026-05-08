@@ -1,12 +1,15 @@
-import React, { useRef } from "react";
-import { AddWorkControl, BlurbInfo, IncrementReadCountControl, RemoveWorkControl } from "@/components";
-import { BlurbStoreContext, BlurbStoreType, createBlurbStore, useBlurbWorkId, useWork } from "@/stores";
-
+import React, { useRef } from 'react';
+import { AddWorkControl, BlurbInfo, IncrementReadCountControl, RemoveWorkControl } from '@/components';
+import { BlurbStoreContext, BlurbStoreType, createBlurbStore, useBlurbWorkId, useWork } from '@/stores';
 
 /**
- * Panel content for one blurb, wiring local context and subcomponents.
- * @param props - Panel props containing `workId` and `targetBlurb`.
- * @returns Provider-wrapped controls and metadata UI.
+ * Renders the blurb panel with controls and metadata for a target blurb.
+ *
+ * @param workId - Work identifier used to initialize the blurb store.
+ * @param targetBlurb - Blurb DOM element that the store reads from.
+ *
+ * @remarks Creates a per-panel store and provides it via context.
+ * @returns The blurb panel content, including controls and info, wrapped in the store context provider.
  */
 export function BlurbPanelContent({ workId, targetBlurb }: { workId: string; targetBlurb: Element }) {
     const storeRef = useRef<BlurbStoreType>();
@@ -16,13 +19,15 @@ export function BlurbPanelContent({ workId, targetBlurb }: { workId: string; tar
 
     return (
         <BlurbStoreContext.Provider value={storeRef.current}>
-            <WorkControls/>
-            <BlurbInfo/>
+            <WorkControls />
+            <BlurbInfo />
         </BlurbStoreContext.Provider>
     );
 }
 
-/** Renders the add/remove controls based on whether the current blurb work exists in the store. */
+/**
+ * Displays work-specific action controls based on store state.
+ */
 function WorkControls() {
     const workId = useBlurbWorkId();
     const work = useWork(workId);
@@ -31,15 +36,12 @@ function WorkControls() {
         <div className="blurb-controls actions">
             { work ? (
                 <>
-                    <RemoveWorkControl/>
-                    <IncrementReadCountControl/>
+                    <RemoveWorkControl />
+                    <IncrementReadCountControl />
                 </>
             ) : (
-                <AddWorkControl/>
+                <AddWorkControl />
             ) }
         </div>
     );
-};
-
-
-
+}

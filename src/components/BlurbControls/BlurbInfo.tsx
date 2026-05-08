@@ -1,15 +1,10 @@
-/**
- * @packageDocumentation
- * @module BlurbControls
- */
-import React from "react";
-import { useBlurbWorkId, useWork } from "@/stores";
-import { formatDate } from "@/utils";
+import { formatDate } from '@/utils';
+import { useBlurbWorkId, useWork } from '@/stores';
 
 /**
- * Displays read metadata for the current work when available.
- * @returns Last-read and read-count information block.
- * @component
+ * Renders last-read date and read count for the active blurb work.
+ *
+ * @remarks Reads blurb work state from the store and formats the latest history date.
  */
 export function BlurbInfo() {
     const work = useWork(useBlurbWorkId());
@@ -21,10 +16,10 @@ export function BlurbInfo() {
         <>
             {work ? (
                 <div className="blurb-info">
-                    <p className={'last-read datetime'}>
+                    <p className="last-read datetime">
                         Last read: {date ? formatDate(date) : 'N/A'}
                     </p>
-                    <p className={'read-count datetime'}>
+                    <p className="read-count datetime">
                         Read {work ? work.info.readCount : 0} time(s)
                     </p>
                 </div>
