@@ -15,27 +15,30 @@ export function AddWorkControl() {
     const targetBlurb = useBlurbTargetBlurb();
 
     return (
-        <a
-            className="toggle"
-            onClick={(e) => {
-                e.preventDefault();
+        <li>
+            <input
+                type="submit"
+                value="Add"
+                className="ao4-toggle"
+                onClick={(e) => {
+                    e.preventDefault();
 
                     logger.debug('addWork clicked!: ', workId);
 
                     const work = Work.fromBlurb(targetBlurb);
                     logger.debug('workBlurb: ', work);
 
-                sendMessage('AddWorkToSpreadsheet', work).then((savedWork) => {
-                    logger.debug('addWork response: ', savedWork);
+                    sendMessage('AddWorkToSpreadsheet', work).then((savedWork) => {
+                        logger.debug('addWork response: ', savedWork);
 
-                    if (!savedWork) {
-                        logger.error('addWork did not return a work');
-                        return;
-                    }
-                });
-            }}
-        >
-            Add
-        </a>
+                        if (!savedWork) {
+                            logger.error('addWork did not return a work');
+                            return;
+                        }
+                    });
+                }}
+            >
+            </input>
+        </li>
     );
 }

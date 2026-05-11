@@ -33,7 +33,7 @@ function WorkControls() {
     const work = useWork(workId);
 
     return (
-        <div className="blurb-controls actions">
+        <ul className="blurb-controls actions">
             { work ? (
                 <>
                     <RemoveWorkControl />
@@ -42,6 +42,6 @@ function WorkControls() {
             ) : (
                 <AddWorkControl />
             ) }
-        </div>
+        </ul>
     );
 }
