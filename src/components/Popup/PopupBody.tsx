@@ -1,5 +1,5 @@
 import { GoToSheetButton, LoginButton } from '@/components';
-import { useSpreadsheetId, useTokens } from '@/stores';
+import { useTokens } from '@/stores';
 
 /**
  * Popup body component that:
@@ -16,7 +16,6 @@ import { useSpreadsheetId, useTokens } from '@/stores';
  */
 export const PopupBody = () => {
     const { accessToken } = useTokens();
-    const spreadsheetId = useSpreadsheetId()
 
     /**
      * Render states:
@@ -25,6 +24,6 @@ export const PopupBody = () => {
      * - Go-to-sheet button if user is authenticated.
      */
     return accessToken
-        ? <GoToSheetButton spreadsheetId={spreadsheetId as string} />
+        ? <GoToSheetButton />
         : <LoginButton />;
 };

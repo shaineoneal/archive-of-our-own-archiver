@@ -1,4 +1,5 @@
 import '@mantine/core/styles.css';
+import { hydrateSpreadsheetId, useSpreadsheetId } from "@/stores";
 import { Button, Center } from '@mantine/core';
 
 /**
@@ -7,8 +8,11 @@ import { Button, Center } from '@mantine/core';
  * @param spreadsheetId - The ID of the spreadsheet to open.
  * @remarks Opens a new browser tab when the button is clicked.
  */
-export function GoToSheetButton({ spreadsheetId }: { spreadsheetId: string }) {
+export function GoToSheetButton() {
+    const spreadsheetId = useSpreadsheetId();
+
     const handleGoToSheet = async () => {
+        await hydrateSpreadsheetId();
         await browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=0` });
     };
 
