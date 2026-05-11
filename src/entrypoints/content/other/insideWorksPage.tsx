@@ -25,7 +25,15 @@ export async function insideWorkPage(): Promise<void> {
     const activeChap = Chapter.getChapter();
     logger.debug('activeChap: ', activeChap);
     // is work already in storage?
-    const fullWork = Work.fromActiveWork(await getFullWork());
+    let fullWork: Work;
+
+    try {
+        const fullWorkDoc = await getFullWork();
+        fullWork = Work.fromActiveWork(fullWorkDoc);
+    } catch (error) {
+        logger.error('Unable to load full work details:', error);
+        return;
+    }
     logger.debug('full_work: ', fullWork.info);
     const workIdStr = fullWork.workId.toString();
 
@@ -71,6 +79,11 @@ async function getFullWork(): Promise<Document> {
     logger.debug('logging', document.location.href);
     // use regex to only get the base url
     const url = document.location.href.match(/(https:\/\/archiveofourown.org\/works\/\d+)/)?.[0];
+
+    if (!url) {
+        throw new Error('Unable to parse work URL for full work fetch');
+    }
+
     logger.debug('url:', url);
 
     const response = await fetch(`${url}?view_full_work=true`);

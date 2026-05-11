@@ -1,6 +1,6 @@
 export * from './logger.ts';
 export * from './wrapper.ts';
-export * from './parse.ts'
+export * from './parse.ts';
 
 /**
  * Checks if the popup is open as a popup or as a tab.

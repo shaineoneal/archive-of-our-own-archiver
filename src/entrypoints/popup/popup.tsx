@@ -69,10 +69,16 @@ const Popup = () => {
     );
 };
 
-export const root = createRoot(document.getElementById("root")!);
+const rootElement = document.getElementById('root');
 
-root.render(
-    <MantineProvider theme={theme}>
-        <Popup />
-    </MantineProvider>
-);
+if (!rootElement) {
+    logger.error('Popup root element not found');
+} else {
+    const root = createRoot(rootElement);
+
+    root.render(
+        <MantineProvider theme={theme}>
+            <Popup />
+        </MantineProvider>
+    );
+}

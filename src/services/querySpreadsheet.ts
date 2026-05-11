@@ -12,7 +12,13 @@ export async function querySpreadsheet(spreadsheetId: string, authToken: string,
         }
     });
 
-    return await parseResponse(response);
+    const result = await parseResponse(response);
+    if (result.status === 'error') {
+        logger.error('Error response from Google Visualization API:', result);
+        throw new Error(`Google Visualization API error: ${result.errors?.[0]?.detailed_message || 'Unknown error'}`);
+    } else {
+        return result;
+    }
 }
 
 function createEncodedQuery(searchList: string[]): string {

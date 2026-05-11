@@ -12,11 +12,15 @@ import { HttpMethod, makeRequest } from './httpRequest.ts';
 export async function revokeTokens(accessToken: string): Promise<void> {
     logger.debug('revokeTokens accessToken', accessToken);
 
-    await makeRequest({
+    const resp = await makeRequest({
         url: `https://oauth2.googleapis.com/revoke?token=${accessToken}`,
         method: HttpMethod.POST,
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
+
+    if (resp.status !== 200) {
+        throw new Error(`Failed to revoke token: ${resp.status} ${resp.statusText}`);
+    }
 }
