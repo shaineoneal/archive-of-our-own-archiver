@@ -155,8 +155,7 @@ a.no-underline {
     }
 }
 
-.toggle {
-    line-height: 1.286;
+.ao4-toggle {
     padding: 0.25em 0.75em;
     border: 1px solid #222;
     border-radius: 0.25em;
@@ -186,7 +185,6 @@ a.no-underline {
     display: flex;
     flex-direction: column;
     text-align: end;
-    line-height: 1.286;
 
     > p {
         margin: 0;
@@ -204,7 +202,6 @@ a.no-underline {
             border-bottom: inherit;
             justify-content: space-between;
             align-items: center;
-            line-height: 2.572;
             box-shadow: none;
 
             + .header {
@@ -215,7 +212,6 @@ a.no-underline {
                 display: flex;
                 flex-direction: column;
                 text-align: end;
-                line-height: 1.286;
 
                 > p {
                     margin: 0;

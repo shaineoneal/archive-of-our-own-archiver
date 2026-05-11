@@ -16,7 +16,7 @@ export function IncrementReadCountControl() {
 
     return (
         <a
-            className="toggle"
+            className="ao4-toggle"
             onClick={(e) => {
                 e.preventDefault();
 

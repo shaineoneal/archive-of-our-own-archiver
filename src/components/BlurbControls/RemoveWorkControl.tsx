@@ -15,7 +15,7 @@ export function RemoveWorkControl() {
     const work = useWork(workId);
     return (
         <a
-            className="toggle"
+            className="ao4-toggle"
             onClick={(e) => {
                 e.preventDefault();
 
