@@ -20,10 +20,10 @@ export function AddWorkControl() {
             onClick={(e) => {
                 e.preventDefault();
 
-                logger.debug('addWork clicked!: ', workId);
+                    logger.debug('addWork clicked!: ', workId);
 
-                const work = Work.fromBlurb(targetBlurb);
-                logger.debug('workBlurb: ', work);
+                    const work = Work.fromBlurb(targetBlurb);
+                    logger.debug('workBlurb: ', work);
 
                 sendMessage('AddWorkToSpreadsheet', work).then((savedWork) => {
                     logger.debug('addWork response: ', savedWork);

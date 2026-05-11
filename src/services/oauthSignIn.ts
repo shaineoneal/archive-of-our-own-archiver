@@ -1,18 +1,18 @@
+import { browser } from '#imports';
+import { logger } from '@/utils';
 import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { browser } from "#imports";
-import { logger } from "@/utils";
 
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
-const scopes = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile'
+const scopes = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.profile';
 let redirectUri = import.meta.env.WXT_API_REDIRECT_URI;
 
 if (import.meta.env.BROWSER === 'firefox' && browser.identity) {
     redirectUri = browser.identity.getRedirectURL();
 }
 
-logger.debug("redirectURI: " , redirectUri);
+logger.debug('redirectURI: ', redirectUri);
 /**
  * Creates the URL for the OAuth authorization flow.
  * 
@@ -21,12 +21,12 @@ logger.debug("redirectURI: " , redirectUri);
  * @see {@link https://developers.google.com/identity/protocols/oauth2/web-server#authorization-code-flow | Google Identity API - Authorization code flow}
  */
 const createAuthUrl = (): string => {
-    logger.info("Creating auth url");
+    logger.info('Creating auth url');
     if (!client_id || !scopes) {
         throw new Error('Invalid oauth2 configuration');
     }
 
-    logger.debug("Params: ", redirectUri);
+    logger.debug('Params: ', redirectUri);
 
     const authParams = new URLSearchParams({
         access_type: 'offline',
@@ -39,7 +39,7 @@ const createAuthUrl = (): string => {
     logger.debug('Auth URL Params: ', { authParams });
 
     return `https://accounts.google.com/o/oauth2/auth?${authParams.toString()}`;
-}
+};
 
 /**
  * The AuthFlowResponse type represents the response object containing a URL and a code.
@@ -49,8 +49,8 @@ const createAuthUrl = (): string => {
  * token, which can then be used to make authorized API requests.
  */
 export interface AuthFlowResponse {
-    url: string,
-    code: string
+    url: string;
+    code: string;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface AuthRequestResponse {
 /**
  * The function `chromeLaunchWebAuthFlow` launches a web authentication flow using the Chrome Identity
  * API and returns a promise that resolves with the response URL and authorization code.
- * 
+ *
  * ```
  * chrome.identity.chromeLaunchWebAuthFlow(
  *      details: WebAuthFlowDetails,
@@ -85,13 +85,13 @@ export interface AuthRequestResponse {
  * {@link AuthFlowResponse} object.
  * 
  */
-export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
+export async function chromeLaunchWebAuthFlow(interactive: boolean): Promise<AuthFlowResponse> {
     let authUrl = '';
     if (import.meta.env.BROWSER === 'chrome') {
         try {
             redirectUri = browser.identity.getRedirectURL();
             if (redirectUri) {
-                authUrl = redirectUri
+                authUrl = redirectUri;
             }
             logger.debug('RedirectUri: ', redirectUri);
         } catch (error) {
@@ -100,14 +100,15 @@ export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<Au
     } else if (import.meta.env.BROWSER === 'edge') {
     } else {
         logger.debug('current browser: ', import.meta.env.BROWSER);
-        authUrl = createAuthUrl()
+        authUrl = createAuthUrl();
     }
     logger.debug('other RedirectUri: ', redirectUri);
     try {
-        const responseUrl = await browser.identity.launchWebAuthFlow({url: createAuthUrl(), interactive: interactive});
+        const responseUrl = await browser.identity.launchWebAuthFlow({ url: createAuthUrl(), interactive: interactive });
 
         logger.debug('launchWebAuthFlow Response: ', responseUrl);
-        if (chrome.runtime.lastError || !responseUrl) {     // if there was an error or the user closed the window
+        // if there was an error or the user closed the window
+        if (chrome.runtime.lastError || !responseUrl) {
             logger.debug('chromeLaunchWebAuthFlow Error: ', chrome.runtime.lastError);
             throw new Error();
         } else {
@@ -117,17 +118,15 @@ export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<Au
 
             logger.debug('chromeLaunchWebAuthFlow Response\n    URL: ', responseUrl, '\n    Params: ', params);
 
-            const response: AuthFlowResponse = {
+            return {
                 url: responseUrl,
                 code: params.code
             };
-            return response;
         }
     } catch (error) {
         logger.debug('chromeLaunchWebAuthFlow Error: ', error);
         throw new Error('Error launching web authentication flow');
     }
-
 }
 
 /**
@@ -139,7 +138,6 @@ export async function  chromeLaunchWebAuthFlow(interactive: boolean): Promise<Au
  */
 export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promise<AuthRequestResponse> {
     return new Promise((resolve, reject) => {
-
         if (!client_id || !scopes || !client_secret) {
             logger.debug('requestAuth oauth2: ', client_id);
             if (!client_secret) {
@@ -152,23 +150,21 @@ export function requestAuthorization(authFlowResponse: AuthFlowResponse): Promis
             method: HttpMethod.POST,
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ',
+                'Authorization': 'Bearer '
             },
             body: {
                 code: authFlowResponse.code,
-                client_id: client_id,       // TODO: fix assertation
+                client_id: client_id,
                 client_secret: client_secret,
                 redirect_uri: redirectUri,
                 grant_type: 'authorization_code'
-            },
+            }
         }).then(async (response) => {
             const parsedResponse = await response.json();
             logger.debug('requestAuthorization Response: ', parsedResponse);
             resolve(parsedResponse);
-            
         }).catch((error: any) => {
             reject(error);
         });
-        
     });
 }

@@ -1,4 +1,4 @@
-import { HttpMethod, makeRequest } from "./httpRequest.ts";
+import { HttpMethod, makeRequest } from './httpRequest.ts';
 
 /**
  * Revokes the given access token.

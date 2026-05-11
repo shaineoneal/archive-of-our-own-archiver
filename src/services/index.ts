@@ -11,14 +11,13 @@ export * from './refreshToken.ts';
 export * from './removeWorkFromSheet.ts';
 export * from './spreadsheet.ts';
 export * from './store.ts';
-export * from '../models/work.tsx'
+export * from './updateWorkInSheet.ts';
 
-
-export async function getAo3Urls () {
+export async function getAo3Urls() {
     return await browser.tabs.query({ url: '*://archiveofourown.org/*' });
 }
 
-export async function sendMessageToAo3Tabs (message: any) {
+export async function sendMessageToAo3Tabs(message: any) {
     const tabs = await getAo3Urls();
     for (const tab of tabs) {
         await sendMessage(message, tab.id);

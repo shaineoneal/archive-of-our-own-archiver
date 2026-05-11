@@ -6,7 +6,7 @@ import {
     handleQuerySpreadSheet,
     handleUpdateWorkInSpreadsheet,
     onMessage
-} from "@/services";
+} from '@/services';
 
 export default defineBackground(() => {
     logger.info('background script running');

@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { revokeTokens } from '@/services';
 import { useActions, useUser } from '@/stores';
-import { Button } from '@mantine/core';
+import { Button } from "@mantine/core";
 
 /**
  * Render a logout button that clears local auth state and revokes tokens.
@@ -21,9 +20,6 @@ export const LogoutButton = () => {
             logout();
             await revokeTokens(accessToken);
         }
-        // TODO: needs to still logout if the user does not have a refresh token
-        //  AKA if it expires
-        // logout();
     };
 
     return (

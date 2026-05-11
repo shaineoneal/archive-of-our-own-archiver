@@ -1,14 +1,13 @@
-import { createIntegratedUi } from "#imports";
-import { handleLoggedIn, onMessage } from '~/services'
-import { createRoot } from "react-dom/client";
-import { App, main, registerStorageListener, unregisterStorageListener } from "./other/content_script.tsx";
-import "@/entrypoints/styles.scss";
+import { createIntegratedUi } from '#imports';
+import { createRoot } from 'react-dom/client';
+import { App, main, registerStorageListener, unregisterStorageListener } from './other/content_script.tsx';
+import '@/entrypoints/styles.scss';
 
 let loggedInListenerRegistered = false;
 
 export default defineContentScript({
-    matches: ["*://*.archiveofourown.org/*"],
-    runAt: "document_end",
+    matches: ['*://*.archiveofourown.org/*'],
+    runAt: 'document_end',
 
     main: function (ctx) {
         logger.debug('content script running');
@@ -17,13 +16,12 @@ export default defineContentScript({
             anchor: 'h1',
             append: 'last',
             onMount: (container) => {
-
                 logger.info('Container found, mounting...');
                 // Create a root on the UI container and render a component
-                container.classList.add("content-script-root");
+                container.classList.add('content-script-root');
                 const root = createRoot(container);
                 root.render(
-                    <App/>
+                    <App />
                 );
                 registerStorageListener();
                 main(ctx);

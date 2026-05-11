@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type LoaderStateType = {
-    loader: boolean
+    loader: boolean;
     setLoader: (loader: boolean) => void;
 };
 

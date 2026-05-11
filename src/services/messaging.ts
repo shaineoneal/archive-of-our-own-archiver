@@ -11,42 +11,72 @@ import {
     querySpreadsheet,
     requestAuthorization,
     revokeTokens,
-    sendMessageToAo3Tabs,
-    Work
+    sendMessageToAo3Tabs
 } from "@/services";
+import { Work } from "@/models"
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
 import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
 import { Spreadsheet } from "@/models/sheet.ts";
 
 /**
- * Messaging protocol for extension requests and responses.
- * Each key maps a message name to its request/response types.
+ * Maps message names to request/response types for extension messaging.
+ * @category Messaging
  */
 interface ProtocolMap {
     AddWorkToSpreadsheet(work: Work): Work;
     GetValidAccessToken(): string;
     IsAccessTokenValid(accessToken: string): boolean;
-    LoggedIn(data: UserDataType): void;
+    LoggedIn(data: any): void;
     Login(): void;
+
+    /**
+     * Queries the spreadsheet for works matching the provided search list.
+     *
+     * @see {@link handleQuerySpreadSheet} for implementation details.
+     */
     QuerySpreadSheet(searchList: string[]): void;
     UpdateWorkInSpreadsheet(work: Work): boolean;
 }
 
 /**
  * Messaging helpers generated from the protocol map.
+ * @category Messaging
  */
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 /**
- * Handles adding a work to the user's spreadsheet.
- * Rehydrates the work model, appends it, and updates the shelf store.
+ * Assert required credential fields exist.
+ *
+ * @param credentials - Object containing the fields to validate.
+ * @param requiredKeys - Keys that must be present and truthy.
+ * @throws Error when any required key is missing or empty.
+ * @category Messaging
+ */
+export function assertCredentials<T extends Record<string, unknown>, K extends keyof T>(
+    credentials: T
+): asserts credentials is T & Required<Pick<T, K>> {
+    for (const key of Object.keys(credentials) as K[]) {
+        if (!credentials?.[key]) {
+            throw new Error('missing required credentials');
+        }
+    }
+}
+
+/**
+ * Adds a work to the user's spreadsheet and updates the shelf store.
  *
  * @param msg - Message payload containing the work to add.
  * @returns The appended work returned by the sheet.
  * @throws If the user is missing credentials or token exchange fails.
+ * @remarks
+ * - Updates the shelf store on success.
+ * @category Messaging
  */
 export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<Work> {
-    logger.info("Received addWorkToSpreadsheet message: ", msg.data);
+    logger.info('Received addWorkToSpreadsheet message: ', msg.data);
+
+    const { accessToken } = await getAndSetTokens();
+    const spreadsheetId = await getSpreadsheetId();
 
     const user = await UserStore.getState().actions.getUser();
     const work = Work.rehydrateWork(msg.data);
@@ -67,11 +97,12 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
 }
 
 /**
- * Ensures a valid access token is returned.
- * If the current token is invalid, attempts a refresh-token exchange.
+ * Ensures a valid access token, refreshing via the stored refresh token when needed.
  *
  * @returns A valid access token.
  * @throws If a valid access token cannot be retrieved.
+ * @remarks Updates the user store when a new access token is obtained.
+ * @category Messaging
  */
 export async function handleGetValidAccessToken(): Promise<string> {
     logger.info("Received getValidAccessToken message");
@@ -93,10 +124,15 @@ export async function handleGetValidAccessToken(): Promise<string> {
 
 /**
  * Initiates the login flow and persists tokens on success.
- * Creates a spreadsheet when the user does not yet have one.
+ * @remarks
+ * - Launches the web auth flow.
+ * - May create a spreadsheet.
+ * - Updates the user store.
+ * - Notifies AO3 tabs.
+ * @category Messaging
  */
 export async function handleLogin(): Promise<void> {
-    logger.info("Received login message");
+    logger.info('Received login message');
 
     const { getUser, userStoreLogin } = UserStore.getState().actions;
     const user = await getUser();
@@ -143,6 +179,7 @@ export async function handleLogin(): Promise<void> {
  *
  * @param msg - Message payload containing the access token to validate.
  * @returns True if the token is valid; otherwise false.
+ * @category Messaging
  */
 export async function handleIsAccessTokenValid(msg: { data: string }): Promise<boolean> {
     return await isAccessTokenValid(msg.data);
@@ -150,10 +187,11 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
 
 /**
  * Queries the spreadsheet for works matching the provided search list.
- * Updates the shelf store with matched works.
  *
  * @param msg - Message payload containing the list of search terms.
  * @throws If the user is missing credentials or query fails.
+ * @remarks Updates the shelf store with matched works.
+ * @category Messaging
  */
 export async function handleQuerySpreadSheet(msg: { data: string[] }): Promise<void> {
     logger.info("Received querySpreadSheet message with searchList: ", msg.data);
@@ -181,22 +219,24 @@ export async function handleQuerySpreadSheet(msg: { data: string[] }): Promise<v
             return;
         }
 
-        shelfSetShelf(rows.map(row => {
+        shelfSetShelf(rows.map((row) => {
             return Work.fromRow(row);
         }));
 
         return;
     } catch (error) {
-        throw new Error("querySpreadsheet failed:", { cause: error });
+        throw new Error('querySpreadsheet failed:', { cause: error });
     }
 }
 
 /**
- * Adds an update to a work's history in the spreadsheet and updates the shelf store.
+ * Adds a history update for a work and refreshes the shelf store.
  *
  * @param msg - Message payload containing the work to update.
  * @returns True if the update succeeded; otherwise false.
  * @throws If the user is missing credentials or the update fails.
+ * @remarks Updates the shelf store on success.
+ * @category Messaging
  */
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
     const user = await UserStore.getState().actions.getUser();
@@ -217,22 +257,4 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
         throw error;
     }
     return false;
-}
-
-/**
- * Handles a LoggedIn message and updates the user store.
- * Triggers page type detection after login.
- *
- * @param msg - Message payload containing the user's login data (access token, refresh token, spreadsheet ID).
- */
-export async function handleLoggedIn(msg: { data: UserDataType }): Promise<void> {
-
-    logger.debug('logged in message received', msg.data);
-    const { userStoreLogin } = UserStore.getState().actions;
-
-    if (msg.data.accessToken && msg.data.refreshToken && msg.data.spreadsheetId) {
-        userStoreLogin(msg.data.accessToken, msg.data.refreshToken, msg.data.spreadsheetId);
-    }
-        //logger.debug('userStoreLogin done', UserStore.getState().user);
-    pageTypeDetect();
 }

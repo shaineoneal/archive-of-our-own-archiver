@@ -1,18 +1,17 @@
 export async function createSpreadsheet(token: string) {
-
     const url = 'https://sheets.googleapis.com/v4/spreadsheets';
     const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
+            'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify(sheetLayout),
+        body: JSON.stringify(sheetLayout)
     };
 
     logger.debug('options: ', options);
 
-    return fetch(url, options)      //TODO: change to makeRequest
+    return fetch(url, options)
         .then((response) => {
             logger.debug('Response status:', response.status);
             return response.json();
@@ -146,7 +145,7 @@ const sheetLayout = {
                 startColumnIndex: 12,
                 endColumnIndex: 13
             }
-        },{
+        }, {
             namedRangeId: '14',
             name: 'personalTags',
             range: {
@@ -154,7 +153,7 @@ const sheetLayout = {
                 startColumnIndex: 13,
                 endColumnIndex: 14
             }
-        },{
+        }, {
             namedRangeId: '15',
             name: 'rating',
             range: {
@@ -162,7 +161,7 @@ const sheetLayout = {
                 startColumnIndex: 14,
                 endColumnIndex: 15
             }
-        },{
+        }, {
             namedRangeId: '16',
             name: 'readCount',
             range: {
@@ -170,7 +169,7 @@ const sheetLayout = {
                 startColumnIndex: 15,
                 endColumnIndex: 16
             }
-        },{
+        }, {
             namedRangeId: '17',
             name: 'skipReason',
             range: {
@@ -197,7 +196,7 @@ const sheetLayout = {
             gridProperties: {
                 rowCount: 2,
                 columnCount: 18,
-                columnGroupControlAfter: true,
+                columnGroupControlAfter: true
             }
         },
         protectedRanges: [
@@ -205,159 +204,159 @@ const sheetLayout = {
                 protectedRangeId: 0,
                 range: {},
                 description: 'Protected',
-                warningOnly: true,
-            },
-        ],        
+                warningOnly: true
+            }
+        ],
         data: [
             {
                 startRow: 0,
                 startColumn: 0,
-                rowData:  [
+                rowData: [
                     {
                         values: [
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Index',
+                                    stringValue: 'Index'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Work ID',
+                                    stringValue: 'Work ID'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: { stringValue: 'Title' },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Authors',
+                                    stringValue: 'Authors'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Fandoms',
+                                    stringValue: 'Fandoms'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Relationships',
+                                    stringValue: 'Relationships'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Tags',
+                                    stringValue: 'Tags'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Description',
+                                    stringValue: 'Description'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Word Count',
+                                    stringValue: 'Word Count'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Chapter Count',
+                                    stringValue: 'Chapter Count'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
-                            },
-                            {
-                                userEnteredValue: { 
-                                    stringValue: 'Status' 
-                                },
-                                userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'History',
+                                    stringValue: 'Status'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Chapters',
+                                    stringValue: 'History'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Personal Tags',
+                                    stringValue: 'Chapters'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Rating',
+                                    stringValue: 'Personal Tags'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Read Count',
+                                    stringValue: 'Rating'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Skip Reason',
+                                    stringValue: 'Read Count'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
                             {
                                 userEnteredValue: {
-                                    stringValue: 'Kudos',
+                                    stringValue: 'Skip Reason'
                                 },
                                 userEnteredFormat: {
-                                    textFormat: { bold: true },
-                                },
+                                    textFormat: { bold: true }
+                                }
                             },
-                        ],
+                            {
+                                userEnteredValue: {
+                                    stringValue: 'Kudos'
+                                },
+                                userEnteredFormat: {
+                                    textFormat: { bold: true }
+                                }
+                            }
+                        ]
                     },
                     {
                         values: [
@@ -378,28 +377,28 @@ const sheetLayout = {
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
                             { userEnteredFormat: { wrapStrategy: 'WRAP' } },
-                            { userEnteredFormat: { wrapStrategy: 'WRAP' } },
+                            { userEnteredFormat: { wrapStrategy: 'WRAP' } }
                         ]
                     }
-                ],
+                ]
             },
-            { startColumn: 1, columnMetadata: { pixelSize: 100 } }, //work ID
-            { startColumn: 2, columnMetadata: { pixelSize: 200 } }, //title
-            { startColumn: 3, columnMetadata: { pixelSize: 200 } }, //authors
-            { startColumn: 4, columnMetadata: { pixelSize: 200 } }, //fandoms
-            { startColumn: 5, columnMetadata: { pixelSize: 200 } }, //relationships
-            { startColumn: 6, columnMetadata: { pixelSize: 200 } }, //tags
-            { startColumn: 7, columnMetadata: { pixelSize: 300 } }, //description
-            { startColumn: 8, columnMetadata: { pixelSize: 100 } }, //word count
-            { startColumn: 9, columnMetadata: { pixelSize: 100 } }, //chapter count
-            { startColumn: 10, columnMetadata: { pixelSize: 100 } }, //status
-            { startColumn: 11, columnMetadata: { pixelSize: 300 } }, //history
-            { startColumn: 12, columnMetadata: { pixelSize: 200 } }, //chapters
-            { startColumn: 13, columnMetadata: { pixelSize: 200 } }, //personal tags
-            { startColumn: 14, columnMetadata: { pixelSize: 100 } }, //rating
-            { startColumn: 15, columnMetadata: { pixelSize: 100 } }, //read count
-            { startColumn: 16, columnMetadata: { pixelSize: 200 } }, //skip reason
-            { startColumn: 17, columnMetadata: { pixelSize: 100 } }, //kudos
-        ],
-    },
+            { startColumn: 1, columnMetadata: { pixelSize: 100 } }, // work ID
+            { startColumn: 2, columnMetadata: { pixelSize: 200 } }, // title
+            { startColumn: 3, columnMetadata: { pixelSize: 200 } }, // authors
+            { startColumn: 4, columnMetadata: { pixelSize: 200 } }, // fandoms
+            { startColumn: 5, columnMetadata: { pixelSize: 200 } }, // relationships
+            { startColumn: 6, columnMetadata: { pixelSize: 200 } }, // tags
+            { startColumn: 7, columnMetadata: { pixelSize: 300 } }, // description
+            { startColumn: 8, columnMetadata: { pixelSize: 100 } }, // word count
+            { startColumn: 9, columnMetadata: { pixelSize: 100 } }, // chapter count
+            { startColumn: 10, columnMetadata: { pixelSize: 100 } }, // status
+            { startColumn: 11, columnMetadata: { pixelSize: 300 } }, // history
+            { startColumn: 12, columnMetadata: { pixelSize: 200 } }, // chapters
+            { startColumn: 13, columnMetadata: { pixelSize: 200 } }, // personal tags
+            { startColumn: 14, columnMetadata: { pixelSize: 100 } }, // rating
+            { startColumn: 15, columnMetadata: { pixelSize: 100 } }, // read count
+            { startColumn: 16, columnMetadata: { pixelSize: 200 } }, // skip reason
+            { startColumn: 17, columnMetadata: { pixelSize: 100 } } // kudos
+        ]
+    }
 };

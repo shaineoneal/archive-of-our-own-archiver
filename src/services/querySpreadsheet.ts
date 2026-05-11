@@ -1,23 +1,22 @@
-import { HttpMethod, HttpResponse, makeRequest } from "./httpRequest.ts";
-import type { GvizDataTableResponse } from "@/types/gvizDataTable.ts";
+import { HttpMethod, HttpResponse, makeRequest } from './httpRequest.ts';
+import type { GvizDataTableResponse } from '@/types/gvizDataTable.ts';
 
 export async function querySpreadsheet(spreadsheetId: string, authToken: string, searchList: string[]): Promise<GvizDataTableResponse> {
-
     let query = createEncodedQuery(searchList);
 
     const response = await makeRequest({
         url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tq=${query}&access_token=${authToken}`,
         method: HttpMethod.GET,
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         }
-    })
+    });
 
     return await parseResponse(response);
 }
 
 function createEncodedQuery(searchList: string[]): string {
-    let query = "select * where B matches";
+    let query = 'select * where B matches';
     searchList.forEach((workId) => {
         if (workId === searchList[0]) {
             query += ` '${workId}'`;

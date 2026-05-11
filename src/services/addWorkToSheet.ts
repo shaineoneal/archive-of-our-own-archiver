@@ -1,5 +1,4 @@
-import { Work } from '@/services';
-import { Spreadsheet } from "@/models/sheet.ts";
+import { Spreadsheet, Work } from '@/models';
 
 /**
  * Adds a work entry to a Google Sheets spreadsheet.
@@ -19,7 +18,7 @@ export const addWorkToSheet = async (
     work: Work
 ): Promise<Work> => {
     // Add a history entry to the work
-    work.addHistory("fullWorkAdded");
+    work.addHistory('fullWorkAdded');
 
     try {
         const response = await ss.appendWorkValues(authToken, work.toStringArray());
@@ -32,10 +31,10 @@ export const addWorkToSheet = async (
             }
         }
 
-        throw new Error("Missing updates in response.");
+        throw new Error('Missing updates in response.');
     } catch (error) {
         // Log and rethrow so callers can handle the failure.
-        console.error("Error appending work to sheet:", error);
+        console.error('Error appending work to sheet:', error);
         throw error;
     }
 };

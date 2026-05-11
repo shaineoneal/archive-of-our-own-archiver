@@ -1,11 +1,9 @@
 import { sendMessage } from "@/services/messaging.ts";
 import { UserStore } from "@/stores/userStore";
+import { getValidAccessToken } from '@/services';
 import { ReactElement } from 'react';
-import { getValidAccessToken } from "@/services";
-import { insideWorkPage } from "./insideWorksPage.tsx";
 import { useShelfHydration } from "@/stores";
 import { BlurbPortals } from "@/components/BlurbControls/BlurbPortals.tsx";
-
 
 // Interface for message structure
 interface Message {
@@ -14,7 +12,6 @@ interface Message {
 
 // Listener for messages from the background script
 export const messageListener = (message: Message, sender: chrome.runtime.MessageSender, sendResponse: (response: any) => void): void => {
-
     logger.debug('content_script', 'heard message: ', message);
 
     if (message.message === 'userChanged') {
@@ -33,12 +30,12 @@ function handleUserChanged(sendResponse: (response: any) => void): void {
 export async function handleVisibilityChange(): Promise<void> {
     if (document.visibilityState === 'visible') {
         logger.debug('tab is now visible');
-        //initializePort();
-        //const resp = await sendMessage('GetValidAccessToken', undefined)
-        //console.log(resp);
+        // initializePort();
+        // const resp = await sendMessage('GetValidAccessToken', undefined)
+        // console.log(resp);
     } else {
         logger.debug('tab is now hidden, closing port');
-        //closePort();
+        // closePort();
         disconnectContentScript();
     }
 }
@@ -62,7 +59,7 @@ export function pageTypeDetect(): void {
 // Disconnect the content script from the background script
 function disconnectContentScript(): void {
     chrome.runtime.onMessage.removeListener(messageListener);
-    //closePort();
+    // closePort();
 }
 
 // Main function to initialize the content script

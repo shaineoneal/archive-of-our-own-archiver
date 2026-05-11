@@ -45,23 +45,24 @@ const Options = () => {
 
     };
 
-    //TODO: evaluate if this is needed
-    //chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    // TODO: evaluate if this is needed
+    // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //    console.log('heard message: ', message);
     //    if (message.message === 'spreadsheetUrlChanged') {
     //        setSpreadsheetUrl(message.newUrl);
     //        setLoader(false);
     //    }
-    //});
+    // });
 
     return (
         <Container fluid p='var(--mantine-spacing-sm)' className="responsiveContainer">
             <PopupHeader/>
             <main>
                 <Paper shadow="xs" p="md" mb="md" withBorder>
-                    <Flex direction="column"
-                          justify="space-between"
-                          gap="xs"
+                    <Flex
+                        direction="column"
+                        justify="space-between"
+                        gap="xs"
                     >
                         <Title size="h4">Google Spreadsheets URL</Title>
                         <Input
@@ -70,11 +71,11 @@ const Options = () => {
                             onChange={onChange}
                             error={errorStatus ? 'Please enter a valid Google Spreadsheet URL' : false}
                         />
-                        <NewSheetButton/>
+                        <NewSheetButton />
                     </Flex>
                 </Paper>
                 <Paper shadow="xs" p="md" withBorder>
-                    <LogoutButton/>
+                    <LogoutButton />
                 </Paper>
 
             </main>
@@ -82,8 +83,16 @@ const Options = () => {
     );
 };
 
-root.render(
-    <MantineProvider theme={theme}>
-        <Options/>
-    </MantineProvider>
-);
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+    logger.error('Options root element not found');
+} else {
+    const root = createRoot(rootElement);
+
+    root.render(
+        <MantineProvider theme={theme}>
+            <Options />
+        </MantineProvider>
+    );
+}
