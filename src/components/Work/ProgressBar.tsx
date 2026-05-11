@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /**
  * Props for {@link ProgressBar}.
@@ -18,7 +18,6 @@ export type ProgressBarProps = {
  * @param props - Progress values used to render the bar and labels.
  */
 export const ProgressBar: React.FC<ProgressBarProps> = ({ current, total, thisChap }) => {
-
     /** Percent of the total already read. */
     const progressPercent = (current / total) * 100;
     /** Percent that includes the current chapter chunk. */
@@ -27,12 +26,12 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ current, total, thisCh
     return (
         <div>
             <div className="progress-bar">
-                <div className='progress current-progress' style={{ width: `${currentPercent}%`}}>
+                <div className="progress current-progress" style={{ width: `${currentPercent}%` }}>
                     <span className="tooltip">
                         {thisChap} words
                     </span>
                 </div>
-                <div className='progress read-progress' style={{ width: `${progressPercent}%` }}>
+                <div className="progress read-progress" style={{ width: `${progressPercent}%` }}>
                     <span className="tooltip">
                         {current} words
                     </span>
@@ -44,4 +43,4 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ current, total, thisCh
             </span>
         </div>
     );
-}
+};

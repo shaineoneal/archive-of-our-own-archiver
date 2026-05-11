@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useUser } from '@/stores';
+import { useTokens } from "@/stores";
 import { ActionIcon } from '@mantine/core';
 import { IconSettingsFilled } from '@tabler/icons-react';
 import classes from '@/components/Popup/Header.module.css';
@@ -10,12 +9,7 @@ import classes from '@/components/Popup/Header.module.css';
  */
 export const OptionsIcon = () => {
     /** Current access token from the user store; used to toggle icon visibility. */
-    const accessT = useUser().accessToken;
-
-    useEffect(() => {
-        // Debug hook to confirm token changes and re-renders.
-        console.log('optionsIcon useEffect');
-    }, [accessT]);
+    const { accessToken } = useTokens();
 
     return (
         <ActionIcon
@@ -26,7 +20,7 @@ export const OptionsIcon = () => {
             bd="none"
             bg="transparent"
         >
-            {accessT ? <IconSettingsFilled className={classes.icon} /> : null}
+            {accessToken ? <IconSettingsFilled className={classes.icon} /> : null}
         </ActionIcon>
     );
 };

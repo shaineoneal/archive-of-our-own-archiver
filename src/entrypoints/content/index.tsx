@@ -23,9 +23,12 @@ export default defineContentScript({
                 root.render(
                     <App />
                 );
-                registerStorageListener();
+                if (!loggedInListenerRegistered) {
+                    registerStorageListener();
+                    loggedInListenerRegistered = true;
+                }
                 main(ctx);
-                container.setAttribute("style", "display: inline;");
+                container.setAttribute('style', 'display: inline;');
                 return root;
             },
             onRemove: (root) => {
@@ -34,15 +37,11 @@ export default defineContentScript({
                 // Unmount the root when the UI is removed
                 (root != undefined) ? root.unmount() : undefined;
                 unregisterStorageListener();
-            },
+                loggedInListenerRegistered = false;
+            }
         });
 
         // Call mount to add the UI to the DOM
         ui.mount();
-        if (!loggedInListenerRegistered) {
-            onMessage('LoggedIn', handleLoggedIn);
-            loggedInListenerRegistered = true;
-        }
-    },
+    }
 });
-

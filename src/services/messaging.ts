@@ -1,6 +1,6 @@
 import { logger } from "@/utils";
 import { defineExtensionMessaging } from "@webext-core/messaging";
-import { UserStore, UserDataType, shelfSetWork, shelfSetShelf } from "@/stores";
+import { getAndSetTokens, getSpreadsheetId, shelfSetWork } from "@/stores";
 import type { GvizRow } from "@/types/gvizDataTable.ts";
 import {
     addWorkToSheet,
@@ -15,7 +15,6 @@ import {
 } from "@/services";
 import { Work } from "@/models"
 import { addToHistory } from "@/services/updateWorkInSheet.ts";
-import { pageTypeDetect } from "@/entrypoints/content/other/content_script.tsx";
 import { Spreadsheet } from "@/models/sheet.ts";
 
 /**
@@ -45,24 +44,6 @@ interface ProtocolMap {
 export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
 
 /**
- * Assert required credential fields exist.
- *
- * @param credentials - Object containing the fields to validate.
- * @param requiredKeys - Keys that must be present and truthy.
- * @throws Error when any required key is missing or empty.
- * @category Messaging
- */
-export function assertCredentials<T extends Record<string, unknown>, K extends keyof T>(
-    credentials: T
-): asserts credentials is T & Required<Pick<T, K>> {
-    for (const key of Object.keys(credentials) as K[]) {
-        if (!credentials?.[key]) {
-            throw new Error('missing required credentials');
-        }
-    }
-}
-
-/**
  * Adds a work to the user's spreadsheet and updates the shelf store.
  *
  * @param msg - Message payload containing the work to add.
@@ -78,21 +59,17 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
     const { accessToken } = await getAndSetTokens();
     const spreadsheetId = await getSpreadsheetId();
 
-    const user = await UserStore.getState().actions.getUser();
+    if (!spreadsheetId || !accessToken) throw new Error('no spreadsheetId or accessToken');
+
     const work = Work.rehydrateWork(msg.data);
+    const ss = new Spreadsheet(spreadsheetId);
 
-    if (user.spreadsheetId !== undefined && user.accessToken !== undefined) {
-        const ss = new Spreadsheet(user.spreadsheetId);
-
-        try {
-            const appendedWork = await addWorkToSheet(ss, user.accessToken, work);
-            shelfSetWork(appendedWork);
-            return appendedWork;
-        } catch (error) {
-            throw new Error('access token expired or invalid, and there was an error exchanging the refresh token', { cause: error });
-        }
-    } else {
-        throw new Error('no spreadsheetId or accessToken');
+    try {
+        const appendedWork = await addWorkToSheet(ss, accessToken, work);
+        shelfSetWork(appendedWork);
+        return appendedWork;
+    } catch (error) {
+        throw new Error('access token expired or invalid, and there was an error exchanging the refresh token', { cause: error });
     }
 }
 
@@ -105,16 +82,16 @@ export async function handleAddWorkToSpreadsheet(msg: { data: Work }): Promise<W
  * @category Messaging
  */
 export async function handleGetValidAccessToken(): Promise<string> {
-    logger.info("Received getValidAccessToken message");
+    logger.info('Received getValidAccessToken message');
 
-    const user = await UserStore.getState().actions.getUser();
+    const { accessToken, refreshToken } = await getAndSetTokens();
 
-    if(await isAccessTokenValid(user.accessToken)) {
-        return user.accessToken;
+    if (await isAccessTokenValid(accessToken)) {
+        return accessToken!;
     } else {
-        const newAccessToken = await exchangeRefreshForAccessToken(user.refreshToken);
+        const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         if (newAccessToken) {
-            UserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
+            await setTokens({ accessToken: newAccessToken, refreshToken });
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');
@@ -134,38 +111,37 @@ export async function handleGetValidAccessToken(): Promise<string> {
 export async function handleLogin(): Promise<void> {
     logger.info('Received login message');
 
-    const { getUser, userStoreLogin } = UserStore.getState().actions;
-    const user = await getUser();
     try {
         // Launch the web authentication flow with interactive set to true
         const flowResp = await chromeLaunchWebAuthFlow(true);
 
         // If the response has a URL and a code, request authorization
         if (flowResp.url && flowResp.code) {
-            logger.debug('Flow response: ', flowResp);
-            const {access_token, refresh_token} = await requestAuthorization(flowResp);
+            logger.debug('WebAuthFlow response: ', flowResp);
+            const { access_token, refresh_token } = await requestAuthorization(flowResp);
 
-            //TODO: if no refresh token, fix it
+            // TODO: if no refresh token, fix it
 
             // If the response has a refresh token, store the async login
             // then send a message to the content script to update the login status
             if (refresh_token) {
-                if (!user.spreadsheetId || user.spreadsheetId === '') {
+                await setTokens({ accessToken: access_token, refreshToken: refresh_token });
+
+                if (!await getSpreadsheetId()) {
                     // If the user has no spreadsheetId, create a new one
                     const newSheet = await createSpreadsheet(access_token);
-                    userStoreLogin(access_token, refresh_token, newSheet);
+                    setSpreadsheetId(newSheet);
 
                     await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: newSheet});
                     await sendMessageToAo3Tabs('LoggedIn');
                 } else {
-                    userStoreLogin(access_token, refresh_token, user.spreadsheetId);
                     logger.debug('Sending message');
                     //await sendMessage('LoggedIn', {accessToken: access_token, refreshToken: refresh_token, spreadsheetId: user.spreadsheetId});
                     await sendMessageToAo3Tabs('LoggedIn' );
                 }
             } else {
-                logger.debug("No refresh token found, revoking tokens");
-                await revokeTokens(access_token);
+                logger.debug('No refresh token found, revoking tokens');
+                await revokeTokens();
             }
 
         }
@@ -194,21 +170,17 @@ export async function handleIsAccessTokenValid(msg: { data: string }): Promise<b
  * @category Messaging
  */
 export async function handleQuerySpreadSheet(msg: { data: string[] }): Promise<void> {
-    logger.info("Received querySpreadSheet message with searchList: ", msg.data);
-
-    const user = await UserStore.getState().actions.getUser();
+    logger.info('Received querySpreadSheet message with searchList: ', msg.data);
+    const { accessToken } = await getAndSetTokens();
+    const spreadsheetId = await getSpreadsheetId();
     const searchList = msg.data ?? [];
 
     if (searchList.length === 0) {
         return;
     }
 
-    if (user.spreadsheetId === '' || user.accessToken === '') {
-        throw new Error('no spreadsheetId or accessToken');
-    }
-
     try {
-        const response = await querySpreadsheet(user.spreadsheetId, user.accessToken, searchList);
+        const response = await querySpreadsheet(spreadsheetId, accessToken, searchList);
         logger.debug('Response from querySpreadsheet: ', response);
 
         const rows = Array.isArray(response?.table?.rows) ? (response.table.rows as GvizRow[]) : [];
@@ -239,14 +211,15 @@ export async function handleQuerySpreadSheet(msg: { data: string[] }): Promise<v
  * @category Messaging
  */
 export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promise<boolean> {
-    const user = await UserStore.getState().actions.getUser();
+    const { accessToken } = await getAndSetTokens();
+    const spreadsheetId = await getSpreadsheetId();
 
-    if (user.spreadsheetId === '' || user.accessToken === '') {
+    if (spreadsheetId === '' || accessToken === '') {
         throw new Error('no spreadsheetId or accessToken');
     }
 
     try {
-        const response = await addToHistory(msg.data, user.spreadsheetId, user.accessToken);
+        const response = await addToHistory(msg.data, spreadsheetId, accessToken);
         logger.debug('row', response);
         if (response) {
             logger.debug('Response from addToHistory: ', msg.data);
@@ -254,7 +227,7 @@ export async function handleUpdateWorkInSpreadsheet(msg: { data: Work }): Promis
             return true;
         }
     } catch (error) {
-        throw error;
+        throw new Error('addToHistory failed:', { cause: error });
     }
     return false;
 }

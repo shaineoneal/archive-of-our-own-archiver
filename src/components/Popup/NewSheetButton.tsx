@@ -1,5 +1,5 @@
 import { createSpreadsheet } from '@/services';
-import { useLoaderStore, UserStore } from '@/stores';
+import { getAndSetTokens, setSpreadsheetId, useLoaderStore } from '@/stores';
 import { Button, Flex } from '@mantine/core';
 
 /**
@@ -7,15 +7,10 @@ import { Button, Flex } from '@mantine/core';
  * @remarks Shows a loader while the spreadsheet is created and stores the ID.
  */
 export const NewSheetButton = () => {
-    const { loader, setLoader } = useLoaderStore();
-    let { accessToken, spreadsheetId } = UserStore.getState().user;
-    const setSpreadsheetId = UserStore.getState().actions.setSpreadsheetId;
-
-    if (accessToken === undefined) {
-        return null;
-    }
+    const { setLoader } = useLoaderStore();
 
     const handleNewSheet = async () => {
+        let { accessToken } = await getAndSetTokens();
         setLoader(true);
         const id = await createSpreadsheet(accessToken);
         if (id) {

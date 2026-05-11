@@ -1,9 +1,8 @@
-import { sendMessage } from "@/services/messaging.ts";
-import { UserStore } from "@/stores/userStore";
+import { insideWorkPage } from "@/entrypoints/content/other/insideWorksPage.tsx";
 import { getValidAccessToken } from '@/services';
+import { getAndSetTokens, revokeTokens, setTokens, useShelfHydration, useTokens } from '@/stores';
 import { ReactElement } from 'react';
-import { useShelfHydration } from "@/stores";
-import { BlurbPortals } from "@/components/BlurbControls/BlurbPortals.tsx";
+import { BlurbPortals } from "@/components/";
 
 // Interface for message structure
 interface Message {
@@ -64,27 +63,23 @@ function disconnectContentScript(): void {
 
 // Main function to initialize the content script
 export async function main(ctx: any) {
-    const user = await UserStore.getState().actions.getUser();
+    const { accessToken, refreshToken } = await getAndSetTokens();
 
-    if(user.accessToken) {
-        const resp = await sendMessage('IsAccessTokenValid', user.accessToken!);
-        logger.debug('IsAccessTokenValid response', resp);
-        if (resp) {
-            logger.debug('user is logged in');
-            UserStore.getState().actions.userStoreLogin(user.accessToken, user.refreshToken!, user.spreadsheetId!);
-            pageTypeDetect();
-        } else {
-            logger.debug('user is not logged in, access token is invalid');
-            try {
-                const newAT = await getValidAccessToken(user.accessToken, user.refreshToken!);
-                UserStore.getState().actions.userStoreLogin(newAT, user.refreshToken!, user.spreadsheetId!);
-                pageTypeDetect();
-            } catch (err) {
-                logger.error(err);
-            }
+    if (!accessToken || !refreshToken) {
+        logger.debug('No access or refresh token found, user is not logged in');
+        return;
+    }
+
+    try {
+        const newAT = await getValidAccessToken(accessToken, refreshToken);
+        if (newAT !== accessToken) {
+            logger.debug('access token was refreshed, updating storage and reloading page');
+            await setTokens({ accessToken: newAT, refreshToken });
         }
-    } else {
-        logger.debug('user is not logged in');
+        pageTypeDetect();
+    } catch (err) {
+        logger.error('Unable to get valid access token, user is not logged in. Error: ', err);
+        await revokeTokens();
     }
 }
 
@@ -103,8 +98,9 @@ export function unregisterStorageListener() {
 }
 
 
-export function App() : ReactElement {
+export function App(): ReactElement {
     const { isHydrated, shelfVersion } = useShelfHydration();
+    const { accessToken } = useTokens();
 
     return (
         <>
@@ -112,7 +108,7 @@ export function App() : ReactElement {
                 <span>++</span>
                 <sup> also beta</sup>
             </a>
-            {isHydrated ? <BlurbPortals key={shelfVersion} /> : null}
+            {isHydrated && accessToken ? <BlurbPortals key={shelfVersion} /> : null}
         </>
     );
 }

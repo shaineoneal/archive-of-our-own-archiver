@@ -1,114 +1,150 @@
-import { create } from "zustand";
-import { persist, StorageValue } from "zustand/middleware";
-import { useStoreWithEqualityFn } from "zustand/traditional";
-import { getStore, removeStore, setStore, StoreMethod } from "@/services";
-import { omit } from "lodash";
-import { browser } from "#imports";
+import { HttpMethod, makeRequest } from "@/services";
+import { storage } from '@wxt-dev/storage';
+import { create } from 'zustand';
+import { StorageItemKey } from '@wxt-dev/storage';
 
-/* https://doichevkostia.dev/blog/authentication-store-with-zustand/ */
-
-const DEFAULT_USER: UserDataType = {
-    accessToken: '',
-    refreshToken: '',
-    spreadsheetId: ''
-}
-
-export type UserDataType = {
-    accessToken: string;
-    refreshToken: string;
+interface SpreadsheetIdStore {
     spreadsheetId: string;
+    hydrateSpreadsheetId: () => Promise<void>;
+    getSpreadsheetId: () => Promise<string>;
+    setSpreadsheetId: (id: string) => void;
 }
 
-type UserActionsType = {
-    getUser: () => Promise<UserDataType>;
-    setAccessToken: (accessT: string) => void;
-    setRefreshToken: (refreshT: string) => void;
-    setSpreadsheetId: (spreadsheetId: string) => void;
-    userStoreLogin: (accessToken: string, refreshToken: string, spreadsheetId: string) => void;
-    logout: () => void;
-}
+const ssSyncStore = storage.defineItem<string>('sync:spreadsheet-id');
 
-type UserStoreType = {
-    user: UserDataType;
-    actions: UserActionsType;
-}
-
-/**
- * Zustand store for user data with persistence.
- */
-export const UserStore = create<UserStoreType>()(
-    persist(
-        (set, get): UserStoreType => ({
-            user: DEFAULT_USER,
-
-            actions: {
-                getUser: async () => {
-                    const userStore = await browser.storage.sync.get('user-store');
-                    const user = userStore['user-store'] as any;
-                    return user?.user ?? DEFAULT_USER;
-                },
-                setAccessToken: (accessT: string) => {
-                    set({ user: { ...get().user, accessToken: accessT } });
-                },
-                setRefreshToken: (refreshT: string) => {
-                    set({ user: { ...get().user, refreshToken: refreshT } });
-                },
-                setSpreadsheetId: (spreadsheetId: string) => {
-                    set({ user: { ...get().user, spreadsheetId: spreadsheetId } });
-                },
-                userStoreLogin: async ( accessToken, refreshToken, spreadsheetId ) => {
-                    set({ user: { ...get().user, accessToken, refreshToken, spreadsheetId } });
-                },
-                logout: () => {
-                    set({ user: { ...get().user, accessToken: '', refreshToken: '' } });
-                }
-            }
-        }),
-        {
-            name: 'user-store',
-            storage: {
-                async getItem(name: string): Promise<StorageValue<any>> {
-
-                    const data = await getStore(name, StoreMethod.SYNC);
-                    return {
-                        state: data[name]
-                    };
-                },
-
-                async setItem(name: string, storageValue: StorageValue<any>) {
-                    await setStore(name, storageValue.state, StoreMethod.SYNC);
-                },
-
-                async removeItem(name: string): Promise<void> {
-                    await removeStore(name, StoreMethod.SYNC);
-                }
-            },
-            partialize: (state) => {
-                return omit(state, ['actions']);
-            }
+const SpreadsheetIdStore = create<SpreadsheetIdStore>()(
+    (set): SpreadsheetIdStore => ({
+        spreadsheetId: '',
+        hydrateSpreadsheetId: async () => {
+            const spreadsheetId = await ssSyncStore.getValue();
+            set({ spreadsheetId: spreadsheetId ?? '' });
+        },
+        getSpreadsheetId: async () => {
+            const spreadsheetId = await ssSyncStore.getValue();
+            set({ spreadsheetId: spreadsheetId ?? '' });
+            return spreadsheetId ?? '';
+        },
+        setSpreadsheetId: (id: string) => {
+            ssSyncStore.setValue(id)
+                .then(() => {
+                    set({ spreadsheetId: id });
+                })
+                .catch((error) => {
+                    throw error;
+                });
         }
-    )
+    })
 );
 
-export type ExtractState<S> = S extends {
-        getState: () => infer T;
-    }
-    ? T
-    : never;
+/** React hook to read spreadsheetId from sync storage and subscribe to updates */
+export const useSpreadsheetId = () => SpreadsheetIdStore(state => state.spreadsheetId);
+export const hydrateSpreadsheetId = () => SpreadsheetIdStore.getState().hydrateSpreadsheetId();
+/** non-hook function to set spreadsheetId into sync storage */
+export const setSpreadsheetId = (id: string) => SpreadsheetIdStore.getState().setSpreadsheetId(id);
+/** non-hook function to get spreadsheetId from sync storage */
+export const getSpreadsheetId = () => SpreadsheetIdStore.getState().getSpreadsheetId();
 
-const userSelector = (state: ExtractState<typeof UserStore>) => state.user;
-const actionsSelector = (state: ExtractState<typeof UserStore>) => state.actions;
-
-export function useUserStore<U>(selector: (state: UserStoreType) => U, equalityFn?: (a: U, b: U) => boolean) {
-    return useStoreWithEqualityFn(UserStore, selector, equalityFn);
+interface ITokens {
+    accessToken: string;
+    refreshToken: string;
 }
 
-/**
- * Custom hook to use the user data from synced storage.
- */
-export const useUser = () => useUserStore(userSelector);
+interface ITokenStore {
+    accessToken: string;
+    refreshToken: string;
+    setTokens(tokens: ITokens): Promise<void>;
+    getAndSetTokens(): Promise<ITokens>;
+    hydrateTokens(): Promise<void>;
+    revokeTokens(): Promise<void>;
+}
 
-/**
- * Custom hook to use the actions from synced storage.
- */
-export const useActions = () => useUserStore(actionsSelector);
+type ItemsSetType = {
+    key: StorageItemKey;
+    value: string;
+};
+
+const TokenStore = create<ITokenStore>()(
+    (set, get) => ({
+        accessToken: '',
+        refreshToken: '',
+        setTokens: async (tokens: ITokens) => {
+            let itemsToSet: ItemsSetType[] = [];
+            if (tokens.refreshToken) {
+                itemsToSet.push({ key: 'local:refresh-token', value: tokens.refreshToken });
+                set({ refreshToken: tokens.refreshToken });
+            }
+            if (tokens.accessToken) {
+                itemsToSet.push({ key: 'local:access-token', value: tokens.accessToken });
+                set({ accessToken: tokens.accessToken });
+            }
+            if (itemsToSet.length !== 0) {
+                logger.debug('itemsToSet in setTokens', itemsToSet);
+                await storage.setItems(itemsToSet).catch((error) => {
+                    throw error;
+                });
+            }
+        },
+        getAndSetTokens: async (): Promise<ITokens> => {
+            return await storage.getItems(['local:access-token', 'local:refresh-token'])
+                .then((result) => {
+                    logger.debug('Tokens found in storage:', result);
+                    const aT = result[0]?.value as string;
+                    const rT = result[1]?.value as string;
+                    if (rT) {
+                        set({ refreshToken: rT });
+                    }
+                    if (aT) {
+                        set({ accessToken: aT });
+                    }
+                    return { accessToken: aT ?? '', refreshToken: rT ?? '' };
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        },
+        hydrateTokens: async () => {
+            await storage.getItems(['local:access-token', 'local:refresh-token'])
+                .then((result) => {
+                    logger.debug('tokens result', result);
+                    const aT = result[0]?.value as string | undefined;
+                    const rT = result[1]?.value as string | undefined;
+                    const nextAccessToken = aT ?? '';
+                    const nextRefreshToken = rT ?? '';
+                    if (nextAccessToken !== get().accessToken) {
+                        set({ accessToken: nextAccessToken });
+                    }
+                    if (nextRefreshToken !== get().refreshToken) {
+                        set({ refreshToken: nextRefreshToken });
+                    }
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        },
+        revokeTokens: async () => {
+            if (get().accessToken) {
+                logger.debug('tokens result', get().accessToken);
+                await makeRequest({
+                    url: `https://oauth2.googleapis.com/revoke?token=${get().accessToken}`,
+                    method: HttpMethod.POST,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+            }
+            set({ accessToken: '', refreshToken: '' });
+            await storage.removeItems(['local:access-token', 'local:refresh-token']);
+        }
+    })
+);
+
+/** non-React function to set access and refresh tokens into local storage and Zustand state */
+export const setTokens = (tokens: ITokens) => TokenStore.getState().setTokens(tokens);
+/** non-React function to get access and refresh tokens from local storage via Zustand state */
+export const hydrateTokens = () => TokenStore.getState().hydrateTokens();
+/** non-React function to get access and refresh tokens from store */
+export const getAndSetTokens = async () => TokenStore.getState().getAndSetTokens();
+/** non-React function to revoke access token via Google's token revocation endpoint and remove Zustand stores */
+export const revokeTokens = () => TokenStore.getState().revokeTokens();
+/** React hook to read access and refresh tokens from Zustand state */
+export const useTokens = () => TokenStore(state => ({ accessToken: state.accessToken, refreshToken: state.refreshToken }));

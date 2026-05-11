@@ -1,6 +1,5 @@
 import { logger } from '@/utils';
 import { HttpMethod, makeRequest } from './httpRequest.ts';
-import { UserStore } from '@/stores'
 
 const client_id = import.meta.env.WXT_API_CLIENT_ID;
 const client_secret = import.meta.env.WXT_API_CLIENT_SECRET;
@@ -116,16 +115,21 @@ export async function isAccessTokenValid(token: string): Promise<boolean> {
  */
 export async function getValidAccessToken(accessToken: string, refreshToken: string): Promise<string> {
     logger.debug('Checking access token validity:', accessToken);
-    const user = await UserStore.getState().actions.getUser();
-    if (await isAccessTokenValid(accessToken)) {
+
+    if (!accessToken) {
+        logger.debug('No access token found');
+    } else if (await isAccessTokenValid(accessToken)) {
         logger.debug('Access token is valid');
         return accessToken;
     } else {
         logger.debug('Access token is invalid, attempting to exchange refresh token: ', refreshToken);
+        if (refreshToken === '') {
+            logger.debug('Refresh token is invalid');
+            throw new Error('No refresh token available to exchange for access token');
+        }
         const newAccessToken = await exchangeRefreshForAccessToken(refreshToken);
         if (newAccessToken) {
             logger.debug('New access token obtained:', newAccessToken);
-            UserStore.getState().actions.userStoreLogin(newAccessToken, user.refreshToken, user.spreadsheetId);
             return newAccessToken;
         } else {
             throw new Error('Unable to retrieve a valid access token');

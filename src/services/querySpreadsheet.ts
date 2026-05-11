@@ -30,5 +30,10 @@ function createEncodedQuery(searchList: string[]): string {
 async function parseResponse(response: HttpResponse): Promise<GvizDataTableResponse> {
     logger.debug('parseResponse', 'response', response);
     let data = await response.text();
+    const item = JSON.parse(data.substring(47, data.length - 2));
+    if (item.status === 'error') {
+        logger.error('Error response from Google Visualization API:', item);
+        throw new Error(`Google Visualization API error: ${item.errors?.[0]?.detailed_message || 'Unknown error'}`);
+    }
     return JSON.parse(data.substring(47, data.length - 2)) as GvizDataTableResponse;
 }

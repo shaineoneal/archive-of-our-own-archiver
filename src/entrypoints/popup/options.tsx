@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { useActions, UserStore } from '@/stores';
+import { PopupHeader } from "@/components/Popup/Header.tsx";
 import { LogoutButton } from '@/components/Popup/LogoutButton.tsx';
 import { NewSheetButton } from '@/components/Popup/NewSheetButton.tsx';
-import { root } from "@/entrypoints/popup/popup.tsx";
 import '@mantine/core/styles.css';
+import { setSpreadsheetId, useSpreadsheetId } from '@/stores';
 import { theme } from "@/utils/theme.ts";
-import { PopupHeader } from "@/components/Popup/Header.tsx";
 import { Container, Flex, Input, MantineProvider, Paper, Title } from '@mantine/core';
+import React from 'react';
+import { createRoot } from "react-dom/client";
 
 export function openOptionsPage() {
     chrome.runtime.openOptionsPage();
@@ -17,29 +17,28 @@ export function openOptionsPage() {
  * @returns the Options component
  */
 const Options = () => {
-
-    const [ errorStatus, setErrorStatus ] = useState<boolean>(false);
-    let { setSpreadsheetId } = useActions();
-    let { spreadsheetId } = UserStore.getState().user;
+    const [ errorStatus, setErrorStatus ] = useState(false);
+    const spreadsheetId = useSpreadsheetId();
     let spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
 
-    useEffect(() => {
-        spreadsheetId = UserStore.getState().user.spreadsheetId;
-    }, [spreadsheetId]);
-
+    /**
+     * Parse a spreadsheet URL and store the extracted spreadsheet ID.
+     * @param event - Text input change event.
+     * @returns Nothing.
+     */
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const regex = /^https:\/\/docs\.google\.com\/spreadsheets\/\/?u?\/?[0-9]?\/?d\/([A-Za-z0-9_-]+)(\/|$)/;
 
         const match = event.target.value.match(regex);
         logger.debug('match: ', match);
-        if(match && match[1]) {
-            setErrorStatus(false);
+        if (match && match[1]) {
             const spreadsheetId = match[1];
             logger.debug('new spreadsheetId: ', spreadsheetId);
             setSpreadsheetId(spreadsheetId);
-            //TODO: actually check if the user can access it properly
+            setErrorStatus(false);
+            // TODO: actually check if the user can access it properly
         } else {
-            //TODO: handle invalid url
+            // TODO: handle invalid url
             setErrorStatus(true);
         }
 

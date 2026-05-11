@@ -8,8 +8,8 @@ import { Button, Center } from '@mantine/core';
  * @remarks Opens a new browser tab when the button is clicked.
  */
 export function GoToSheetButton({ spreadsheetId }: { spreadsheetId: string }) {
-    const handleGoToSheet = () => {
-        browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=0` });
+    const handleGoToSheet = async () => {
+        await browser.tabs.create({ url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=0` });
     };
 
     return (
